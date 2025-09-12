@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: echo_debate_of_school_project/package-lock.json  # 新增此行
 
       - name: Install deps
         run: npm ci
