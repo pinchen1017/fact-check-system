@@ -1,5 +1,6 @@
 import './css/header.css'
 import { MdOutlineNaturePeople } from "react-icons/md"
+import logo from './assets/logo.png';
 
 {/* Header */}
 function Header({ currentTab, onTabChange }) {
@@ -10,7 +11,7 @@ function Header({ currentTab, onTabChange }) {
                 <div className="header-left">
                     <div className="logo-container">
                         <div className="logo-icon">
-                            <a href="index.php"><img src="./src/assets/logo.png" alt="" /></a>
+                            <a href="index.php"><img src={logo} alt="logo" /></a>
                         </div>
                         <div className="logo-text">
                             <h1 className="brand-name">Echo & Debat</h1>

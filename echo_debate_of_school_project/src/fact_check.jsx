@@ -10,6 +10,7 @@ import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
 import LlmAnalysis from './llm'
 import SlmAnalysis from './slm'
+import cofact from './assets/cofact.png'
 
 
 {/* FactCheck */ }
@@ -156,7 +157,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 <div className="cofact-header">
                   <div className="cofact-header-left">
                     <div className="cofact-logo">
-                      <a href="index.php"><img src="./src/assets/cofact.png" alt="" /></a>
+                      <a href="index.php"><img src={cofact} alt="cofact" /></a>
                     </div>
                     <h3>Cofact 事實查核結果</h3>
                   </div>
@@ -190,7 +191,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 <div className="cofact-header">
                   <div className="cofact-header-left">
                     <div className="cofact-logo">
-                      <a href="index.php"><img src="./src/assets/cofact.png" alt="" /></a>
+                      <a href="index.php"><img src={cofact} alt="cofact" /></a>
                     </div>
                     <h3>Cofact 事實查核結果</h3>
                   </div>
