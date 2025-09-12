@@ -1,4 +1,4 @@
-name: Deploy Vite to GitHub Pages
+name: Deploy Vite (subfolder) to GitHub Pages
 
 on:
   push:
@@ -24,16 +24,21 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install deps
+        run: npm ci
+        working-directory: echo_debate_of_school_project
 
-      # 若你使用 BrowserRouter，這行會幫你建立 404 回退頁面；
-      # 即使用 HashRouter，保留也沒壞處
-      - run: cp dist/index.html dist/404.html
+      - name: Build
+        run: npm run build
+        working-directory: echo_debate_of_school_project
+
+      # React Router 刷新回退（可留着）
+      - name: Add 404 fallback
+        run: cp echo_debate_of_school_project/dist/index.html echo_debate_of_school_project/dist/404.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./echo_debate_of_school_project/dist
 
   deploy:
     needs: build
