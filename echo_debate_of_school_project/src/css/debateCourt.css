@@ -1,0 +1,210 @@
+/* 辯論法庭系统 */
+.debate-court-section {
+  width: 90%;
+  margin-bottom: 3rem;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.court-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.prosecution-area,
+.defense-area {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.judge-area {
+  grid-column: 1 / -1;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.role-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.role-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.role-header.prosecution h3 {
+  color: #c53030;
+}
+
+.role-header.defense h3 {
+  color: #2f855a;
+}
+
+.role-header.judge h3 {
+  color: #744210;
+}
+
+.role-icon {
+  font-size: 1.25rem;
+}
+
+.debate-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  /* 設置滾動區域高度為三個訊息欄位大小 */
+  height: calc(3 * (1rem + 2rem + 1.5rem + 1rem)); /* 3個訊息的總高度 */
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  /* 自定義滾動條樣式 */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+/* Webkit瀏覽器的滾動條樣式 */
+.debate-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.debate-messages::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.debate-messages::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.debate-messages::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+.message {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+  /* 確保訊息不會被壓縮 */
+  flex-shrink: 0;
+}
+
+.prosecution-msg {
+  border-left: 4px solid #c53030;
+}
+
+.defense-msg {
+  border-left: 4px solid #2f855a;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.speaker {
+  font-weight: 600;
+  color: #1a202c;
+  font-size: 0.875rem;
+}
+
+.timestamp {
+  color: #718096;
+  font-size: 0.75rem;
+}
+
+.message-content {
+  color: #4a5568;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+.judgment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.judgment-text {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.judgment-text p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.confidence-meter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.confidence-meter span:first-child {
+  font-weight: 600;
+  color: #1a202c;
+  min-width: 80px;
+}
+
+.confidence-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgb(221, 208, 164), rgb(162, 135, 46));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.confidence-meter span:last-child {
+  font-weight: 600;
+  color: #744210;
+  min-width: 40px;
+  text-align: right;
+}

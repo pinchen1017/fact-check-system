@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事實查核頁面寬度測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .width-indicator {
+            background: #3182ce;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .search-section {
+            width: 820px;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+        
+        .search-container {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-button {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .analysis-section {
+            width: 820px;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+        
+        .summary-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .debate-court-section {
+            width: 820px;
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+        
+        .court-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        
+        .prosecution-area,
+        .defense-area {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .judge-area {
+            grid-column: 1 / -1;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            margin-top: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .latest-section {
+            width: 820px;
+            margin-bottom: 3rem;
+        }
+        
+        .fact-check-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: #edf2f7;
+            color: #4a5568;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .item-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0 0 0.75rem 0;
+        }
+        
+        .item-summary {
+            color: #4a5568;
+            line-height: 1.6;
+            margin: 0 0 1rem 0;
+        }
+        
+        .item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #718096;
+            font-size: 0.875rem;
+        }
+        
+        .correctness-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3182ce, #2c5aa0);
+            border-radius: 4px;
+            width: 65%;
+        }
+        
+        .role-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .role-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0;
+        }
+        
+        .role-header.prosecution h3 {
+            color: #c53030;
+        }
+        
+        .role-header.defense h3 {
+            color: #2f855a;
+        }
+        
+        .role-header.judge h3 {
+            color: #744210;
+        }
+        
+        .role-icon {
+            font-size: 1.25rem;
+        }
+        
+        .debate-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            /* 設置滾動區域高度為三個訊息欄位大小 */
+            height: calc(3 * (1rem + 2rem + 1.5rem + 1rem)); /* 3個訊息的總高度 */
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            /* 自定義滾動條樣式 */
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        
+        /* Webkit瀏覽器的滾動條樣式 */
+        .debate-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .debate-messages::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 3px;
+        }
+        
+        .debate-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+        
+        .debate-messages::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        
+        .message {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            /* 確保訊息不會被壓縮 */
+            flex-shrink: 0;
+        }
+        
+        .prosecution-msg {
+            border-left: 4px solid #c53030;
+        }
+        
+        .defense-msg {
+            border-left: 4px solid #2f855a;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .speaker {
+            font-weight: 600;
+            color: #1a202c;
+            font-size: 0.875rem;
+        }
+        
+        .timestamp {
+            color: #718096;
+            font-size: 0.75rem;
+        }
+        
+        .message-content {
+            color: #4a5568;
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+        
+        .confidence-meter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f6ad55, #ed8936);
+            border-radius: 4px;
+            width: 65%;
+        }
+        
+        .confidence-meter span {
+            font-weight: 600;
+            color: #744210;
+            min-width: 40px;
+        }
+        
+        .confidence-meter span:first-child {
+            min-width: 80px;
+        }
+        
+        .confidence-meter span:last-child {
+            text-align: right;
+        }
+        
+        .scroll-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #234e52;
+        }
+        
+        @media (max-width: 768px) {
+            .court-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .confidence-meter {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .confidence-meter span:first-child,
+            .confidence-meter span:last-child {
+                min-width: auto;
+                text-align: left;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-section,
+            .analysis-section,
+            .debate-court-section,
+            .latest-section {
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            .summary-item,
+            .prosecution-area,
+            .defense-area,
+            .judge-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>事實查核頁面寬度測試</h1>
+        <p>此頁面展示事實查核頁面各區域的寬度是否保持一致</p>
+        
+        <!-- 搜索區域 -->
+        <div class="search-section">
+            <div class="width-indicator">搜索區域 - 寬度: 820px</div>
+            <h1 style="font-size: 2.5rem; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem; text-align: center;">事實查核</h1>
+            <p style="font-size: 1.125rem; color: #4a5568; margin-bottom: 2rem; text-align: center;">輸入謠言內容，獲得專業分析結果</p>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="輸入要查證的謠言內容...">
+                <button class="search-button">開始分析</button>
+            </div>
+        </div>
+        
+        <!-- 分析結果區域 -->
+        <div class="analysis-section">
+            <div class="width-indicator">分析結果區域 - 寬度: 820px</div>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #1a202c; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">分析結果</h2>
+            
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h3>新聞正確性</h3>
+                    <div class="correctness-badge">真實</div>
+                </div>
+                <div class="summary-item">
+                    <h3>模糊分數</h3>
+                    <div class="score-bar">
+                        <div class="score-fill"></div>
+                    </div>
+                    <span>65%</span>
+                </div>
+            </div>
+            
+            <div class="summary-item">
+                <h3>詳細分析</h3>
+                <p>根據多個可靠來源的交叉驗證，此消息的真實性存在爭議。專家意見分歧，需要進一步調查。</p>
+            </div>
+            
+            <div class="summary-item">
+                <h3>參考網址</h3>
+                <ul>
+                    <li><a href="#" target="_blank">https://example.com/reference1</a></li>
+                    <li><a href="#" target="_blank">https://example.com/reference2</a></li>
+                    <li><a href="#" target="_blank">https://example.com/reference3</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 辯論法庭系統 -->
+        <div class="debate-court-section">
+            <div class="width-indicator">辯論法庭系統 - 寬度: 820px (含滾動功能)</div>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #1a202c; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">辯論法庭系統</h2>
+            
+            <div class="court-layout">
+                <div class="prosecution-area">
+                    <div class="role-header prosecution">
+                        <div class="role-icon">⚖️</div>
+                        <h3>正方</h3>
+                    </div>
+                    <div class="debate-messages">
+                        <div class="message prosecution-msg">
+                            <div class="message-header">
+                                <span class="speaker">正方</span>
+                                <span class="timestamp">10:30</span>
+                            </div>
+                            <div class="message-content">根據證據顯示，此消息缺乏可靠來源支持。</div>
+                        </div>
+                        <div class="message prosecution-msg">
+                            <div class="message-header">
+                                <span class="speaker">正方</span>
+                                <span class="timestamp">10:32</span>
+                            </div>
+                            <div class="message-content">多個事實查核機構已將此消息標記為可疑。</div>
+                        </div>
+                        <div class="message prosecution-msg">
+                            <div class="message-header">
+                                <span class="speaker">正方</span>
+                                <span class="timestamp">10:34</span>
+                            </div>
+                            <div class="message-content">相關專家對此消息的準確性表示質疑。</div>
+                        </div>
+                        <div class="message prosecution-msg">
+                            <div class="message-header">
+                                <span class="speaker">正方</span>
+                                <span class="timestamp">10:36</span>
+                            </div>
+                            <div class="message-content">此消息的發布時間與已知事實不符。</div>
+                        </div>
+                        <div class="message prosecution-msg">
+                            <div class="message-header">
+                                <span class="speaker">正方</span>
+                                <span class="timestamp">10:38</span>
+                            </div>
+                            <div class="message-content">需要進一步的權威驗證來確認真實性。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="defense-area">
+                    <div class="role-header defense">
+                        <div class="role-icon">⚖️</div>
+                        <h3>反方</h3>
+                    </div>
+                    <div class="debate-messages">
+                        <div class="message defense-msg">
+                            <div class="message-header">
+                                <span class="speaker">反方</span>
+                                <span class="timestamp">10:31</span>
+                            </div>
+                            <div class="message-content">我方當事人提供了相關證據支持此消息。</div>
+                        </div>
+                        <div class="message defense-msg">
+                            <div class="message-header">
+                                <span class="speaker">反方</span>
+                                <span class="timestamp">10:33</span>
+                            </div>
+                            <div class="message-content">部分專家學者對此消息持支持態度。</div>
+                        </div>
+                        <div class="message defense-msg">
+                            <div class="message-header">
+                                <span class="speaker">反方</span>
+                                <span class="timestamp">10:35</span>
+                            </div>
+                            <div class="message-content">需要考慮消息發布的時空背景。</div>
+                        </div>
+                        <div class="message defense-msg">
+                            <div class="message-header">
+                                <span class="speaker">反方</span>
+                                <span class="timestamp">10:37</span>
+                            </div>
+                            <div class="message-content">相關證據正在進一步收集和驗證中。</div>
+                        </div>
+                        <div class="message defense-msg">
+                            <div class="message-header">
+                                <span class="speaker">反方</span>
+                                <span class="timestamp">10:39</span>
+                            </div>
+                            <div class="message-content">建議等待更多權威機構的調查結果。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="judge-area">
+                    <div class="role-header judge">
+                        <div class="role-icon">⚖️</div>
+                        <h3>法官判決</h3>
+                    </div>
+                    <p>經法庭審理，此消息的真實性存在爭議，建議公眾謹慎對待，等待進一步權威驗證。</p>
+                    <div class="confidence-meter">
+                        <span>判決信心度</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill"></div>
+                        </div>
+                        <span>65%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="scroll-info">
+                <strong>滾動功能說明：</strong> 正方和反方的對話區域已設置為可滾動，高度限制為三個訊息欄位大小。當訊息超過三個時，可以使用滾動條查看更多內容。
+            </div>
+        </div>
+        
+        <!-- 最新查證 -->
+        <div class="latest-section">
+            <div class="width-indicator">最新查證區域 - 寬度: 820px</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #1a202c; margin: 0;">最新查證</h2>
+                <a href="#" style="color: #3182ce; text-decoration: none; font-weight: 500; font-size: 0.875rem;">查看全部</a>
+            </div>
+            
+            <div class="fact-check-item">
+                <div class="item-header">
+                    <span class="status-badge">真實</span>
+                    <span class="category-badge">政治</span>
+                </div>
+                <h3 class="item-title">某地區將實施新的交通管制措施？</h3>
+                <p class="item-summary">相關政策文件已正式發布，將於下月開始實施。</p>
+                <div class="item-meta">
+                    <span>作者：王美</span>
+                    <span>2024-01-13</span>
+                </div>
+            </div>
+            
+            <div class="fact-check-item">
+                <div class="item-header">
+                    <span class="status-badge" style="background: #fed7d7; color: #742a2a;">假消息</span>
+                    <span class="category-badge">健康</span>
+                </div>
+                <h3 class="item-title">某品牌食品含有致癌物質？</h3>
+                <p class="item-summary">該品牌部分產品確實含有微量相關物質，但含量遠低於安全標準。</p>
+                <div class="item-meta">
+                    <span>作者：李華</span>
+                    <span>2024-01-14</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>寬度一致性檢查結果</h3>
+            <p>✅ 所有區域都已設置為 <code>width: 820px</code></p>
+            <p>✅ 搜索區域、分析結果區域、辯論法庭系統和最新查證區域寬度完全一致</p>
+            <p>✅ 辯論法庭系統已添加滾動功能，高度限制為三個訊息欄位大小</p>
+            <p>✅ 響應式設計確保在不同螢幕尺寸下寬度保持一致</p>
+        </div>
+    </div>
+</body>
+</html>

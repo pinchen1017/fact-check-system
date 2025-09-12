@@ -1,0 +1,291 @@
+.model-modal.llm {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.model-modal.llm .model-modal-content {
+  width: 840px;
+  max-width: 95vw;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  border: 2px solid rgb(203, 163, 54);
+}
+
+.model-modal.llm .model-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eaeaea;
+  background: rgba(203, 163, 54, 0.08);
+}
+
+.model-modal.llm .model-modal-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: rgb(46, 68, 91);
+}
+
+.model-modal.llm .model-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: rgb(46, 68, 91);
+}
+
+.model-modal.llm .model-modal-body {
+  padding: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.model-modal.llm .model-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* 模型分析组件样式 */
+.model-analysis.llm {
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 68, 91, 0.1);
+  margin-bottom: 16px;
+}
+
+.model-analysis.llm .model-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.model-analysis.llm .analysis-text {
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(46, 68, 91, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid rgb(203, 163, 54);
+}
+
+.model-analysis.llm .analysis-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: rgb(46, 68, 91);
+  font-weight: 600;
+}
+
+.model-analysis.llm .analysis-text p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #2b2b2b;
+}
+
+.model-analysis.llm .references {
+  margin: 16px 0 0 0;
+  padding: 12px;
+  background: rgba(46, 68, 91, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid rgb(98, 126, 156);
+}
+
+.model-analysis.llm .references h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: rgb(46, 68, 91);
+  font-weight: 600;
+}
+
+.model-analysis.llm .references ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.model-analysis.llm .references li {
+  margin: 6px 0;
+  padding: 4px 0;
+}
+
+.model-analysis.llm .references a {
+  color: rgb(46, 68, 91);
+  text-decoration: none;
+  font-size: 12px;
+  word-break: break-all;
+  transition: color 0.2s ease;
+}
+
+.model-analysis.llm .references a:hover {
+  color: rgb(203, 163, 54);
+  text-decoration: underline;
+}
+
+.model-modal.llm .metric-item span {
+  display: inline-block;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.model-modal.llm .metric-bar {
+  height: 10px;
+  background: rgba(46, 68, 91, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.model-modal.llm .metric-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgb(203, 163, 54), rgb(221, 208, 164));
+}
+
+.model-modal.llm .metric-fill.truth {
+  background: linear-gradient(90deg, rgb(46, 68, 91), rgb(98, 126, 156));
+}
+
+.model-modal.llm .metric-value {
+  margin-left: 6px;
+  font-size: 12px;
+  color: rgb(46, 68, 91);
+}
+
+.model-modal.llm .model-perspective h5 {
+  margin: 14px 0 6px;
+  font-size: 14px;
+  color: rgb(203, 163, 54);
+}
+
+.model-modal.llm .model-perspective p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #2b2b2b;
+}
+
+/* Analysis buttons area - ensure consistent styling */
+.model-detail-tree h5 {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  color: rgb(203, 163, 54);
+}
+
+.analysis-tree .tree-node {
+  background: #ffffff;
+  border: 1px solid rgba(46, 68, 91, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  min-width: 260px;
+  max-width: 860px;
+}
+
+.analysis-tree .node-header {
+  background: rgba(203, 163, 54, 0.08);
+  color: rgb(46, 68, 91);
+  border-bottom: 1px solid rgba(203, 163, 54, 0.25);
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.analysis-tree .node-body {
+  padding: 12px 14px;
+  color: #2b2b2b;
+  line-height: 1.6;
+}
+
+.analysis-tree .tree-branches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: start;
+  position: relative;
+}
+
+.analysis-tree .tree-branches::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgb(203, 163, 54);
+}
+
+.analysis-tree .tree-branch {
+  display: grid;
+  grid-template-rows: 16px auto;
+  justify-items: center;
+  position: relative;
+}
+
+.analysis-tree .branch-connector {
+  width: 2px;
+  height: 16px;
+  background: rgb(203, 163, 54);
+}
+
+.analysis-text ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.analysis-text button.n8n,
+.analysis-text button.llm,
+.analysis-text button.slm {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 68, 91, 0.25);
+  background: linear-gradient(180deg, rgb(46, 68, 91), rgb(35, 52, 71));
+  color: rgb(246, 241, 235);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.analysis-text button.n8n:hover,
+.analysis-text button.llm:hover,
+.analysis-text button.slm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.analysis-text button.n8n:active,
+.analysis-text button.llm:active,
+.analysis-text button.slm:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
+}
+
+.analysis-text button.n8n::after,
+.analysis-text button.llm::after,
+.analysis-text button.slm::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgb(203, 163, 54), rgb(221, 208, 164));
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+

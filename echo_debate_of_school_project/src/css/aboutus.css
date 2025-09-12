@@ -1,0 +1,255 @@
+/* 關於我們 */
+.about-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+.about-section h1 {
+    text-align: center;
+    color: #2d3748;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.about-section h2 {
+    /* color: #4a5568; */
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem 0;
+    font-weight: 600;
+    text-align: left;
+    /* border-bottom: 1px solid #0e2943; */
+    padding-bottom: 0.5rem;
+}
+
+.about-section h2 svg {
+    color: rgb(203, 163, 54);
+}
+
+.about-intro-section,
+.about-mission-section,
+.about-platform-section {
+    margin-bottom: 3rem;
+    /* border-bottom: 1px solid #0e2943; */
+}
+
+.about-platform-section h2,
+.about-process-section h2,
+.about-contact-section h2 {
+    border-bottom: 1px solid #0e2943;
+}
+
+.about-intro,
+.mission-text,
+.platform-intro {
+    font-size: 1.1rem;
+    color: #4a5568;
+    text-align: justify;
+    margin-bottom: 1rem;
+}
+
+/* 特色功能區域 */
+.about-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.about-feature {
+    background: #f7fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.about-feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: rgb(203, 163, 54);
+}
+
+.feature-icon {
+    background: #ebf8ff;
+    color: rgb(46, 68, 91);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+.feature-icon h2 svg {
+    color: #2d3748;
+    border-bottom: #e2e8f0;
+}
+
+.about-icon{
+    color: #2d3748;
+}
+
+.about-feature h3 {
+    color: #2d3748;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.about-feature p {
+    color: #4a5568;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* 四階段流程 */
+.about-process-section {
+    margin: 3rem 0;
+}
+
+.process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.process-step {
+    background:  linear-gradient(135deg, rgb(46, 68, 91) 0%, rgb(26, 38, 51) 50%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.process-step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+}
+
+.process-step > * {
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 1rem auto;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.process-step h4 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.process-step p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* 聯絡我們 */
+.about-contact-section {
+    background: #f7fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-top: 3rem;
+    text-align: left;
+}
+
+.contact-info {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid rgb(46, 68, 91);
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.contact-info strong {
+    color: #2d3748;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .about-section {
+        padding: 1rem;
+    }
+    
+    .about-section h1 {
+        font-size: 2rem;
+    }
+    
+    .about-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .about-features {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .process-steps {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .about-feature,
+    .process-step {
+        padding: 1.5rem;
+    }
+}
+
+/* 动画效果 */
+.about-feature,
+.process-step {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 为不同区块添加延迟动画 */
+.about-feature:nth-child(1) { animation-delay: 0.1s; }
+.about-feature:nth-child(2) { animation-delay: 0.2s; }
+.about-feature:nth-child(3) { animation-delay: 0.3s; }
+.about-feature:nth-child(4) { animation-delay: 0.4s; }
+
+.process-step:nth-child(1) { animation-delay: 0.5s; }
+.process-step:nth-child(2) { animation-delay: 0.6s; }
+.process-step:nth-child(3) { animation-delay: 0.7s; }
+.process-step:nth-child(4) { animation-delay: 0.8s; }

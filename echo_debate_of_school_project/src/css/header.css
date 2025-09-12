@@ -1,0 +1,202 @@
+/* Header 組件樣式 */
+.header {
+    background: rgb(63, 74, 85);
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 70px;
+}
+
+/* 左側 Logo 區域 */
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.logo-container:hover {
+    opacity: 0.8;
+}
+
+.logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 0.875rem;
+    color: white;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* 右側導航區域 */
+.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nav-list h2 svg{
+    color: rgb(203, 163, 54);;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease;
+    font-family: inherit;
+    position: relative;
+}
+
+.nav-button:hover {
+    color: rgb(221, 208, 164);
+}
+
+.nav-button.active {
+    color: rgb(221, 208, 164);
+}
+
+.nav-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgb(212, 174, 49);
+    border-radius: 1px;
+}
+
+.submit-button {
+    background: rgb(212, 174, 49);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-family: inherit;
+}
+
+.submit-button:hover {
+    background: rgb(46, 68, 91);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 1rem;
+        min-height: 60px;
+    }
+    
+    .brand-name {
+        font-size: 1.25rem;
+    }
+    
+    .brand-subtitle {
+        font-size: 0.75rem;
+    }
+    
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .nav-list {
+        gap: 1rem;
+    }
+        
+    .nav-button {
+        font-size: 0.9rem;
+    }
+    
+    .submit-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        min-height: auto;
+    }
+    
+    .logo-container {
+        gap: 0.5rem;
+    }
+    
+    .nav-list {
+        gap: 0.75rem;
+    }
+    
+    .nav-button {
+        font-size: 0.85rem;
+    }
+    
+    .submit-button {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+    }
+}
