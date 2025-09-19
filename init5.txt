@@ -113,3 +113,33 @@ END $$;
 -- 回傳最新 t（複製給前端/後端測試）
 SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1;
 SQL
+
+******************************************Table********************************************
+CREATE DATABASE
+CREATE ROLE
+You are now connected to database "echo_db" as user "postgres".
+CREATE SCHEMA
+GRANT
+GRANT
+GRANT
+ALTER ROLE
+CREATE TYPE
+CREATE TYPE
+CREATE TYPE
+CREATE TYPE
+CREATE FUNCTION
+CREATE TABLE
+CREATE TRIGGER
+CREATE TABLE
+CREATE TABLE
+SET
+CREATE EXTENSION
+ERROR:  INSERT has more target columns than expressions
+LINE 1: ...bate_turns(conversation_t, side, turn_index, content, score)
+                                                                 ^
+QUERY:  INSERT INTO debate_turns(conversation_t, side, turn_index, content, score)
+  SELECT v_t,'con',row_number() over(), x
+  FROM (VALUES ('仍為被告，案件在審理中。'),('檢方求刑 28 年 6 個月。')) t(x)
+CONTEXT:  PL/pgSQL function inline_code_block line 31 at SQL statement
+ t 
+---
