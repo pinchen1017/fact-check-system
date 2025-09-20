@@ -99,3 +99,7 @@ bash: syntax error near unexpected token `)'
 --: command not found
 bash: syntax error near unexpected token `('
 
+*********************************
+sel@sel-X570S-AORUS-ELITE-AX:~/echo_flask$ sudo -u postrges psql -d echo_db
+sudo: unknown user postrges
+sudo: error initializing audit plugin sudoers_audit
