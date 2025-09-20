@@ -1,7 +1,72 @@
 ***************************************************************************
 t=686119a7-a95d-4525-8de7-252d231e7041
-***************************************************************************
-
+******************************************Table********************************************
+client1.ovpn: command not found
+ROLLBACK: command not found
+SET: command not found
+CREATE: command not found
+DO: command not found
+bash: syntax error near unexpected token `('
+BEGIN: command not found
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `v_t,'
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `('
+conversation_t,: command not found
+cofact_correctness,: command not found
+news_truth_label,: command not found
+model_final_correctness,: command not found
+judge_final_verdict,: command not found
+llm_correctness,: command not found
+slm_correctness,: command not found
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `newline'
+v_t,: command not found
+bash: syntax error near unexpected token `'found','
+[]::jsonb,: command not found
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+交保≠出獄,: command not found
+{"label":"false","score":0.90},: command not found
+[]::jsonb,: command not found
+[]::jsonb,: command not found
+{"label":"false","score":0.90},: command not found
+bash: syntax error near unexpected token `'seed','
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `VALUES'
+bash: syntax error near unexpected token `,'
+檢方求刑 28 年 6 個月。: command not found
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `VALUES'
+bash: syntax error near unexpected token `,'
+限制出境出海與電子監控。: command not found
+bash: syntax error near unexpected token `)'
+RAISE: command not found
+END: command not found
+--: command not found
+SELECT: command not found
+--: command not found
+SELECT: command not found
+FROM: command not found
+bash: syntax error near unexpected token `('
+SELECT: command not found
+FROM: command not found
+bash: syntax error near unexpected token `('
+ORDER: command not found
+*************************PINCHEN1017***********************
+//  Step -1：
 sudo -u postgres psql <<'SQL'
 -- 1) DB + 角色
 CREATE DATABASE echo_db;
@@ -117,73 +182,7 @@ END $$;
 -- 回傳最新 t（複製給前端/後端測試）
 SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1;
 SQL
-
-******************************************Table********************************************
-client1.ovpn: command not found
-ROLLBACK: command not found
-SET: command not found
-CREATE: command not found
-DO: command not found
-bash: syntax error near unexpected token `('
-BEGIN: command not found
-bash: syntax error near unexpected token `)'
-bash: syntax error near unexpected token `('
-bash: syntax error near unexpected token `v_t,'
-bash: syntax error near unexpected token `)'
-bash: syntax error near unexpected token `('
-conversation_t,: command not found
-cofact_correctness,: command not found
-news_truth_label,: command not found
-model_final_correctness,: command not found
-judge_final_verdict,: command not found
-llm_correctness,: command not found
-slm_correctness,: command not found
-bash: syntax error near unexpected token `)'
-bash: syntax error near unexpected token `newline'
-v_t,: command not found
-bash: syntax error near unexpected token `'found','
-[]::jsonb,: command not found
-Command 'false,' not found, did you mean:
-  command 'false' from deb coreutils (9.4-3ubuntu6.1)
-Try: sudo apt install <deb name>
-Command 'false,' not found, did you mean:
-  command 'false' from deb coreutils (9.4-3ubuntu6.1)
-Try: sudo apt install <deb name>
-交保≠出獄,: command not found
-{"label":"false","score":0.90},: command not found
-[]::jsonb,: command not found
-[]::jsonb,: command not found
-{"label":"false","score":0.90},: command not found
-bash: syntax error near unexpected token `'seed','
-bash: syntax error near unexpected token `)'
-bash: syntax error near unexpected token `)'
---: command not found
-bash: syntax error near unexpected token `('
-bash: syntax error near unexpected token `('
-bash: syntax error near unexpected token `VALUES'
-bash: syntax error near unexpected token `,'
-檢方求刑 28 年 6 個月。: command not found
-bash: syntax error near unexpected token `)'
---: command not found
-bash: syntax error near unexpected token `('
-bash: syntax error near unexpected token `('
-bash: syntax error near unexpected token `VALUES'
-bash: syntax error near unexpected token `,'
-限制出境出海與電子監控。: command not found
-bash: syntax error near unexpected token `)'
-RAISE: command not found
-END: command not found
---: command not found
-SELECT: command not found
---: command not found
-SELECT: command not found
-FROM: command not found
-bash: syntax error near unexpected token `('
-SELECT: command not found
-FROM: command not found
-bash: syntax error near unexpected token `('
-ORDER: command not found
-*************************PINCHEN1017***********************
+********************************************************************
 //  Step 0：準備一筆測試資料
 sudo -u postgres psql -d echo_db <<'SQL'
 SET search_path TO echo, public;
