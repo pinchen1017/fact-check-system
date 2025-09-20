@@ -1,0 +1,104 @@
+SET search_path TO echo, public;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+DO $$
+DECLARE v_t uuid := gen_random_uuid();
+BEGIN
+  INSERT INTO conversations(t, channel, user_id, input_text, status)
+  VALUES (v_t, 'web', 'U_demo_line_user', '柯文哲出獄了', 'done');
+
+  INSERT INTO analysis_summary(
+    conversation_t,
+    cofact_correctness, cofact_viewpoints,
+    news_truth_label, credibility_percent,
+    model_final_correctness, model_viewpoints,
+    judge_final_verdict, judge_confidence,
+    llm_correctness, llm_viewpoints, llm_refs,
+    slm_correctness, extra
+  )
+  VALUES (
+    v_t,
+    jsonb_build_object('found', false, 'label', '', 'note', '沒找到'),
+    '[]'::jsonb,
+    'false', 70.00,
+    'false', '[{"point":"澄清交保與出獄的法律差異","weight":0.8}]',
+    '交保≠出獄', 91.00,
+    '{"label":"false","score":0.90}',
+    '[]'::jsonb, '[]'::jsonb,
+    '{"label":"false","score":0.90}',
+    jsonb_build_object('seed', true)
+  );
+
+  -- 反方
+  INSERT INTO debate_turns(conversation_t, side, turn_index, content, score)
+  SELECT v_t,'con', row_number() over(), x, 0.80
+  FROM (VALUES
+    ('仍為被告，案件在審理中。'),
+    ('檢方求刑 28 年 6 個月。')
+  ) t(x);
+
+  -- 正方
+  INSERT INTO debate_turns(conversation_t, side, turn_index, content, score)
+  SELECT v_t,'pro', row_number() over(), x, 0.70
+  FROM (VALUES
+    ('2025/09/08 以 7000 萬交保。'),
+    ('限制出境出海與電子監控。')
+  ) t(x);
+
+  RAISE NOTICE 'Seed OK t=%', v_t;
+END $$;
+
+-- 取得這筆的 t，複製起來等下測 API
+SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1;
+***********************************************************************************
+                  t                   
+--------------------------------------
+ 387f80be-0039-4627-ae35-4fb0663be432
+(1 row)
+
+echo_db=# \q
+SET: command not found
+CREATE: command not found
+DO: command not found
+bash: syntax error near unexpected token `('
+BEGIN: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `v_t,'
+bash: syntax error near unexpected token `('
+conversation_t,: command not found
+cofact_correctness,: command not found
+news_truth_label,: command not found
+model_final_correctness,: command not found
+judge_final_verdict,: command not found
+llm_correctness,: command not found
+slm_correctness,: command not found
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `newline'
+v_t,: command not found
+bash: syntax error near unexpected token `'found','
+[]::jsonb,: command not found
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+交保≠出獄,: command not found
+{"label":"false","score":0.90},: command not found
+[]::jsonb,: command not found
+{"label":"false","score":0.90},: command not found
+bash: syntax error near unexpected token `'seed','
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `VALUES'
+bash: syntax error near unexpected token `,'
+檢方求刑 28 年 6 個月。: command not found
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+
+*********************************
+# 連進 echo_db
+sudo -u postgres psql -d echo_db
