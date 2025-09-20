@@ -50,3 +50,52 @@ END $$;
 
 -- 取得這筆的 t，複製起來等下測 API
 SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1;
+***********************************************************************************
+                  t                   
+--------------------------------------
+ 387f80be-0039-4627-ae35-4fb0663be432
+(1 row)
+
+echo_db=# \q
+SET: command not found
+CREATE: command not found
+DO: command not found
+bash: syntax error near unexpected token `('
+BEGIN: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `v_t,'
+bash: syntax error near unexpected token `('
+conversation_t,: command not found
+cofact_correctness,: command not found
+news_truth_label,: command not found
+model_final_correctness,: command not found
+judge_final_verdict,: command not found
+llm_correctness,: command not found
+slm_correctness,: command not found
+bash: syntax error near unexpected token `)'
+bash: syntax error near unexpected token `newline'
+v_t,: command not found
+bash: syntax error near unexpected token `'found','
+[]::jsonb,: command not found
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+Command 'false,' not found, did you mean:
+  command 'false' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+交保≠出獄,: command not found
+{"label":"false","score":0.90},: command not found
+[]::jsonb,: command not found
+{"label":"false","score":0.90},: command not found
+bash: syntax error near unexpected token `'seed','
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `VALUES'
+bash: syntax error near unexpected token `,'
+檢方求刑 28 年 6 個月。: command not found
+bash: syntax error near unexpected token `)'
+--: command not found
+bash: syntax error near unexpected token `('
+
