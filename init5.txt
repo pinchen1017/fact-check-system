@@ -148,19 +148,7 @@ CONTEXT:  PL/pgSQL function inline_code_block line 31 at SQL statement
  t 
 ---
 *************************PINCHEN1017***********************
-//  安裝與環境
-# 在你的使用者家目錄
-mkdir -p ~/echo_flask && cd ~/echo_flask
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
-
-# 安裝 Flask + SQLAlchemy + psycopg3 + LINE SDK + Gunicorn + CORS
-pip install "Flask==3.0.3" "flask-cors==4.0.1" \
-            "SQLAlchemy==2.0.35" "psycopg[binary]==3.2.10" \
-            "python-dotenv==1.0.1" "line-bot-sdk==3.11.0" "gunicorn==23.0.0"
-
-***********************************************************
+//  Step 0：準備一筆測試資料
 sudo -u postgres psql -d echo_db <<'SQL'
 SET search_path TO echo, public;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -280,3 +268,18 @@ SELECT side, turn_index, content, score
 FROM debate_turns
 WHERE conversation_t = (SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1)
 ORDER BY side, turn_index;
+
+**********************************************************
+//  Step 1：安裝與環境
+# 在你的使用者家目錄
+mkdir -p ~/echo_flask && cd ~/echo_flask
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+
+# 安裝 Flask + SQLAlchemy + psycopg3 + LINE SDK + Gunicorn + CORS
+pip install "Flask==3.0.3" "flask-cors==4.0.1" \
+            "SQLAlchemy==2.0.35" "psycopg[binary]==3.2.10" \
+            "python-dotenv==1.0.1" "line-bot-sdk==3.11.0" "gunicorn==23.0.0"
+
+***********************************************************
