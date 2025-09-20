@@ -1,0 +1,3 @@
+SET search_path TO echo, public;
+SELECT COUNT(*) AS conv_count FROM conversations;
+SELECT t FROM conversations ORDER BY created_at DESC LIMIT 1;
