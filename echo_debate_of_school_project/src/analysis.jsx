@@ -24,12 +24,83 @@ function Analysis({ modelKey, data, onBack }) {
     n8n: '辯論法庭系統分析',
     slm: 'SLM 模型分析',
     llm: 'LLM 模型分析',
+    overall: '整體結果分析',
   }
+
+  // 從數據中提取各個模型的結果
+  const weightCalculation = data.weight_calculation_json || {};
+  const finalReport = data.final_report_json || {};
+  const factCheckResult = data.fact_check_result_json || {};
+  const classification = data.classification_json || {};
+
+  // 計算消息查證結果
+  const messageVerification = weightCalculation.final_score >= 0.5 ? '正確' : '錯誤';
+  const credibilityScore = Math.round((weightCalculation.final_score || 0) * 100);
+
+  // 提取辯論觀點
+  const advocatePoints = finalReport.stake_summaries?.find(s => s.side === 'Advocate')?.strongest_points || [];
+  const skepticPoints = finalReport.stake_summaries?.find(s => s.side === 'Skeptic')?.strongest_points || [];
 
   // 根據模型類型渲染不同的內容
   const renderModelContent = () => {
-    if (modelKey === 'n8n') {
-      // 法庭辯論內容
+    if (modelKey === 'overall') {
+      // 整體結果分析
+      return (
+        <div className="overall-analysis">
+          <div className="overall-summary">
+            <h3>整體結果</h3>
+            <div className="summary-grid">
+              <div className="summary-item">
+                <h4>消息查證</h4>
+                <div className={`verification-badge ${messageVerification === '正確' ? 'correct' : 'incorrect'}`}>
+                  {messageVerification}
+                </div>
+                <p>基於 final_score >= 0.5 判斷</p>
+              </div>
+              <div className="summary-item">
+                <h4>消息可信度</h4>
+                <div className="credibility-score">
+                  <div className="score-bar">
+                    <div className="score-fill" style={{ width: `${credibilityScore}%` }}></div>
+                  </div>
+                  <span>{credibilityScore}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="comprehensive-analysis">
+            <h3>綜合分析</h3>
+            <div className="weight-calculation-details">
+              <h4>權重計算詳情</h4>
+              <div className="details-grid">
+                <div className="detail-item">
+                  <span>LLM 標籤:</span>
+                  <span>{weightCalculation.llm_label || '無資料'}</span>
+                </div>
+                <div className="detail-item">
+                  <span>LLM 分數:</span>
+                  <span>{weightCalculation.llm_score || 0}</span>
+                </div>
+                <div className="detail-item">
+                  <span>SLM 分數:</span>
+                  <span>{weightCalculation.slm_score || 0}</span>
+                </div>
+                <div className="detail-item">
+                  <span>陪審團分數:</span>
+                  <span>{weightCalculation.jury_score || 0}</span>
+                </div>
+                <div className="detail-item">
+                  <span>最終分數:</span>
+                  <span className="final-score">{weightCalculation.final_score || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    } else if (modelKey === 'n8n') {
+      // 辯論法庭系統分析
       return (
         <div className="debate-court-section">
           <div className="court-layout">
@@ -40,110 +111,105 @@ function Analysis({ modelKey, data, onBack }) {
               </div>
               <div className="judgment-content">
                 <div className="judgment-text">
-                  <p>{data.debate?.judge?.verdict || '無判決資料'}</p>
+                  <p>{finalReport.jury_brief || '無判決資料'}</p>
                 </div>
                 <div className="confidence-meter">
-                  <span>判決信心度</span>
+                  <span>判官信心度</span>
                   <div className="confidence-bar">
                     <div
                       className="confidence-fill"
-                      style={{ width: `${data.debate?.judge?.confidence || 0}%` }}
+                      style={{ width: `${finalReport.jury_score || 0}%` }}
                     ></div>
                   </div>
-                  <span>{data.debate?.judge?.confidence || 0}%</span>
+                  <span>{finalReport.jury_score || 0}%</span>
                 </div>
               </div>
             </div>
 
-            {/* 檢察官區域 */}
+            {/* 正方辯論觀點 */}
             <div className="prosecution-area">
               <div className="role-header prosecution">
-                <h3>☺ 正方辯護</h3>
+                <h3>☺ 正方辯論觀點</h3>
               </div>
               <div className="debate-messages">
-                {data.debate?.prosecution?.map((msg, index) => (
+                {advocatePoints.map((point, index) => (
                   <div key={index} className="message prosecution-msg">
-                    <div className="message-header">
-                      <span className="speaker">{msg.speaker}</span>
-                      <span className="timestamp">{msg.timestamp}</span>
-                    </div>
-                    <div className="message-content">{msg.message}</div>
+                    <div className="message-content">{point}</div>
                   </div>
-                )) || []}
+                ))}
               </div>
             </div>
 
-            {/* 辯護律師區域 */}
+            {/* 反方辯論觀點 */}
             <div className="defense-area">
               <div className="role-header defense">
-                <h3>☹ 反方質疑</h3>
+                <h3>☹ 反方辯論觀點</h3>
               </div>
               <div className="debate-messages">
-                {data.debate?.defense?.map((msg, index) => (
+                {skepticPoints.map((point, index) => (
                   <div key={index} className="message defense-msg">
-                    <div className="message-header">
-                      <span className="speaker">{msg.speaker}</span>
-                      <span className="timestamp">{msg.timestamp}</span>
-                    </div>
-                    <div className="message-content">{msg.message}</div>
+                    <div className="message-content">{point}</div>
                   </div>
-                )) || []}
+                ))}
               </div>
             </div>
           </div>
         </div>
       )
-    } else {
-      // LLM/SLM 模型內容
+    } else if (modelKey === 'llm') {
+      // LLM 模型分析
       return (
-        <>
+        <div className="llm-analysis">
           <div className="summary-grid">
             <div className="summary-item">
-              <h3>正確性</h3>
-              <div className="ambiguity-score">
-                <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${data?.correctness ?? 0}%` }}></div>
-                </div>
-                <span>{data?.correctness ?? 0}%</span>
+              <h3>消息查證</h3>
+              <div className="verification-result">
+                <span className={`verification-badge ${weightCalculation.llm_label === '正確' ? 'correct' : 'incorrect'}`}>
+                  {weightCalculation.llm_label || '無資料'}
+                </span>
               </div>
             </div>
             <div className="summary-item">
-              <h3>真實性分數</h3>
-              <div className="ambiguity-score">
+              <h3>可信度比例</h3>
+              <div className="credibility-score">
                 <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${data?.truthfulness ?? 0}%` }}></div>
+                  <div className="score-fill" style={{ width: `${(weightCalculation.llm_score || 0) * 100}%` }}></div>
                 </div>
-                <span>{data?.truthfulness ?? 0}%</span>
+                <span>{Math.round((weightCalculation.llm_score || 0) * 100)}%</span>
               </div>
             </div>
-          </div><p />
+          </div>
 
           <div className="analysis-text">
             <h3>觀點分析</h3>
-            <p>{data?.perspective || '無資料'}</p>
-          </div><p />
-
-          {/* 參考網址 */}
-          {data?.references && data.references.length > 0 ? (
-            <div className="references">
-              <h3>參考網址</h3>
-              <ul>
-                {data.references.map((ref, index) => (
-                  <li key={index}>
-                    <a href={ref} target="_blank" rel="noopener noreferrer">
-                      {ref}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <p>{factCheckResult.analysis || '無資料'}</p>
+          </div>
+        </div>
+      )
+    } else if (modelKey === 'slm') {
+      // SLM 模型分析
+      return (
+        <div className="slm-analysis">
+          <div className="summary-grid">
+            <div className="summary-item">
+              <h3>消息查證</h3>
+              <div className="verification-result">
+                <span className={`verification-badge ${classification.classification === '正確' ? 'correct' : 'incorrect'}`}>
+                  {classification.classification || '無資料'}
+                </span>
+              </div>
             </div>
-          ) : (
-            <div className="references">
-              <h3>參考網址</h3>
-              <p>無相關新聞內容</p>
+            <div className="summary-item">
+              <h3>機率分數</h3>
+              <div className="probability-score">
+                <div className="score-bar">
+                  <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
+                </div>
+                <span>{Math.round((parseFloat(classification.Probability) || 0) * 100)}%</span>
+              </div>
             </div>
-          )}
-        </>
+          </div>
+        </div>
       )
     }
   }

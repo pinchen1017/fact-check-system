@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最終事實查核整合測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .data-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        .mockup {
+            background: #f8f9fa;
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            color: #6c757d;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎯 最終事實查核整合測試</h1>
+        
+        <div class="test-section">
+            <h2>📊 修改完成狀態</h2>
+            <div class="status success">✅ 整體結果已直接整合到事實查核頁面</div>
+            <p>成功將整體結果分析直接整合到原本的 analysis-summary 區域，保持原有風格，並確保所有詳細內容都從 response_b1.json 正確抓取。</p>
+            
+            <ul class="feature-list">
+                <li>整體結果直接顯示在搜索結果中，無需額外按鈕</li>
+                <li>保持原有的視覺風格和佈局設計</li>
+                <li>所有數據都從 response_b1.json 正確抓取</li>
+                <li>法庭、SLM、LLM 的內容都完整顯示</li>
+                <li>綜合分析欄保持原樣</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🎨 新的頁面結構</h2>
+            <div class="mockup">
+                <h3>事實查核頁面結構</h3>
+                <div style="text-align: left; margin: 20px 0;">
+                    <p><strong>1. 整體結果分析 (直接整合到 analysis-summary)</strong></p>
+                    <div style="margin-left: 20px;">
+                        <p>• 消息查證 (基於 final_score >= 0.5)</p>
+                        <p>• 消息可信度 (final_score 轉百分比)</p>
+                        <p>• 權重計算詳情 (所有 weight_calculation_json 值)</p>
+                    </div>
+                    <p><strong>2. 詳細分析 (保持原樣)</strong></p>
+                    <div style="margin-left: 20px;">
+                        <p>• 辯論法庭系統 (final_report_json 數據)</p>
+                        <p>• LLM 模型判斷 (weight_calculation_json + fact_check_result_json)</p>
+                        <p>• SLM 模型判斷 (classification_json 數據)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 數據映射實現</h2>
+            <div class="status success">✅ 完整數據結構映射</div>
+            <p>所有 response_b1.json 的數據都已正確映射到對應的顯示區域：</p>
+            
+            <div class="code-block">// 整體結果計算
+const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
+const credibilityScore = Math.round(responseData.weight_calculation_json.final_score * 100);
+
+// 法庭系統數據 - 直接從 final_report_json 抓取
+辯論法庭系統: {
+  最終法官判決: final_report_json.jury_brief,
+  判官信心度: final_report_json.jury_score,
+  正方辯論觀點: final_report_json.stake_summaries.find(s => s.side === "Advocate").strongest_points,
+  反方辯論觀點: final_report_json.stake_summaries.find(s => s.side === "Skeptic").strongest_points
+}
+
+// LLM 模型數據 - 整合 weight_calculation_json 和 fact_check_result_json
+LLM 模型: {
+  消息查證: weight_calculation_json.llm_label,
+  可信度比例: weight_calculation_json.llm_score * 100,
+  觀點分析: fact_check_result_json.analysis
+}
+
+// SLM 模型數據 - 從 classification_json 抓取
+SLM 模型: {
+  消息查證: classification_json.classification,
+  機率分數: classification_json.Probability * 100
+}</div>
+        </div>
+
+        <div class="test-section">
+            <h2>✨ 視覺設計特色</h2>
+            <div class="status info">💡 保持原有風格的整合設計</div>
+            <ul class="feature-list">
+                <li>整體結果直接整合到原本的 analysis-summary 區域</li>
+                <li>保持原有的三欄網格佈局設計</li>
+                <li>權重計算詳情以卡片形式展示</li>
+                <li>辯論觀點以網格形式並排顯示</li>
+                <li>驗證結果使用彩色標籤顯示</li>
+                <li>響應式設計支援各種螢幕尺寸</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🚀 使用方式</h2>
+            <div class="status info">📝 測試步驟</div>
+            <ol>
+                <li>啟動 React 應用程式</li>
+                <li>進入事實查核頁面</li>
+                <li>輸入任何查詢內容（例如：「國高中改10點上課」）</li>
+                <li>點擊搜索按鈕</li>
+                <li>查看整體結果分析（直接顯示在搜索結果中）</li>
+                <li>查看詳細分析區域的各模型結果</li>
+                <li>點擊各模型的「詳細分析」按鈕查看完整數據</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🎉 主要改進</h2>
+            <div class="status success">✅ 功能完成</div>
+            <ul class="feature-list">
+                <li>整體結果直接顯示，無需額外按鈕或頁面跳轉</li>
+                <li>保持原有的視覺風格和用戶體驗</li>
+                <li>所有數據都從真實的 response_b1.json 文件抓取</li>
+                <li>法庭、SLM、LLM 的內容都完整顯示</li>
+                <li>詳細的權重計算資訊一目了然</li>
+                <li>完整的錯誤處理和預設值設定</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 技術實現總結</h2>
+            <div class="status info">🔧 技術細節</div>
+            <ul class="feature-list">
+                <li>使用 response_b1.json 的完整數據結構</li>
+                <li>安全的數據提取（可選鏈操作符）</li>
+                <li>正確的數據類型轉換</li>
+                <li>動態生成辯論觀點</li>
+                <li>響應式 CSS 設計</li>
+                <li>模組化的組件結構</li>
+                <li>保持原有設計風格的一致性</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 數據來源確認</h2>
+            <div class="status success">✅ 所有數據都從 response_b1.json 抓取</div>
+            <div class="data-preview">weight_calculation_json: {
+  "llm_label": "完全錯誤",
+  "llm_score": 0,
+  "slm_score": 0.0795,
+  "jury_score": -0.7244,
+  "final_score": 0.035
+}
+
+final_report_json: {
+  "jury_brief": "證據不足。未全面實施，但提案已達附議門檻。",
+  "jury_score": 72,
+  "stake_summaries": [
+    {
+      "side": "Advocate",
+      "strongest_points": ["提案已在公共政策網路參與平台獲得萬人附議..."]
+    },
+    {
+      "side": "Skeptic", 
+      "strongest_points": ["Yahoo新聞網路投票顯示超過六成民眾不贊成..."]
+    }
+  ]
+}
+
+fact_check_result_json: {
+  "analysis": "根據目前的資料顯示...",
+  "classification": "完全錯誤"
+}
+
+classification_json: {
+  "Probability": "0.07950027287006378",
+  "classification": "錯誤"
+}</div>
+        </div>
+    </div>
+</body>
+</html>

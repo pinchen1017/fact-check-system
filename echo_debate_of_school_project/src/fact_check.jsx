@@ -23,20 +23,87 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     setSearchInput(searchQuery || '')
   }, [searchQuery])
 
-  // 模擬搜索功能
+  // 模擬搜索功能 - 使用 response_b1.json 數據
   const handleSearch = () => {
     if (!searchInput.trim()) return
 
     setIsSearching(true)
     setSearchQuery(searchInput) // 更新全局搜尋查詢
 
-    // 模拟API調用延遲延遲
+    // 模拟API調用延遲
     setTimeout(() => {
-      // 模拟 Cofact 搜索结果
+      // 使用 response_b1.json 的實際數據
+      const responseData = {
+        weight_calculation_json: {
+          llm_label: "完全錯誤",
+          llm_score: 0,
+          slm_score: 0.0795,
+          jury_score: -0.7244,
+          final_score: 0.035
+        },
+        final_report_json: {
+          topic: "國高中改10點上課現在實施中",
+          overall_assessment: "「國高中改10點上課現在實施中」的說法為假。目前台灣並未全面實施此政策，僅為一項已達附議門檻、待教育部回應的公共政策提案。社會對此議題意見高度分歧，教育部預計於11月14日前做出回應，但過往經驗顯示全面實施的可能性較低，更傾向於彈性調整。",
+          jury_score: 72,
+          jury_brief: "證據不足。未全面實施，但提案已達附議門檻。",
+          evidence_digest: [
+            "公共政策網路參與平台：國高中改10點上課提案已達萬人附議門檻，教育部須於11/14前回應。",
+            "教育部 (2017年類似提案處理)：曾有建議9點上課提案，最終未全面採納，僅放寬早自習彈性。",
+            "教育部 (2022年作息調整)：修正發布作息注意事項，讓高中生第一節課前時間更有彈性，非全面延後。",
+            "Yahoo新聞網路投票：超過六成參與者不贊成或完全不贊成國高中改為10點上課。",
+            "社群觀察：學生普遍支持，家長、教育工作者多數反對或擔憂實際操作。"
+          ],
+          stake_summaries: [
+            {
+              side: "Advocate",
+              thesis: "國高中改為上午10點上課的提案，旨在改善學生睡眠不足及提升學習效率，是符合學生福祉的改革方向。",
+              strongest_points: [
+                "提案已在公共政策網路參與平台獲得萬人附議，顯示強大民意支持。",
+                "延後上課有助於改善學生睡眠品質，提升學習效率與身心發展。",
+                "教育部需在11月14日前做出回應，顯示政策推動的可能性。"
+              ],
+              weaknesses: [
+                "未能有效回應家長接送、交通、補習文化等實際衝擊。",
+                "未充分說明如何解決課程時數壓縮與教學品質問題。",
+                "過於樂觀看待教育部對提案的採納程度，忽略歷史經驗。"
+              ]
+            },
+            {
+              side: "Skeptic",
+              thesis: "國高中改10點上課的提案，雖立意良善，但實際執行將對家庭作息、學校行政、教學品質及社會運作造成巨大衝擊，且社會反對聲浪高。",
+              strongest_points: [
+                "Yahoo新聞網路投票顯示超過六成民眾不贊成，反映社會主流意見。",
+                "家長擔憂接送時間與自身工作衝突，增加家庭負擔。",
+                "教育工作者擔憂課程時數壓縮與教學品質問題。",
+                "過去類似提案(2017年9點上課)最終未被採納，僅放寬彈性。"
+              ],
+              weaknesses: [
+                "未能充分考慮學生身心發展需求。",
+                "過度保守，缺乏改革勇氣。",
+                "未提出替代方案解決學生睡眠不足問題。"
+              ]
+            }
+          ]
+        },
+        fact_check_result_json: {
+          analysis: "根據目前的資料顯示，「國高中改10點上課現在實施中」的說法並不正確。1. 尚未全面實施： 台灣目前並沒有全面實施國高中延後至上午10點上課的政策。大部分國高中仍維持在早上7點半至8點左右開始上課。2. 公民提案與教育部回應： 國高中改為10點上課的議題，是在「公共政策網路參與平台」上獲得超過萬人附議的公民提案。教育部已承諾將針對此提案進行研議，並預計於2025年11月14日前做出具體回應。3. 過去的調整與提案：\n*   教育部在2022年3月曾修正發布「教育部主管高級中等學校學生在校作息時間規劃注意事項」，並於同年8月1日起實施。這項修正主要是讓高中生第一節課前的時間更有彈性，例如將全校性集會活動從每週最多2天調整為最多1天，其餘時間學生可自主規劃運用，但這並非全面更改上課起始時間至10點。\n*   在2017年，也曾有類似建議國高中改為上午9點上課的提案，但教育部評估後並未全面採納，當時僅放寬高中早自習和第八節課的彈性參與。4. 社會意見分歧：\n*   學生群體普遍支持延後上課，認為有助於改善睡眠品質、提升學習效率與身心發展。有些學生也觀察到部分高中已將早自習改為自主時間，被視為一種實質上的延後上課。\n*   家長與通勤族群多數反對，擔憂延後上課會衝擊家長接送、自身工作時間安排、放學時間延後可能影響補習與才藝班時間，以及對交通運作可能造成的影響。一項由Yahoo新聞發起的網路投票顯示，有超過六成的參與者不贊成或完全不贊成國高中改為10點上課。\n*   教育工作者與學校行政則持觀望態度，擔憂全面延後上課對現有課綱、教學時數、學校行政排程、教師授課時間及校園設施使用都會是巨大的挑戰，認為這與過去的彈性調整概念不同。結論：目前國高中並沒有全面實施10點上課的政策，此訊息為誤解。",
+          classification: "完全錯誤"
+        },
+        classification_json: {
+          Probability: "0.07950027287006378",
+          classification: "錯誤"
+        }
+      }
+
+      // 計算整體結果
+      const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
+      const credibilityScore = Math.round(responseData.weight_calculation_json.final_score * 100);
+
+      // 模擬 Cofact 搜索结果 (預設為 false)
       const cofactResult = {
-        found: Math.random() > 0.3, // 70% 概率找到 Cofact 结果
-        correctness: Math.random() > 0.5 ? '真實' : '假消息',
-        confidence: Math.floor(Math.random() * 100),
+        found: false, // 預設未找到
+        correctness: messageVerification,
+        confidence: credibilityScore,
         perspective: 'Cofact 事實查核：根據多個可靠來源的交叉驗證，此消息的真實性已得到確認。相關專家對此消息的準確性表示支持。',
         references: [
           'https://cofact.org/article/2024-001',
@@ -47,62 +114,48 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       }
 
       const newAnalysisResult = {
+        // 原始 response_b1.json 數據
+        ...responseData,
         cofact: cofactResult,
-        newsCorrectness: cofactResult.found ? cofactResult.correctness : (Math.random() > 0.5 ? '真實' : '假消息'),
-        ambiguityScore: cofactResult.found ? cofactResult.confidence : Math.floor(Math.random() * 100),
-        analysis: cofactResult.found
-          ? `Cofact 已查證：${cofactResult.perspective}`
-          : '根據多個可靠來源的交叉驗證，此消息的真實性存在爭議。專家意見分歧，需要進一步調查。',
+        newsCorrectness: messageVerification,
+        ambiguityScore: credibilityScore,
+        analysis: responseData.fact_check_result_json.analysis,
         models: {
           n8n: {
-            correctness: Math.floor(Math.random() * 100),
-            truthfulness: Math.floor(Math.random() * 100),
-            perspective: '新聞內容與摘要一致，提供了貨到付款詐騙退貨退款的相關步驟，並提及官方回應及爭議點，支持了輸入文本的真實性。',
-            references: [
-              'https://court-legal-database.com/verdict-2024-001',
-              'https://legal-precedent.org/case-study-123',
-              'https://judicial-review.net/analysis-456'
-            ]
+            correctness: responseData.final_report_json.jury_score,
+            truthfulness: responseData.final_report_json.jury_score,
+            perspective: responseData.final_report_json.overall_assessment,
+            references: responseData.final_report_json.evidence_digest
           },
           llm: {
-            correctness: Math.floor(Math.random() * 100),
-            truthfulness: Math.floor(Math.random() * 100),
-            perspective: '大型語言模型基於語料判讀，觀點偏中立，對來源可信度持審慎態度。',
-            references: [
-              'https://llm-research.org/paper-2024-001',
-              'https://ai-analysis.com/study-789',
-              'https://language-model.net/insights-012',
-            ]
+            correctness: Math.round(responseData.weight_calculation_json.llm_score * 100),
+            truthfulness: Math.round(responseData.weight_calculation_json.llm_score * 100),
+            perspective: responseData.fact_check_result_json.analysis,
+            references: responseData.final_report_json.evidence_digest
           },
           slm: {
-            correctness: Math.floor(Math.random() * 100),
-            truthfulness: Math.floor(Math.random() * 100),
-            perspective: '小型模型根據關鍵特徵比對，指出部分敘述缺乏佐證。',
-            references: [
-              'https://slm-verification.com/check-345',
-              'https://small-model.org/validation-678',
-              'https://compact-ai.net/analysis-901',
-            ]
+            correctness: Math.round(parseFloat(responseData.classification_json.Probability) * 100),
+            truthfulness: Math.round(parseFloat(responseData.classification_json.Probability) * 100),
+            perspective: responseData.fact_check_result_json.analysis,
+            references: responseData.final_report_json.evidence_digest
           }
         },
         debate: {
-          prosecution: [
-            { speaker: '正方', message: '多個事實查核機構已將此消息標記為可疑。', timestamp: '10:32' },
-            { speaker: '正方', message: '根據證據顯示，此消息缺乏可靠來源支持。', timestamp: '10:30' },
-            { speaker: '正方', message: '相關專家對此消息的準確性表示質疑。', timestamp: '10:35' },
-            { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-            { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-            { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' },
-            { speaker: '正方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' }
-          ],
-          defense: [
-            { speaker: '反方', message: '我方當事人提供了相關證據支持此消息。', timestamp: '10:31' },
-            { speaker: '反方', message: '部分專家學者對此消息持支持態度。', timestamp: '10:33' },
-            { speaker: '反方', message: '需要考慮消息發布的時空背景。', timestamp: '10:36' }
-          ],
+          prosecution: responseData.final_report_json.stake_summaries
+            .find(s => s.side === "Advocate")?.strongest_points.map((point, index) => ({
+              speaker: '正方',
+              message: point,
+              timestamp: `10:${30 + index}`
+            })) || [],
+          defense: responseData.final_report_json.stake_summaries
+            .find(s => s.side === "Skeptic")?.strongest_points.map((point, index) => ({
+              speaker: '反方',
+              message: point,
+              timestamp: `10:${31 + index}`
+            })) || [],
           judge: {
-            verdict: '經法庭審理，此消息的真實性存在爭議，建議公眾謹慎對待，等待進一步權威驗證。',
-            confidence: 65
+            verdict: responseData.final_report_json.jury_brief,
+            confidence: responseData.final_report_json.jury_score
           }
         }
       }
@@ -220,30 +273,65 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 </div>
                 {/* <span className="ai-analysis-badge"></span> */}
 
-                <div className="analysis-summary">
-                  <div className="summary-grid">
-                    <div className="summary-item">
-                      <h3>新聞正確性</h3>
-                      <div className={`correctness-badge ${analysisResult.newsCorrectness === '真實' ? 'true' : 'false'}`}>
+                {/* 整體結果分析 */}
+                <div className="overall-results-section">
+                  <div className="overall-summary-grid">
+                    <div className="overall-item">
+                      <h3>消息查證</h3>
+                      <div className={`verification-badge ${analysisResult.newsCorrectness === '正確' ? 'correct' : 'incorrect'}`}>
                         {analysisResult.newsCorrectness}
                       </div>
+                      <p className="verification-note">基於 final_score &gt;= 0.5 判斷</p>
                     </div>
-                    <div className="summary-item">
-                      <h3>真實性分數</h3>
-                      <div className="ambiguity-score">
-                        <div className="score-bar">
-                          <div
-                            className="score-fill"
-                            style={{ width: `${analysisResult.ambiguityScore}%` }}
-                          ></div>
+                    
+                    <div className="overall-item">
+                      <h3>消息可信度</h3>
+                      <div className="credibility-display">
+                        <div className="credibility-score">
+                          <div className="score-bar">
+                            <div
+                              className="score-fill"
+                              style={{ width: `${analysisResult.ambiguityScore}%` }}
+                            ></div>
+                          </div>
+                          <span className="score-value">{analysisResult.ambiguityScore}%</span>
                         </div>
-                        <span>{analysisResult.ambiguityScore}%</span>
+                        <p className="credibility-note">來自 weight_calculation_json["final_score"]</p>
                       </div>
                     </div>
                   </div>
 
+                  <div className="comprehensive-analysis">
+                    <h3>綜合分析</h3>
+                    <div className="weight-calculation-details">
+                      <h4>權重計算詳情</h4>
+                      <div className="details-grid">
+                        <div className="detail-item">
+                          <span>LLM 分數:</span>
+                          <span className="detail-value">{analysisResult.weight_calculation_json?.llm_score || 0}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span>SLM 分數:</span>
+                          <span className="detail-value">{analysisResult.weight_calculation_json?.slm_score || 0}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span>陪審團分數:</span>
+                          <span className="detail-value">{analysisResult.weight_calculation_json?.jury_score || 0}</span>
+                        </div>
+                        <div className="detail-item final-score-item">
+                          <span>最終分數:</span>
+                          <span className="detail-value highlight">{analysisResult.weight_calculation_json?.final_score || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 詳細分析 */}
+                <div className="analysis-summary">
+                  <h3>詳細分析</h3>
                   <div className="analysis-text">
-                    <h3>詳細分析</h3>
+                    <h3>綜合分析</h3>
                     <div className="analysis-tree">
                       <div className="tree-root">
                         <div className="tree-node root-node">
@@ -259,14 +347,42 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                             <div className="model-analysis n8n">
                               <div className="model-metrics">
                                 <div className="metric-item">
-                                  <span>判決信心度</span>
+                                  <span>最終法官判決</span>
+                                  <div className="judgment-text">
+                                    <p>{analysisResult.final_report_json?.jury_brief || '無判決資料'}</p>
+                                  </div>
+                                </div>
+                                <div className="metric-item">
+                                  <span>判官信心度</span>
                                   <div className="metric-bar">
                                     <div
                                       className="metric-fill"
-                                      style={{ width: `${analysisResult?.debate?.judge?.confidence || 0}%` }}
+                                      style={{ width: `${analysisResult.final_report_json?.jury_score || 0}%` }}
                                     ></div>
                                   </div>
-                                  <span className="metric-value">{analysisResult?.debate?.judge?.confidence || 0}%</span>
+                                  <span className="metric-value">{analysisResult.final_report_json?.jury_score || 0}%</span>
+                                </div>
+                              </div>
+                              <div className="debate-points">
+                                <div className="advocate-points">
+                                  <h4>☺ 正方辯論觀點</h4>
+                                  <ul>
+                                    {analysisResult.final_report_json?.stake_summaries
+                                      ?.find(s => s.side === "Advocate")?.strongest_points
+                                      ?.map((point, index) => (
+                                        <li key={index}>{point}</li>
+                                      )) || []}
+                                  </ul>
+                                </div>
+                                <div className="skeptic-points">
+                                  <h4>☹ 反方辯論觀點</h4>
+                                  <ul>
+                                    {analysisResult.final_report_json?.stake_summaries
+                                      ?.find(s => s.side === "Skeptic")?.strongest_points
+                                      ?.map((point, index) => (
+                                        <li key={index}>{point}</li>
+                                      )) || []}
+                                  </ul>
                                 </div>
                               </div>
                             </div>
@@ -275,8 +391,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                               <button
                                 className="detail-btn n8n-btn"
                                 onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
-                                  ...analysisResult?.models?.n8n,
-                                  debate: analysisResult?.debate
+                                  final_report_json: analysisResult.final_report_json,
+                                  weight_calculation_json: analysisResult.weight_calculation_json
                                 })}
                               >
                                 詳細分析
@@ -288,13 +404,41 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                           <div className="branch-connector"></div>
                           <div className="branch-node">
                             <div className="branch-header">LLM 模型判斷</div>
-                            <LlmAnalysis data={analysisResult?.models?.llm} />
+                            <div className="model-analysis llm">
+                              <div className="model-metrics">
+                                <div className="metric-item">
+                                  <span>消息查證</span>
+                                  <div className="verification-result">
+                                    <span className={`verification-badge ${analysisResult.weight_calculation_json?.llm_label === '正確' ? 'correct' : 'incorrect'}`}>
+                                      {analysisResult.weight_calculation_json?.llm_label || '無資料'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="metric-item">
+                                  <span>可信度比例</span>
+                                  <div className="metric-bar">
+                                    <div
+                                      className="metric-fill"
+                                      style={{ width: `${(analysisResult.weight_calculation_json?.llm_score || 0) * 100}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="metric-value">{Math.round((analysisResult.weight_calculation_json?.llm_score || 0) * 100)}%</span>
+                                </div>
+                              </div>
+                              <div className="analysis-perspective">
+                                <h4>觀點分析</h4>
+                                <p>{analysisResult.fact_check_result_json?.analysis || '無資料'}</p>
+                              </div>
+                            </div>
                             <div className="branch-actions">
                               <button
                                 className="detail-btn llm-btn"
                                 onClick={() => {
-                                  console.log('LLM data:', analysisResult?.models?.llm);
-                                  onOpenAnalysis && onOpenAnalysis('llm', analysisResult?.models?.llm);
+                                  console.log('LLM data:', analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
+                                  onOpenAnalysis && onOpenAnalysis('llm', {
+                                    weight_calculation_json: analysisResult.weight_calculation_json,
+                                    fact_check_result_json: analysisResult.fact_check_result_json
+                                  });
                                 }}
                               >
                                 詳細分析
@@ -306,13 +450,36 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                           <div className="branch-connector"></div>
                           <div className="branch-node">
                             <div className="branch-header">SLM 模型判斷</div>
-                            <SlmAnalysis data={analysisResult?.models?.slm} />
+                            <div className="model-analysis slm">
+                              <div className="model-metrics">
+                                <div className="metric-item">
+                                  <span>消息查證</span>
+                                  <div className="verification-result">
+                                    <span className={`verification-badge ${analysisResult.classification_json?.classification === '正確' ? 'correct' : 'incorrect'}`}>
+                                      {analysisResult.classification_json?.classification || '無資料'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="metric-item">
+                                  <span>機率分數</span>
+                                  <div className="metric-bar">
+                                    <div
+                                      className="metric-fill"
+                                      style={{ width: `${(parseFloat(analysisResult.classification_json?.Probability) || 0) * 100}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="metric-value">{Math.round((parseFloat(analysisResult.classification_json?.Probability) || 0) * 100)}%</span>
+                                </div>
+                              </div>
+                            </div>
                             <div className="branch-actions">
                               <button
                                 className="detail-btn slm-btn"
                                 onClick={() => {
-                                  console.log('SLM data:', analysisResult?.models?.slm);
-                                  onOpenAnalysis && onOpenAnalysis('slm', analysisResult?.models?.slm);
+                                  console.log('SLM data:', analysisResult?.classification_json);
+                                  onOpenAnalysis && onOpenAnalysis('slm', {
+                                    classification_json: analysisResult.classification_json
+                                  });
                                 }}
                               >
                                 詳細分析

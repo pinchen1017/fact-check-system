@@ -1047,3 +1047,523 @@
     padding: 1rem;
   }
 }
+
+/* 新增樣式 - 整體結果分析 */
+.overall-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.overall-summary h3,
+.comprehensive-analysis h3 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  min-width: 80px;
+}
+
+.verification-badge.correct {
+  background-color: #c6f6d5;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+}
+
+.verification-badge.incorrect {
+  background-color: #fed7d7;
+  color: #742a2a;
+  border: 1px solid #feb2b2;
+}
+
+.credibility-score,
+.probability-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.credibility-score .score-bar,
+.probability-score .score-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.credibility-score .score-fill,
+.probability-score .score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1, #3182ce);
+  transition: width 0.3s ease;
+}
+
+.credibility-score span,
+.probability-score span {
+  font-weight: 600;
+  color: #2d3748;
+  min-width: 40px;
+  text-align: right;
+}
+
+.weight-calculation-details {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.weight-calculation-details h4 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.detail-item span:first-child {
+  color: #718096;
+  font-weight: 500;
+}
+
+.detail-item span:last-child {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.detail-item .final-score {
+  color: #3182ce;
+  font-size: 1.1rem;
+}
+
+/* LLM 和 SLM 分析樣式 */
+.llm-analysis,
+.slm-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.verification-result {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.analysis-text {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.analysis-text h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.analysis-text p {
+  color: #2d3748;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 整體結果分析樣式 */
+.overall-results-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.overall-results-section .section-title {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 3px solid #4299e1;
+  padding-bottom: 0.5rem;
+}
+
+/* 詳細分析樣式 */
+.analysis-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.analysis-summary .section-title {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 3px solid #48bb78;
+  padding-bottom: 0.5rem;
+}
+
+.analysis-text h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.overall-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.overall-item {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.overall-item h3 {
+  color: #495057;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  min-width: 100px;
+  margin-bottom: 0.5rem;
+}
+
+.verification-badge.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 2px solid #c3e6cb;
+}
+
+.verification-badge.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 2px solid #f5c6cb;
+}
+
+.credibility-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.credibility-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.credibility-score .score-bar {
+  flex: 1;
+  height: 12px;
+  background-color: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.credibility-score .score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1, #3182ce);
+  transition: width 0.3s ease;
+}
+
+.score-value {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1.1rem;
+  min-width: 50px;
+  text-align: right;
+}
+
+.comprehensive-analysis {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.comprehensive-analysis h3 {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.weight-calculation-details h4 {
+  color: #718096;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.detail-item span:first-child {
+  color: #718096;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.detail-value {
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.detail-value.highlight {
+  color: #3182ce;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.detail-item.final-score-item {
+  background-color: #e3f2fd;
+  border: 2px solid #bbdefb;
+  font-weight: 600;
+}
+
+.verification-note,
+.credibility-note {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* 辯論觀點樣式 */
+.debate-points {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.advocate-points,
+.skeptic-points {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.advocate-points h4,
+.skeptic-points h4 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.advocate-points ul,
+.skeptic-points ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.advocate-points li,
+.skeptic-points li {
+  padding: 0.25rem 0;
+  font-size: 0.8rem;
+  color: #6c757d;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.advocate-points li:last-child,
+.skeptic-points li:last-child {
+  border-bottom: none;
+}
+
+.advocate-points li:before {
+  content: "✓ ";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.skeptic-points li:before {
+  content: "✗ ";
+  color: #dc3545;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+/* 判決文字樣式 */
+.judgment-text {
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
+
+.judgment-text p {
+  margin: 0;
+  color: #1565c0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* 驗證結果樣式 */
+.verification-result {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.verification-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+  min-width: 80px;
+}
+
+.verification-badge.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.verification-badge.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* 分析觀點樣式 */
+.analysis-perspective {
+  margin-top: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.analysis-perspective h4 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.analysis-perspective p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .debate-points {
+    grid-template-columns: 1fr;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .credibility-score,
+  .probability-score {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .credibility-score,
+  .probability-score {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .overall-analysis-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8rem;
+  }
+}
