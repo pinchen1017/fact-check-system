@@ -11,7 +11,7 @@ import { TbDeviceDesktopAnalytics } from "react-icons/tb"
 import LlmAnalysis from './llm'
 import SlmAnalysis from './slm'
 import cofact from './assets/cofact.png'
-
+import fuzzy_score from './assets/fuzzy_score.jpg'
 
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
@@ -37,7 +37,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         weight_calculation_json: {
           llm_label: "完全錯誤",
           llm_score: 0,
-          slm_score: 0.0795,
+          slm_score: 0.9795,
           jury_score: -0.7244,
           final_score: 0.035
         },
@@ -281,47 +281,86 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className={`verification-badge ${analysisResult.newsCorrectness === '正確' ? 'correct' : 'incorrect'}`}>
                         {analysisResult.newsCorrectness}
                       </div>
-                      <p className="verification-note">基於 final_score &gt;= 0.5 判斷</p>
                     </div>
                     
                     <div className="overall-item">
                       <h3>消息可信度</h3>
                       <div className="credibility-display">
                         <div className="credibility-score">
-                          <div className="score-bar">
-                            <div
-                              className="score-fill"
-                              style={{ width: `${analysisResult.ambiguityScore}%` }}
-                            ></div>
+                        <div className="score-bar">
+                            <div className="score-fill"
+                            style={{ width: `${analysisResult.ambiguityScore}%` }}
+                          ></div>
                           </div>
                           <span className="score-value">{analysisResult.ambiguityScore}%</span>
                         </div>
-                        <p className="credibility-note">來自 weight_calculation_json["final_score"]</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="comprehensive-analysis">
                     <h3>綜合分析</h3>
-                    <div className="weight-calculation-details">
-                      <h4>權重計算詳情</h4>
-                      <div className="details-grid">
-                        <div className="detail-item">
-                          <span>LLM 分數:</span>
-                          <span className="detail-value">{analysisResult.weight_calculation_json?.llm_score || 0}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span>SLM 分數:</span>
-                          <span className="detail-value">{analysisResult.weight_calculation_json?.slm_score || 0}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span>陪審團分數:</span>
-                          <span className="detail-value">{analysisResult.weight_calculation_json?.jury_score || 0}</span>
-                        </div>
-                        <div className="detail-item final-score-item">
-                          <span>最終分數:</span>
-                          <span className="detail-value highlight">{analysisResult.weight_calculation_json?.final_score || 0}</span>
-                        </div>
+                    {/* 公式計算區域 */}
+                    <div className="formula-section">
+                      <div className="formula-head">
+                        <h4>權重計算公式</h4>
+                      </div>
+                      <div className="formula-display">
+                        <a href="index.php"><img src={fuzzy_score} alt="fuzzy_score" /></a>
+                      </div>
+                    </div>
+
+                    {/* 實際分數計算表格 */}
+                    <div className="score-calculation-section">
+                      <div className="score-head">
+                        <h4>實際分數計算</h4>
+                      </div>
+                      <div className="score-table-container">
+                        <table className="score-table">
+                          <thead>
+                            <tr>
+                              <th>項目</th>
+                              <th>分數</th>
+                              <th>權重</th>
+                              <th>加權分數</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="score-item">LLM 分數</td>
+                              <td className="score-value">{analysisResult.weight_calculation_json?.llm_score || 0}</td>
+                              <td className="weight-value">0.6</td>
+                              <td className="weighted-score">{(analysisResult.weight_calculation_json?.llm_score || 0) * 0.6}</td>
+                            </tr>
+                            <tr>
+                              <td className="score-item">SLM 分數</td>
+                              <td className="score-value">{analysisResult.weight_calculation_json?.slm_score || 0}</td>
+                              <td className="weight-value">0.4</td>
+                              <td className="weighted-score">{(analysisResult.weight_calculation_json?.slm_score || 0) * 0.4}</td>
+                            </tr>
+                            <tr>
+                              <td className="score-item">陪審團分數</td>
+                              <td className="score-value">{analysisResult.weight_calculation_json?.jury_score || 0}</td>
+                              <td className="weight-value">0.1</td>
+                              <td className="weighted-score">{(analysisResult.weight_calculation_json?.jury_score || 0) * 0.1}</td>
+                            </tr>
+                            <tr className="calculation-row">
+                              <td className="score-item">計算結果</td>
+                              <td colSpan="2" className="calculation-formula">
+                                {`0.6 × ${analysisResult.weight_calculation_json?.llm_score || 0} + 0.4 × ${analysisResult.weight_calculation_json?.slm_score || 0} + 0.1 × ${analysisResult.weight_calculation_json?.jury_score || 0}`}
+                              </td>
+                              <td className="calculation-result">
+                                = {((analysisResult.weight_calculation_json?.llm_score || 0) * 0.6 + (analysisResult.weight_calculation_json?.slm_score || 0) * 0.4 + (analysisResult.weight_calculation_json?.jury_score || 0) * 0.1).toFixed(4)}
+                              </td>
+                            </tr>
+                            <tr className="final-score-row">
+                              <td className="score-item">最終分數</td>
+                              <td colSpan="3" className="final-score-value">
+                                {analysisResult.weight_calculation_json?.final_score || 0}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>
@@ -347,12 +386,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                             <div className="model-analysis n8n">
                               <div className="model-metrics">
                                 <div className="metric-item">
-                                  <span>最終法官判決</span>
-                                  <div className="judgment-text">
-                                    <p>{analysisResult.final_report_json?.jury_brief || '無判決資料'}</p>
-                                  </div>
-                                </div>
-                                <div className="metric-item">
                                   <span>判官信心度</span>
                                   <div className="metric-bar">
                                     <div
@@ -361,28 +394,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                                     ></div>
                                   </div>
                                   <span className="metric-value">{analysisResult.final_report_json?.jury_score || 0}%</span>
-                                </div>
-                              </div>
-                              <div className="debate-points">
-                                <div className="advocate-points">
-                                  <h4>☺ 正方辯論觀點</h4>
-                                  <ul>
-                                    {analysisResult.final_report_json?.stake_summaries
-                                      ?.find(s => s.side === "Advocate")?.strongest_points
-                                      ?.map((point, index) => (
-                                        <li key={index}>{point}</li>
-                                      )) || []}
-                                  </ul>
-                                </div>
-                                <div className="skeptic-points">
-                                  <h4>☹ 反方辯論觀點</h4>
-                                  <ul>
-                                    {analysisResult.final_report_json?.stake_summaries
-                                      ?.find(s => s.side === "Skeptic")?.strongest_points
-                                      ?.map((point, index) => (
-                                        <li key={index}>{point}</li>
-                                      )) || []}
-                                  </ul>
                                 </div>
                               </div>
                             </div>
@@ -424,10 +435,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                                   </div>
                                   <span className="metric-value">{Math.round((analysisResult.weight_calculation_json?.llm_score || 0) * 100)}%</span>
                                 </div>
-                              </div>
-                              <div className="analysis-perspective">
-                                <h4>觀點分析</h4>
-                                <p>{analysisResult.fact_check_result_json?.analysis || '無資料'}</p>
                               </div>
                             </div>
                             <div className="branch-actions">

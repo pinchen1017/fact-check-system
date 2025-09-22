@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公式區域樣式調整測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        
+        /* 原始 feature-icon 樣式 */
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .about-feature {
+            text-align: center;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+        
+        .about-feature h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0 0 0.75rem 0;
+        }
+        
+        /* 修改後的 formula-section 樣式 */
+        .formula-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .formula-section h4 {
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .formula-display {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .formula-image {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .formula-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .comparison-item {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .comparison-item h4 {
+            color: #1a202c;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .style-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎨 公式區域樣式調整測試</h1>
+        
+        <div class="test-section">
+            <h2>📊 樣式調整狀態</h2>
+            <div class="status success">✅ formula-section 樣式已調整完成</div>
+            <p>成功將 formula-section 的樣式調整為與 feature-icon 相似的風格，保持一致的視覺設計。</p>
+            
+            <ul class="feature-list">
+                <li>背景色調整為 #f8fafc</li>
+                <li>邊框樣式統一為 1px solid #e2e8f0</li>
+                <li>圓角調整為 12px</li>
+                <li>內邊距調整為 2rem</li>
+                <li>文字對齊調整為居中</li>
+                <li>標題樣式統一</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 樣式對比</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>原始 feature-icon 樣式</h4>
+                    <div class="about-feature">
+                        <div class="feature-icon">
+                            <span>📊</span>
+                        </div>
+                        <h3>功能特色</h3>
+                        <p>這是原始的 feature-icon 樣式範例</p>
+                    </div>
+                    <div class="style-details">
+                        <strong>CSS 屬性：</strong><br>
+                        background: #f8fafc<br>
+                        border: 1px solid #e2e8f0<br>
+                        border-radius: 12px<br>
+                        padding: 2rem<br>
+                        text-align: center
+                    </div>
+                </div>
+                
+                <div class="comparison-item">
+                    <h4>調整後的 formula-section 樣式</h4>
+                    <div class="formula-section">
+                        <h4>權重計算公式</h4>
+                        <div class="formula-display">
+                            <div class="formula-image">
+                                <img src="/src/assets/fuzzy_score.jpg" alt="權重計算公式圖" class="formula-img" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="style-details">
+                        <strong>CSS 屬性：</strong><br>
+                        background: #f8fafc<br>
+                        border: 1px solid #e2e8f0<br>
+                        border-radius: 12px<br>
+                        padding: 2rem<br>
+                        text-align: center
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>✨ 樣式調整細節</h2>
+            <div class="status info">🎯 主要調整項目</div>
+            
+            <div class="style-details">
+                <strong>formula-section 調整：</strong><br>
+                • 背景色：<span class="highlight">#f7fafc → #f8fafc</span><br>
+                • 邊框：<span class="highlight">2px solid rgb(203, 163, 54) → 1px solid #e2e8f0</span><br>
+                • 圓角：<span class="highlight">8px → 12px</span><br>
+                • 內邊距：<span class="highlight">1.5rem → 2rem</span><br>
+                • 文字對齊：<span class="highlight">left → center</span><br><br>
+                
+                <strong>formula-section h4 調整：</strong><br>
+                • 顏色：<span class="highlight">#0e2943 → #1a202c</span><br>
+                • 字體大小：<span class="highlight">1.1rem → 1.25rem</span><br>
+                • 文字對齊：<span class="highlight">left → center</span><br><br>
+                
+                <strong>formula-display 調整：</strong><br>
+                • 新增：<span class="highlight">align-items: center</span><br><br>
+                
+                <strong>formula-image 調整：</strong><br>
+                • 顯示方式：<span class="highlight">text-align: center → display: inline-flex</span><br>
+                • 邊框：<span class="highlight">1px solid #bee3f8 → 1px solid #e2e8f0</span><br>
+                • 圓角：<span class="highlight">8px → 12px</span><br>
+                • 新增：<span class="highlight">margin-bottom: 1rem</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎨 視覺效果對比</h2>
+            <div class="status info">👀 視覺效果說明</div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0;">
+                <h4>調整前：</h4>
+                <ul>
+                    <li>使用金色邊框 (rgb(203, 163, 54))</li>
+                    <li>較小的圓角 (8px)</li>
+                    <li>左對齊的文字</li>
+                    <li>較小的內邊距 (1.5rem)</li>
+                    <li>較深的標題顏色 (#0e2943)</li>
+                </ul>
+                
+                <h4>調整後：</h4>
+                <ul>
+                    <li>使用統一的淺灰色邊框 (#e2e8f0)</li>
+                    <li>較大的圓角 (12px)</li>
+                    <li>居中的文字</li>
+                    <li>較大的內邊距 (2rem)</li>
+                    <li>統一的標題顏色 (#1a202c)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🚀 使用方式</h2>
+            <div class="status info">📝 測試步驟</div>
+            <ol>
+                <li>啟動 React 應用程式</li>
+                <li>進入事實查核頁面</li>
+                <li>輸入查詢內容並執行搜索</li>
+                <li>查看整體結果分析區域</li>
+                <li>觀察 formula-section 的新樣式</li>
+                <li>對比與其他 feature-icon 的一致性</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ 調整完成</h2>
+            <div class="status success">🎉 樣式調整完成</div>
+            <p>formula-section 現在具有與 feature-icon 相似的視覺風格，包括：</p>
+            <ul class="feature-list">
+                <li>統一的背景色和邊框樣式</li>
+                <li>一致的圓角和內邊距</li>
+                <li>居中的文字對齊</li>
+                <li>統一的標題樣式</li>
+                <li>更好的視覺一致性</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

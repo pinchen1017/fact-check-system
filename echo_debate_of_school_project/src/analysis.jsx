@@ -4,6 +4,7 @@ import './css/llm.css'
 import './css/slm.css'
 import { IoArrowBack } from 'react-icons/io5'
 import { GiTribunalJury } from "react-icons/gi"
+import slm from './assets/slm.jpg'
 
 function Analysis({ modelKey, data, onBack }) {
   console.log('Analysis received data:', data);
@@ -208,6 +209,9 @@ function Analysis({ modelKey, data, onBack }) {
                 <span>{Math.round((parseFloat(classification.Probability) || 0) * 100)}%</span>
               </div>
             </div>
+          </div>
+          <div className="analysis-text">
+            <a href="index.php"><img src={slm} alt="slm" /></a>
           </div>
         </div>
       )
