@@ -8,8 +8,6 @@ import { BsNewspaper } from "react-icons/bs"
 import { MdOutlineHistoryToggleOff } from "react-icons/md"
 import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
-import LlmAnalysis from './llm'
-import SlmAnalysis from './slm'
 import cofact from './assets/cofact.png'
 import fuzzy_score from './assets/fuzzy_score.jpg'
 
