@@ -56,7 +56,7 @@ function Analysis({ modelKey, data, onBack }) {
                 <div className={`verification-badge ${messageVerification === '正確' ? 'correct' : 'incorrect'}`}>
                   {messageVerification}
                 </div>
-                <p>基於 final_score >= 0.5 判斷</p>
+                <p>基於 final_score ≥ 0.5 判斷</p>
               </div>
               <div className="summary-item">
                 <h4>消息可信度</h4>
@@ -212,6 +212,30 @@ function Analysis({ modelKey, data, onBack }) {
           </div>
           <div className="analysis-text">
             <a href="index.php"><img src={slm} alt="slm" /></a>
+          </div>
+          <div className="slm-explainer">
+            <h3>一、 SLM 模型簡介</h3>
+            <ul>
+              <li>半監督式假消息偵測模型，適合標註資料稀少的情境</li>
+              <li>核心結構：LSTM + Self-Attention，同時捕捉文字脈絡與關鍵詞</li>
+              <li>輸出：真假新聞分類 + 可信度分數</li>
+            </ul>
+
+            <h3>二、 如何訓練假消息辨識模型</h3>
+            <ul>
+              <li>收集7000多筆真假消息文本數據，並使用bert-base-chinese 將文本轉換成電腦看得懂的數據，這些數據代表文本的語意，並使用transformer的BertForSequenceClassification 去進行分類器的訓練。</li>
+              <li>使用少量標註資料 + 大量未標註新聞/貼文</li>
+              <li>偽標籤機制：模型先訓練 → 產生高信心標籤 → 加回訓練集 → 持續迭代</li>
+              <li>融合情感特徵（正向/負向/誇張語氣）提升判斷力</li>
+            </ul>
+
+            <h3>三、 模型效果</h3>
+            <ul>
+              <li>在 FakeNewsNet 測試集表現優於傳統方法</li>
+              <li>LSTM：Precision 0.84 / Recall 0.83 / F1 0.84</li>
+              <li>LSTM + Self-Attention：Precision 0.87 / Recall 0.86 / F1 0.87</li>
+              <li>證明 Self-Attention 能有效提升假消息辨識準確度</li>
+            </ul>
           </div>
         </div>
       )

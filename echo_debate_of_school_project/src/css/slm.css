@@ -289,3 +289,32 @@
 }
 
 
+/* SLM explainer - align left and match typography */
+.slm-analysis .slm-explainer {
+  margin: 16px 0;
+  padding: 12px 14px;
+  background: rgba(46, 68, 91, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid rgb(203, 163, 54);
+  text-align: left;
+}
+
+.slm-analysis .slm-explainer h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: rgb(46, 68, 91);
+  font-weight: 600;
+}
+
+.slm-analysis .slm-explainer ul {
+  margin: 6px 0 12px 1.25rem;
+  padding: 0;
+  list-style: disc;
+}
+
+.slm-analysis .slm-explainer li {
+  margin: 4px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #2b2b2b;
+}
