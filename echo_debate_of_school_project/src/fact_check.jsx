@@ -10,6 +10,7 @@ import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
 import cofact from './assets/cofact.png'
 import fuzzy_score from './assets/fuzzy_score.jpg'
+const cofactToken = import.meta.env.VITE_COFACT_TOKEN;
 
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
@@ -21,17 +22,111 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     setSearchInput(searchQuery || '')
   }, [searchQuery])
 
-  // 模擬搜索功能 - 使用 response_b1.json 數據
-  const handleSearch = () => {
+  // 呼叫 Cofacts Agent API 取得相似查證
+  const fetchCofactResult = async (query) => {
+    const url = 'https://unknown4853458-cofacts-agent-rag.hf.space/agent/check_message'
+    const headers = {
+      'Authorization': cofactToken,
+      'accept': 'application/json',
+      'X-API-Key': 'CofactChecker123',
+      'Content-Type': 'application/json',
+    }
+    const payload = {
+      text: query,
+      top_k: 5,
+      jaccard_threshold: 0.0,
+      use_api: true,
+      use_hf: true,
+      allow_llm: true,
+    }
+
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      })
+
+      // 若非 2xx 也嘗試讀取內容
+      const data = await resp.json().catch(() => null)
+
+      // 預設值
+      let found = false
+      let correctness = '未知'
+      let perspective = ''
+      let cofactUrl = 'https://cofact.org/search?q=' + encodeURIComponent(query)
+
+      if (data && typeof data === 'object') {
+        // 依照提供之 API 回傳模板做欄位映射
+        // found
+        found = data?.found === true
+
+        // correctness = answer.decision -> 真實/錯誤
+        if (data?.answer && typeof data.answer.decision === 'boolean') {
+          correctness = data.answer.decision ? '真實' : '錯誤'
+        }
+
+        // perspective = 第一個命中的 text
+        if (Array.isArray(data?.hits) && data.hits.length > 0) {
+          perspective = data.hits[0]?.text || ''
+        }
+        if (!perspective) {
+          perspective = data?.text || data?.analysis || ''
+        }
+
+        // cofactUrl = references[0] -> 其次 match_url -> 最後搜尋頁
+        if (Array.isArray(data?.answer?.references) && data.answer.references.length > 0) {
+          cofactUrl = data.answer.references[0]
+        } else if (data?.answer?.match_url) {
+          cofactUrl = data.answer.match_url
+        }
+
+        // 後備邏輯（若欄位缺漏）：
+        if (!found) {
+          const candidates = [
+            Array.isArray(data?.results) ? data.results : null,
+            Array.isArray(data?.matches) ? data.matches : null,
+            Array.isArray(data?.search_results) ? data.search_results : null,
+            Array.isArray(data?.top_k_results) ? data.top_k_results : null,
+          ].filter(Boolean)
+          found = (candidates.length > 0 && candidates.some(arr => arr.length > 0)) || data?.found === true
+        }
+        if (correctness === '未知') {
+          const label = data?.classification_json?.classification || data?.classification || data?.label || data?.verdict
+          const prob = parseFloat(data?.classification_json?.Probability) || data?.probability || data?.score
+          const finalScore = typeof data?.weight_calculation_json?.final_score === 'number' ? data.weight_calculation_json.final_score : undefined
+          if (label) {
+            if (label.includes('正確') || label.includes('真實')) correctness = '真實'
+            else if (label.includes('錯誤') || label.includes('不實')) correctness = '錯誤'
+            else correctness = '混合'
+          } else if (typeof finalScore === 'number') {
+            correctness = finalScore >= 0.5 ? '真實' : '錯誤'
+          } else if (!isNaN(prob)) {
+            correctness = prob >= 0.5 ? '真實' : '錯誤'
+          }
+        }
+      }
+
+      return { found, correctness, perspective, cofactUrl }
+    } catch (e) {
+      // 失敗則視為未找到，避免中斷整體分析
+      return { found: false, correctness: '未知', perspective: '', cofactUrl: 'https://cofact.org/search?q=' + encodeURIComponent(query) }
+    }
+  }
+
+  // 搜索功能：先查 Cofacts，再組合分析結果
+  const handleSearch = async () => {
     if (!searchInput.trim()) return
 
     setIsSearching(true)
     setSearchQuery(searchInput) // 更新全局搜尋查詢
+    
+    // 先呼叫 Cofacts 查證 API
+    const cofactResult = await fetchCofactResult(searchInput)
 
-    // 模拟API調用延遲
-    setTimeout(() => {
-      // 使用 response_b1.json 的實際數據
-      const responseData = {
+    // 以下為既有的分析資料（本地模擬），可與 Cofacts 結果並存
+    // 使用 response_b1.json 的實際數據
+    const responseData = {
         weight_calculation_json: {
           llm_label: "完全錯誤",
           llm_score: 0,
@@ -97,20 +192,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
       const credibilityScore = Math.round(responseData.weight_calculation_json.final_score * 100);
 
-      // 模擬 Cofact 搜索结果 (預設為 false)
-      const cofactResult = {
-        found: false, // 預設未找到
-        correctness: messageVerification,
-        confidence: credibilityScore,
-        perspective: 'Cofact 事實查核：根據多個可靠來源的交叉驗證，此消息的真實性已得到確認。相關專家對此消息的準確性表示支持。',
-        references: [
-          'https://cofact.org/article/2024-001',
-          'https://cofact.org/article/2024-002',
-          'https://cofact.org/article/2024-003'
-        ],
-        cofactUrl: 'https://cofact.org/search?q=' + encodeURIComponent(searchInput)
-      }
-
       const newAnalysisResult = {
         // 原始 response_b1.json 數據
         ...responseData,
@@ -159,7 +240,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       }
       setAnalysisResult(newAnalysisResult)
       setIsSearching(false)
-    }, 2000)
   }
 
   return (
