@@ -29,10 +29,10 @@
 
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: initial;
 }
 
 .logo {
@@ -83,11 +83,11 @@
 }
 
 .content-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 1fr;
   gap: 3rem;
 }
 
@@ -553,7 +553,7 @@
 /* 響應式設計 */
 @media (max-width: 1200px) {
   .content-wrapper {
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 1fr;
     gap: 2rem;
   }
 }
@@ -576,7 +576,7 @@
 
 @media (max-width: 768px) {
   .content-wrapper {
-    padding: 0 1rem;
+    padding: 0;
   }
   
   .main-title {
@@ -648,7 +648,7 @@
   .content-wrapper {
     grid-template-columns: 1fr;
     gap: 1rem;
-    padding: 0 1rem;
+    padding: 0;
   }
   
   .sidebar {
@@ -663,13 +663,13 @@
 /* 桌面端保持原有布局 */
 @media (min-width: 481px) {
   .content-wrapper {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 1fr;
     gap: 3rem;
-    padding: 0 2rem;
+    padding: 0;
   }
   
   .sidebar {
-    display: block; /* 在桌面端显示侧边栏 */
+    display: none;
   }
   
   .main-content-area {

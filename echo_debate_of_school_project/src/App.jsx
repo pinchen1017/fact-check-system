@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './css/App.css'
 import Header from './header'
-import Aside from './aside'
+import HomePage from './HomePage'
 import FactCheck from './fact_check'
 import AboutUs from './aboutus'
 import Trending from './trending'
@@ -11,12 +11,11 @@ import RealTimeAnalysisPage from './pages/RealTimeAnalysisPage'
 
 function App() {
   // 狀態設定
-  const [currentTab, setCurrentTab] = useState('trending')
+  const [currentTab, setCurrentTab] = useState('home') // 改為默認顯示首頁
   const [analysisState, setAnalysisState] = useState({ modelKey: null, data: null })
   const [searchQuery, setSearchQuery] = useState('')
   const [analysisResult, setAnalysisResult] = useState(null)
   const [showRealTimeAnalysis, setShowRealTimeAnalysis] = useState(false)
-  const categories = ["全部", "政治", "社會", "經濟", "生活", "國際", "科技", "娛樂", "體育", "地方"]
 
   // 檢查URL路由
   useEffect(() => {
@@ -29,7 +28,7 @@ function App() {
   }, []);
 
   // 最新資料
-  const trendingTopics = ["特朗普", "疫苗", "AI", "選舉", "氣候變化"]
+  
   const factChecks = [
     {
       id: 1,
@@ -105,18 +104,17 @@ function App() {
       <Header currentTab={currentTab} onTabChange={setCurrentTab} />
 
       {/*Content*/}
-      {currentTab === 'trending' ? (
+      {currentTab === 'home' ? (
+        <HomePage onTabChange={setCurrentTab} />
+      ) : currentTab === 'trending' ? (
         <main className="main-content">
           <div className="content-wrapper">
-            <Aside categories={categories} trendingTopics={trendingTopics} />
             <Trending factChecks={factChecks} />
-
           </div>
         </main>
       ) : currentTab === 'fact_check' ? (
         <main className="main-content">
           <div className="content-wrapper">
-            <Aside categories={categories} trendingTopics={trendingTopics} />
             <FactCheck 
               searchQuery={searchQuery} 
               factChecks={factChecks} 
@@ -126,27 +124,22 @@ function App() {
               onOpenAnalysis={(modelKey, data) => { setAnalysisState({ modelKey, data }); setCurrentTab('analysis'); }}
               onStartRealTimeAnalysis={() => setShowRealTimeAnalysis(true)}
             />
-
           </div>
         </main>
       ) : currentTab === 'analysis' ? (
         <main className="main-content">
           <div className="content-wrapper">
-            <Aside categories={categories} trendingTopics={trendingTopics} />
             <Analysis 
               modelKey={analysisState.modelKey} 
               data={analysisState.data} 
               onBack={() => setCurrentTab('fact_check')}
             />
-
           </div>
         </main>
       ) : (
         <main className="main-content">
           <div className="content-wrapper">
-            <Aside categories={categories} trendingTopics={trendingTopics} />
             <AboutUs />
-
           </div>
         </main>
       )}
