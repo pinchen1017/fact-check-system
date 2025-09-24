@@ -17,6 +17,17 @@ function App() {
   const [analysisResult, setAnalysisResult] = useState(null)
   const [showRealTimeAnalysis, setShowRealTimeAnalysis] = useState(false)
 
+  // 頁面切換函數 - 強制滾動到最上層
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+    // 強制滾動到頁面最上層
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }
+
   // 檢查URL路由
   useEffect(() => {
     const path = window.location.pathname;
@@ -101,11 +112,11 @@ function App() {
   return (
     <div className="app">
       {/*Header*/}
-      <Header currentTab={currentTab} onTabChange={setCurrentTab} />
+      <Header currentTab={currentTab} onTabChange={handleTabChange} />
 
       {/*Content*/}
       {currentTab === 'home' ? (
-        <HomePage onTabChange={setCurrentTab} />
+        <HomePage onTabChange={handleTabChange} />
       ) : currentTab === 'trending' ? (
         <main className="main-content">
           <div className="content-wrapper">
@@ -121,7 +132,7 @@ function App() {
               setSearchQuery={setSearchQuery}
               analysisResult={analysisResult}
               setAnalysisResult={setAnalysisResult}
-              onOpenAnalysis={(modelKey, data) => { setAnalysisState({ modelKey, data }); setCurrentTab('analysis'); }}
+              onOpenAnalysis={(modelKey, data) => { setAnalysisState({ modelKey, data }); handleTabChange('analysis'); }}
               onStartRealTimeAnalysis={() => setShowRealTimeAnalysis(true)}
             />
           </div>
@@ -132,7 +143,7 @@ function App() {
             <Analysis 
               modelKey={analysisState.modelKey} 
               data={analysisState.data} 
-              onBack={() => setCurrentTab('fact_check')}
+              onBack={() => handleTabChange('fact_check')}
             />
           </div>
         </main>

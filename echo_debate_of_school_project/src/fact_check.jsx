@@ -9,7 +9,6 @@ import { MdOutlineHistoryToggleOff } from "react-icons/md"
 import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
 import cofact from './assets/cofact.png'
-import fuzzy_score from './assets/fuzzy_score.jpg'
 const cofactToken = import.meta.env.VITE_COFACT_TOKEN;
 
 {/* FactCheck */ }
