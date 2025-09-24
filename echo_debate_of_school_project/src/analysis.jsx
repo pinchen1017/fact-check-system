@@ -5,6 +5,8 @@ import './css/slm.css'
 import { IoArrowBack } from 'react-icons/io5'
 import { GiTribunalJury } from "react-icons/gi"
 import slm from './assets/slm.jpg'
+import { CiFaceFrown } from "react-icons/ci"
+import { CiFaceSmile } from "react-icons/ci"
 
 function Analysis({ modelKey, data, onBack }) {
   console.log('Analysis received data:', data);
@@ -130,7 +132,7 @@ function Analysis({ modelKey, data, onBack }) {
             {/* 正方辯論觀點 */}
             <div className="prosecution-area">
               <div className="role-header prosecution">
-                <h3>☺ 正方辯論觀點</h3>
+                <h3><CiFaceSmile /> 正方辯論觀點</h3>
               </div>
               <div className="debate-messages">
                 {advocatePoints.map((point, index) => (
@@ -144,7 +146,7 @@ function Analysis({ modelKey, data, onBack }) {
             {/* 反方辯論觀點 */}
             <div className="defense-area">
               <div className="role-header defense">
-                <h3>☹ 反方辯論觀點</h3>
+                <h3><CiFaceFrown /> 反方辯論觀點</h3>
               </div>
               <div className="debate-messages">
                 {skepticPoints.map((point, index) => (

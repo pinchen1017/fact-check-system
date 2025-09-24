@@ -1,12 +1,47 @@
 import './css/HomePage.css'
-import { FaSearch, FaShieldAlt, FaUsers, FaBrain, FaGavel, FaChartLine, FaRocket, FaCheckCircle, FaTimesCircle, FaQuestionCircle } from 'react-icons/fa'
+import { FaSearch, FaShieldAlt, FaUsers, FaBrain, FaGavel, FaChartLine, FaRocket, FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaRobot, FaMicrochip } from 'react-icons/fa'
 import { MdOutlineNaturePeople, MdVerifiedUser, MdSpeed, MdSecurity } from 'react-icons/md'
+import { useState, useEffect } from 'react'
+import homepage_snow from './assets/homepage_snow.jpg'
 
 function HomePage({ onTabChange }) {
+    const [scrollY, setScrollY] = useState(0);
+
+    // 監聽滾動事件
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollY(window.pageYOffset);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
         <div className="homepage">
-            {/* Hero Section - 參考 Cofacts 的設計 */}
+            {/* 第一部分：假新聞雷達名稱跟一句話簡介 */}
             <section className="hero-section">
+                {/* 背景圖層 - 視差滾動效果 */}
+                <div 
+                    className="hero-background"
+                    style={{
+                        transform: `translateX(${scrollY * 0.1}px)`
+                    }}
+                >
+                    <img 
+                        src={homepage_snow} 
+                        alt="homepage_snow" 
+                        onError={(e) => {
+                            console.log('圖片載入失敗:', e.target.src);
+                            e.target.style.display = 'none';
+                        }}
+                        onLoad={() => {
+                            console.log('圖片載入成功');
+                        }}
+                    />
+                </div>
+                
+                {/* 內容層 */}
                 <div className="hero-container">
                     <div className="hero-content">
                         <h1 className="hero-title">
@@ -18,7 +53,7 @@ function HomePage({ onTabChange }) {
                             為您提供最準確、最可靠的新聞事實查核服務。
                         </p>
                         
-                        {/* 搜索區域 - 參考 Cofacts */}
+                        {/* 搜索區域 */}
                         <div className="hero-search">
                             <div className="search-container">
                                 <div className="search-box">
@@ -68,7 +103,43 @@ function HomePage({ onTabChange }) {
                 </div>
             </section>
 
-            {/* 功能特色區域 - 參考 APMIC 的設計 */}
+            {/* 第二部分：如何操作 */}
+            <section className="workflow-section">
+                <div className="container">
+                    <div className="section-header">
+                        <h2>如何運作？</h2>
+                        <p>簡單三步驟，輕鬆查證新聞真偽</p>
+                    </div>
+                    
+                    <div className="workflow-steps">
+                        <div className="step">
+                            <div className="step-number">1</div>
+                            <div className="step-content">
+                                <h3>輸入內容</h3>
+                                <p>貼上您想要查證的新聞內容或可疑訊息</p>
+                            </div>
+                        </div>
+                        
+                        <div className="step">
+                            <div className="step-number">2</div>
+                            <div className="step-content">
+                                <h3>AI 分析</h3>
+                                <p>多個智能代理進行辯論分析，評估內容真實性</p>
+                            </div>
+                        </div>
+                        
+                        <div className="step">
+                            <div className="step-number">3</div>
+                            <div className="step-content">
+                                <h3>獲得結果</h3>
+                                <p>查看詳細的分析報告和辯論過程</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 第三部分：介紹我們的技術優勢 */}
             <section className="features-section">
                 <div className="container">
                     <div className="section-header">
@@ -105,8 +176,8 @@ function HomePage({ onTabChange }) {
                             <div className="feature-icon">
                                 <MdSpeed />
                             </div>
-                            <h3>即時分析</h3>
-                            <p>快速響應的查證系統，在幾秒鐘內為您提供詳細的分析結果和建議。</p>
+                            <h3>Cofact輔助查證</h3>
+                            <p>查詢前會先查詢Cofact，提供查證結果，幫助您快速了解新聞內容的真實性。</p>
                         </div>
                         
                         <div className="feature-card">
@@ -128,67 +199,118 @@ function HomePage({ onTabChange }) {
                 </div>
             </section>
 
-            {/* 工作流程區域 */}
-            <section className="workflow-section">
+            {/* 第四部分：針對我們流程的三個分支進行優勢介紹 */}
+            <section className="process-branches-section">
                 <div className="container">
                     <div className="section-header">
-                        <h2>如何運作？</h2>
-                        <p>簡單三步驟，輕鬆查證新聞真偽</p>
+                        <h2>三大核心技術分支</h2>
+                        <p>每個分支都有其獨特的優勢，共同構建完整的事實查核體系</p>
                     </div>
                     
-                    <div className="workflow-steps">
-                        <div className="step">
-                            <div className="step-number">1</div>
-                            <div className="step-content">
-                                <h3>輸入內容</h3>
-                                <p>貼上您想要查證的新聞內容或可疑訊息</p>
+                    <div className="branches-content">
+                        {/* 三大分支介紹 */}
+                        <div className="branches-grid">
+                            <div className="branch-card llm-branch">
+                                <div className="branch-header">
+                                    <div className="branch-icon">
+                                        <FaRobot />
+                                    </div>
+                                    <div className="branch-title">
+                                        <h3>LLM-AGS</h3>
+                                        <span className="branch-subtitle">智慧顧問系統</span>
+                                    </div>
+                                </div>
+                                <div className="branch-content">
+                                    <p className="branch-description">
+                                        大型語言模型提供「智慧顧問」角色，快速理解新聞文本語意，給出第一層建議並以可量化的分數呈現。
+                                    </p>
+                                    <div className="branch-advantages">
+                                        <h4>核心優勢：</h4>
+                                        <ul>
+                                            <li><strong>快速理解：</strong>強大的自然語言處理能力</li>
+                                            <li><strong>量化評估：</strong>提供具體的可信度分數</li>
+                                            <li><strong>廣泛知識：</strong>基於海量數據訓練的深度理解</li>
+                                            <li><strong>即時響應：</strong>秒級分析速度</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div className="step">
-                            <div className="step-number">2</div>
-                            <div className="step-content">
-                                <h3>AI 分析</h3>
-                                <p>多個智能代理進行辯論分析，評估內容真實性</p>
+                            
+                            <div className="branch-card slm-branch">
+                                <div className="branch-header">
+                                    <div className="branch-icon">
+                                        <FaMicrochip />
+                                    </div>
+                                    <div className="branch-title">
+                                        <h3>SLM</h3>
+                                        <span className="branch-subtitle">專業裁判系統</span>
+                                    </div>
+                                </div>
+                                <div className="branch-content">
+                                    <p className="branch-description">
+                                        專精的小型模型，針對新聞關鍵詞與外部資料進行比對，給出精確的可信度評估。
+                                    </p>
+                                    <div className="branch-advantages">
+                                        <h4>核心優勢：</h4>
+                                        <ul>
+                                            <li><strong>精確比對：</strong>與外部資料庫進行詳細比對</li>
+                                            <li><strong>專業判斷：</strong>針對特定領域的深度分析</li>
+                                            <li><strong>高效運算：</strong>輕量級模型，快速響應</li>
+                                            <li><strong>細節檢驗：</strong>關注新聞內容的具體細節</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div className="step">
-                            <div className="step-number">3</div>
-                            <div className="step-content">
-                                <h3>獲得結果</h3>
-                                <p>查看詳細的分析報告和辯論過程</p>
+                            
+                            <div className="branch-card ma-branch">
+                                <div className="branch-header">
+                                    <div className="branch-icon">
+                                        {/* <FaScaleBalanced /> */}
+                                    </div>
+                                    <div className="branch-title">
+                                        <h3>多代理辯論系統</h3>
+                                        <span className="branch-subtitle">法庭式辯論機制</span>
+                                    </div>
+                                </div>
+                                <div className="branch-content">
+                                    <p className="branch-description">
+                                        模擬法庭辯論，整合不同觀點，確保結論不是單一模型說了算，提供多角度分析。
+                                    </p>
+                                    <div className="branch-advantages">
+                                        <h4>核心優勢：</h4>
+                                        <ul>
+                                            <li><strong>多角度分析：</strong>正反雙方觀點全面呈現</li>
+                                            <li><strong>公正裁決：</strong>模擬法庭的公正判決機制</li>
+                                            <li><strong>透明過程：</strong>完整的辯論過程可追溯</li>
+                                            <li><strong>社會模擬：</strong>模擬資訊在社群中的傳播</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* 統計數據區域 - 參考 Cofacts */}
-            <section className="stats-section">
+            {/* 第五部分：準備開始對抗假新聞了嗎？ */}
+            <section className="cta-section">
                 <div className="container">
-                    <div className="stats-grid">
-                        <div className="stat-item">
-                            <div className="stat-number">250+</div>
-                            <div className="stat-label">每週查證訊息</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-number">95%</div>
-                            <div className="stat-label">準確率</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-number">12</div>
-                            <div className="stat-label">智能代理</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-number">24/7</div>
-                            <div className="stat-label">即時服務</div>
+                    <div className="cta-content">
+                        <h2>準備開始對抗假新聞了嗎？</h2>
+                        <p>加入我們，一起建立更真實、更可信的資訊環境</p>
+                        <div className="cta-buttons">
+                            <button className="cta-button primary" onClick={() => onTabChange('fact_check')}>
+                                <FaRocket /> 立即開始查證
+                            </button>
+                            <button className="cta-button secondary" onClick={() => onTabChange('about')}>
+                                了解更多
+                            </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* 最新查證預覽 */}
+            {/* 第六部分：最新查證 */}
             <section className="latest-section">
                 <div className="container">
                     <div className="section-header">
@@ -224,24 +346,6 @@ function HomePage({ onTabChange }) {
                             <h4>某品牌食品含有致癌物質？</h4>
                             <p>該品牌部分產品確實含有微量相關物質，但含量遠低於安全標準。</p>
                             <span className="date">2024-01-14</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* 行動呼籲區域 */}
-            <section className="cta-section">
-                <div className="container">
-                    <div className="cta-content">
-                        <h2>準備開始對抗假新聞了嗎？</h2>
-                        <p>加入我們，一起建立更真實、更可信的資訊環境</p>
-                        <div className="cta-buttons">
-                            <button className="cta-button primary" onClick={() => onTabChange('fact_check')}>
-                                <FaRocket /> 立即開始查證
-                            </button>
-                            <button className="cta-button secondary" onClick={() => onTabChange('about')}>
-                                了解更多
-                            </button>
                         </div>
                     </div>
                 </div>
