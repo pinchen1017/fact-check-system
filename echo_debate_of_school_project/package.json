@@ -5,7 +5,7 @@
   "type": "module",
   "homepage": "https://fact-check-system.onrender.com",
   "engines": {
-    "node": "18.x"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "dev": "vite",
