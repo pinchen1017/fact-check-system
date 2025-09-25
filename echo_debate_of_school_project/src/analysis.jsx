@@ -122,7 +122,7 @@ function Analysis({ modelKey, data, onBack }) {
                   <p>{finalReport.jury_brief || '無判決資料'}</p>
                 </div>
                 <div className="confidence-meter">
-                  <span>判官信心度</span>
+                  <span>判決信心度</span>
                   <div className="confidence-bar">
                     <div
                       className="confidence-fill"
@@ -208,7 +208,7 @@ function Analysis({ modelKey, data, onBack }) {
               </div>
             </div>
             <div className="summary-item">
-              <h3>機率分數</h3>
+              <h3>可信度比例</h3>
               <div className="probability-score">
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
