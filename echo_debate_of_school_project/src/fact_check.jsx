@@ -122,6 +122,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
     setIsSearching(true)
     setSearchQuery(searchInput) // 更新全局搜尋查詢
+    setAnalysisResult(null) // 清空之前的分析結果
 
     // 顯示 Cofact 協尋動畫
     setIsCofactLoading(true)
@@ -262,64 +263,71 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   return (
     <>
       {/* 主要內容區域 */}
-      <div className="main-content-area">
-        {/* 搜索區域 */}
-        <div className="search-section">
-          <h1 className="main-title"><BsNewspaper /> 事實查核</h1>
-          <p className="main-subtitle">輸入消息內容，獲得專業分析結果</p>
+      <div className={`main-content-area ${(isCofactLoading || isModelLoading) ? 'loading-state' : ''}`}>
+        {/* 搜索區域 - 只在非 loading 狀態時顯示 */}
+        {!(isCofactLoading || isModelLoading) && (
+          <div className="search-section">
+            <h1 className="main-title"><BsNewspaper /> 事實查核</h1>
+            <p className="main-subtitle">輸入消息內容，獲得專業分析結果</p>
 
-          <div className="search-container">
-            <div className="search-box">
-              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <input
-                type="text"
-                placeholder="輸入要查證的謠言內容..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="search-input"
-                onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            </div>
-            <div className="search-buttons">
-              <button
-                className="search-button"
-                onClick={handleSearch}
-                disabled={isSearching}
-              >
-                {isSearching ? '分析中...' : '開始分析'}
-              </button>
+            <div className="search-container">
+              <div className="search-box">
+                <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="輸入要查證的謠言內容..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="search-input"
+                  onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
+                />
+              </div>
+              <div className="search-buttons">
+                <button
+                  className="search-button"
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                >
+                  {isSearching ? '分析中...' : '開始分析'}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* 分析結果區域 */}
-        <div className="analysis-section">
-          {/* Cofact 協尋過場動畫 */}
-          {isCofactLoading && (
-            <div className="loading-overlay">
-              <div className="loading-content">
-                <img src={discuss_cofact} alt="Cofact 協尋中" className="loading-image" />
-                <h3>Cofact 協尋中...</h3>
-                <div className="loading-spinner"></div>
+        {/* 分析結果區域 - 只在有查詢時顯示 */}
+        {(isSearching || isCofactLoading || isModelLoading || analysisResult) && (
+          <div className={`analysis-section ${(isCofactLoading || isModelLoading) ? 'loading-background' : ''}`}>
+            {/* Cofact 協尋過場動畫 */}
+            {isCofactLoading && (
+              <div className="loading-overlay">
+                <div className="loading-content">
+                  <img src={discuss_cofact} alt="Cofact 協尋中" className="loading-image" />
+                  <h3>Cofact 協尋中...</h3>
+                  <div className="loading-progress">
+                    <div className="loading-progress-bar"></div>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 模型執行過場動畫 */}
-          {isModelLoading && (
-            <div className="loading-overlay">
-              <div className="loading-content">
-                <img src={discuss} alt="三路並審中" className="loading-image" />
-                <h3>三路並審中...</h3>
-                <div className="loading-spinner"></div>
+            {/* 模型執行過場動畫 */}
+            {isModelLoading && (
+              <div className="loading-overlay">
+                <div className="loading-content">
+                  <img src={discuss} alt="三路並審中" className="loading-image" />
+                  <h3>三路並審中...</h3>
+                  <div className="loading-progress">
+                    <div className="loading-progress-bar"></div>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 分析結果內容 */}
-          {analysisResult && (
+            {/* 分析結果內容 */}
+            {analysisResult && (
             <>
               <h2 className="section-title"><MdAnalytics /> 分析結果</h2>
 
@@ -548,10 +556,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             )}
             </>
           )}
-        </div>
+          </div>
+        )}
 
-        {/* 最新查證 */}
-        <div className="latest-section">
+        {/* 最新查證 - 只在非 loading 狀態時顯示 */}
+        {!(isCofactLoading || isModelLoading) && (
+          <div className="latest-section">
           <div className="section-header">
             <h2><MdOutlineHistoryToggleOff /> 歷史查證</h2>
             <a href="#" className="view-all-link">查看全部</a>
@@ -577,7 +587,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
               </article>
             ))}
           </div>
-        </div>
+          </div>
+        )}
       </div>
     </>
   )
