@@ -196,6 +196,10 @@ function Analysis({ modelKey, data, onBack }) {
       )
     } else if (modelKey === 'slm') {
       // SLM 模型分析
+      console.log('SLM Analysis - classification:', classification);
+      console.log('SLM Analysis - classification.classification:', classification.classification);
+      console.log('SLM Analysis - classification.Probability:', classification.Probability);
+      
       return (
         <div className="slm-analysis">
           <div className="summary-grid">
