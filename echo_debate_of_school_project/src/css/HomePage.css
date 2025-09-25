@@ -853,10 +853,10 @@
 /* Characters Animation */
 .characters-animation {
     position: absolute;
-    bottom: -500px;
+    bottom: -400px;
     left: 0;
     right: 0;
-    height: 1000px;
+    height: 1200px;
     overflow: hidden;
     z-index: 15;
 }
@@ -870,7 +870,7 @@
 
 .character-image {
     width: 330px;
-    height: 500px;
+    height: 420px;
     object-fit: contain;
     object-position: center bottom;
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
@@ -915,10 +915,29 @@
 .character.show.judge-character {
     right: 5%;
     transform: none;
+    animation: bounceInJudge 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Bounce Animation */
 @keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: translateY(450px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-60px);
+    }
+    80% {
+        transform: translateY(30px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Judge Character Bounce Animation - 保持 right: 5% 位置 */
+@keyframes bounceInJudge {
     0% {
         opacity: 0;
         transform: translateY(450px);
@@ -976,7 +995,30 @@
         right: 3%;
     }
     
+    .character.show.judge-character {
+        right: 3%;
+        transform: none;
+        animation: bounceInJudge1024 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
     @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: translateY(250px);
+        }
+        60% {
+            opacity: 1;
+            transform: translateY(-30px);
+        }
+        80% {
+            transform: translateY(15px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounceInJudge1024 {
         0% {
             opacity: 0;
             transform: translateY(250px);
@@ -1038,7 +1080,30 @@
         right: 2%;
     }
     
+    .character.show.judge-character {
+        right: 2%;
+        transform: none;
+        animation: bounceInJudge768 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
     @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: translateY(200px);
+        }
+        60% {
+            opacity: 1;
+            transform: translateY(-25px);
+        }
+        80% {
+            transform: translateY(12px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounceInJudge768 {
         0% {
             opacity: 0;
             transform: translateY(200px);

@@ -166,6 +166,8 @@ function HomePage({ onTabChange }) {
                 <div className="container">
                     <div className="section-header">
                         <h1>可靠的法治社會</h1>
+                    </div>
+                    <div className="section-subtitle">
                         <p>三個分支共同構建完整的事實查核體系</p>
                     </div>
                     
@@ -272,7 +274,6 @@ function HomePage({ onTabChange }) {
                 <div className="container">
                     <div className="section-header">
                         <h1>全力得以保障</h1>
-                        <p>結合多種先進技術，提供最可靠的事實查核服務</p>
                     </div>
                     
                     <div className="features-grid">
