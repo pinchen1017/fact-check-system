@@ -28,15 +28,142 @@ function App() {
     });
   }
 
-  // 檢查URL路由
+  // 檢查URL路由和session_id參數
   useEffect(() => {
     const path = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    
     if (path.startsWith('/r/')) {
       setShowRealTimeAnalysis(true);
+    } else if (sessionId) {
+      // 如果有session_id參數，直接跳轉到事實查核頁面並載入分析結果
+      setCurrentTab('fact_check');
+      setSearchQuery('國高中改10點上課現在實施中'); // 預設查詢
+      // 載入對應的分析結果
+      loadAnalysisBySessionId(sessionId);
     } else {
       setShowRealTimeAnalysis(false);
     }
   }, []);
+
+  // 根據session_id載入分析結果的函數
+  const loadAnalysisBySessionId = (sessionId) => {
+    // 使用您現有的 session JSON 數據
+    const mockAnalysisResult = {
+      weight_calculation_json: {
+        llm_label: "完全錯誤",
+        llm_score: 0,
+        slm_score: 0.9795,
+        jury_score: -0.7244,
+        final_score: 0.035
+      },
+      final_report_json: {
+        topic: "國高中改10點上課現在實施中",
+        overall_assessment: "「國高中改10點上課現在實施中」的說法為假。目前台灣並未全面實施此政策，僅為一項已達附議門檻、待教育部回應的公共政策提案。社會對此議題意見高度分歧，教育部預計於11月14日前做出回應，但過往經驗顯示全面實施的可能性較低，更傾向於彈性調整。",
+        jury_score: 72,
+        jury_brief: "證據不足。未全面實施，但提案已達附議門檻。",
+        evidence_digest: [
+          "公共政策網路參與平台：國高中改10點上課提案已達萬人附議門檻，教育部須於11/14前回應。",
+          "教育部 (2017年類似提案處理)：曾有建議9點上課提案，最終未全面採納，僅放寬早自習彈性。",
+          "教育部 (2022年作息調整)：修正發布作息注意事項，讓高中生第一節課前時間更有彈性，非全面延後。",
+          "Yahoo新聞網路投票：超過六成參與者不贊成或完全不贊成國高中改為10點上課。",
+          "社群觀察：學生普遍支持，家長、教育工作者多數反對或擔憂實際操作。"
+        ],
+        stake_summaries: [
+          {
+            side: "Advocate",
+            thesis: "國高中改為上午10點上課的提案，旨在改善學生睡眠不足及提升學習效率，是符合學生福祉的改革方向。",
+            strongest_points: [
+              "提案已在公共政策網路參與平台獲得萬人附議，顯示強大民意支持。",
+              "延後上課有助於改善學生睡眠品質，提升學習效率與身心發展。",
+              "教育部需在11月14日前做出回應，顯示政策推動的可能性。"
+            ],
+            weaknesses: [
+              "未能有效回應家長接送、交通、補習文化等實際衝擊。",
+              "未充分說明如何解決課程時數壓縮與教學品質問題。",
+              "過於樂觀看待教育部對提案的採納程度，忽略歷史經驗。"
+            ]
+          },
+          {
+            side: "Skeptic",
+            thesis: "國高中改10點上課的提案，雖立意良善，但實際執行將對家庭作息、學校行政、教學品質及社會運作造成巨大衝擊，且社會反對聲浪高。",
+            strongest_points: [
+              "Yahoo新聞網路投票顯示超過六成民眾不贊成，反映社會主流意見。",
+              "家長擔憂接送時間與自身工作衝突，增加家庭負擔。",
+              "教育工作者擔憂課程時數壓縮與教學品質問題。",
+              "過去類似提案(2017年9點上課)最終未被採納，僅放寬彈性。"
+            ],
+            weaknesses: [
+              "未能充分考慮學生身心發展需求。",
+              "過度保守，缺乏改革勇氣。",
+              "未提出替代方案解決學生睡眠不足問題。"
+            ]
+          }
+        ]
+      },
+      fact_check_result_json: {
+        analysis: "根據目前的資料顯示，「國高中改10點上課現在實施中」的說法並不正確。1. 尚未全面實施： 台灣目前並沒有全面實施國高中延後至上午10點上課的政策。大部分國高中仍維持在早上7點半至8點左右開始上課。2. 公民提案與教育部回應： 國高中改為10點上課的議題，是在「公共政策網路參與平台」上獲得超過萬人附議的公民提案。教育部已承諾將針對此提案進行研議，並預計於2025年11月14日前做出具體回應。3. 過去的調整與提案：\n*   教育部在2022年3月曾修正發布「教育部主管高級中等學校學生在校作息時間規劃注意事項」，並於同年8月1日起實施。這項修正主要是讓高中生第一節課前的時間更有彈性，例如將全校性集會活動從每週最多2天調整為最多1天，其餘時間學生可自主規劃運用，但這並非全面更改上課起始時間至10點。\n*   在2017年，也曾有類似建議國高中改為上午9點上課的提案，但教育部評估後並未全面採納，當時僅放寬高中早自習和第八節課的彈性參與。4. 社會意見分歧：\n*   學生群體普遍支持延後上課，認為有助於改善睡眠品質、提升學習效率與身心發展。有些學生也觀察到部分高中已將早自習改為自主時間，被視為一種實質上的延後上課。\n*   家長與通勤族群多數反對，擔憂延後上課會衝擊家長接送、自身工作時間安排、放學時間延後可能影響補習與才藝班時間，以及對交通運作可能造成的影響。一項由Yahoo新聞發起的網路投票顯示，有超過六成的參與者不贊成或完全不贊成國高中改為10點上課。\n*   教育工作者與學校行政則持觀望態度，擔憂全面延後上課對現有課綱、教學時數、學校行政排程、教師授課時間及校園設施使用都會是巨大的挑戰，認為這與過去的彈性調整概念不同。結論：目前國高中並沒有全面實施10點上課的政策，此訊息為誤解。",
+        classification: "完全錯誤"
+      },
+      classification_json: {
+        Probability: "0.07950027287006378",
+        classification: "錯誤"
+      }
+    };
+
+    // 計算整體結果
+    const messageVerification = mockAnalysisResult.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
+    const credibilityScore = Math.round(mockAnalysisResult.weight_calculation_json.final_score * 100);
+
+    const newAnalysisResult = {
+      ...mockAnalysisResult,
+      cofact: { found: false, correctness: '未知', perspective: '', cofactUrl: 'https://cofact.org/search?q=' + encodeURIComponent('國高中改10點上課現在實施中') },
+      newsCorrectness: messageVerification,
+      ambiguityScore: credibilityScore,
+      analysis: mockAnalysisResult.fact_check_result_json.analysis,
+      models: {
+        n8n: {
+          correctness: mockAnalysisResult.final_report_json.jury_score,
+          truthfulness: mockAnalysisResult.final_report_json.jury_score,
+          perspective: mockAnalysisResult.final_report_json.overall_assessment,
+          references: mockAnalysisResult.final_report_json.evidence_digest
+        },
+        llm: {
+          correctness: Math.round(mockAnalysisResult.weight_calculation_json.llm_score * 100),
+          truthfulness: Math.round(mockAnalysisResult.weight_calculation_json.llm_score * 100),
+          perspective: mockAnalysisResult.fact_check_result_json.analysis,
+          references: mockAnalysisResult.final_report_json.evidence_digest
+        },
+        slm: {
+          correctness: Math.round(parseFloat(mockAnalysisResult.classification_json.Probability) * 100),
+          truthfulness: Math.round(parseFloat(mockAnalysisResult.classification_json.Probability) * 100),
+          perspective: mockAnalysisResult.fact_check_result_json.analysis,
+          references: mockAnalysisResult.final_report_json.evidence_digest
+        }
+      },
+      debate: {
+        prosecution: mockAnalysisResult.final_report_json.stake_summaries
+          .find(s => s.side === "Advocate")?.strongest_points.map((point, index) => ({
+            speaker: '正方',
+            message: point,
+            timestamp: `10:${30 + index}`
+          })) || [],
+        defense: mockAnalysisResult.final_report_json.stake_summaries
+          .find(s => s.side === "Skeptic")?.strongest_points.map((point, index) => ({
+            speaker: '反方',
+            message: point,
+            timestamp: `10:${31 + index}`
+          })) || [],
+        judge: {
+          verdict: mockAnalysisResult.final_report_json.jury_brief,
+          confidence: mockAnalysisResult.final_report_json.jury_score
+        }
+      }
+    };
+
+    setAnalysisResult(newAnalysisResult);
+  };
 
   // 最新資料
   
