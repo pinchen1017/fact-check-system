@@ -49,6 +49,7 @@ function App() {
 
   // 根據session_id載入分析結果的函數
   const loadAnalysisBySessionId = (sessionId) => {
+    console.log('loadAnalysisBySessionId called with sessionId:', sessionId);
     // 使用您現有的 session JSON 數據
     const mockAnalysisResult = {
       weight_calculation_json: {
@@ -162,6 +163,8 @@ function App() {
       }
     };
 
+    console.log('Setting analysisResult:', newAnalysisResult);
+    console.log('analysisResult.classification_json:', newAnalysisResult.classification_json);
     setAnalysisResult(newAnalysisResult);
   };
 

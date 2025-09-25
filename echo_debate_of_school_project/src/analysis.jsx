@@ -35,6 +35,10 @@ function Analysis({ modelKey, data, onBack }) {
   const finalReport = data.final_report_json || {};
   const factCheckResult = data.fact_check_result_json || {};
   const classification = data.classification_json || {};
+  
+  console.log('Analysis - data:', data);
+  console.log('Analysis - classification:', classification);
+  console.log('Analysis - modelKey:', modelKey);
 
   // 計算消息查證結果
   const messageVerification = weightCalculation.final_score >= 0.5 ? '正確' : '錯誤';
