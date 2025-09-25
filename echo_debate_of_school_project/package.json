@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://fact-check-system.onrender.com",
   "engines": {
     "node": "18.x"
   },
