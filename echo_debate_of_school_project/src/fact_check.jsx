@@ -64,8 +64,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
       if (data && typeof data === 'object') {
         // 依照提供之 API 回傳模板做欄位映射
-        found = false
-        // data?.found === true
+        found = data?.found === true || false
+        
         if (data?.answer && typeof data.answer.decision === 'boolean') {
           correctness = data.answer.decision ? '真實' : '錯誤'
         }
@@ -445,9 +445,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     <div className="dialogue-actions">
                       <button
                         className="detail-btn llm-btn"
-                        onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
+                        onClick={() => onOpenAnalysis && onOpenAnalysis('llm', {
                           final_report_json: analysisResult.final_report_json,
-                          weight_calculation_json: analysisResult.weight_calculation_json
+                          weight_calculation_json: analysisResult.weight_calculation_json,
+                          fact_check_result_json: analysisResult.fact_check_result_json
                         })}
                       >
                         查看詳細分析
@@ -496,13 +497,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="agent-info">
                         <img src={judge_character} alt="法官" className="agent-avatar" />
                         <div className="agent-details">
-                          <h4>法官 Agent</h4>
+                          <h4>法庭辯論系統</h4>
                           <p>公正裁決</p>
                         </div>
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <span>法庭消息查證</span>
+                          <span>法庭判決信心度</span>
                           <div className="metric-bar">
                             <div
                               className="metric-fill"
@@ -516,8 +517,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     <div className="dialogue-actions">
                       <button
                         className="detail-btn judge-btn"
-                        onClick={() => onOpenAnalysis && onOpenAnalysis('judge', {
-                          final_report_json: analysisResult.final_report_json
+                        onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
+                          final_report_json: analysisResult.final_report_json,
+                          weight_calculation_json: analysisResult.weight_calculation_json
                         })}
                       >
                         查看詳細分析
