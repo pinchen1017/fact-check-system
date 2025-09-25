@@ -527,6 +527,23 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     </div>
                   </div>
                 </div>
+
+                {/* 最終分析 - LLM 觀點分析 */}
+                <div className="final-analysis-section">
+                  <h3>最終分析</h3>
+                  <div className="final-analysis-content">
+                    {/* <div className="analysis-header">
+                      <img src={private_detective} alt="私家偵探" className="analysis-avatar" />
+                      <div className="analysis-title">
+                        <h4>LLM 最終觀點分析</h4>
+                        <p>基於深度學習的質疑與挑戰分析</p>
+                      </div>
+                    </div> */}
+                    <div className="analysis-text">
+                      <p>{analysisResult.fact_check_result_json?.analysis || '無分析資料'}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             </>

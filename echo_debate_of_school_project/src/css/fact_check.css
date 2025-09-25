@@ -2274,3 +2274,51 @@
     font-size: 0.8rem;
   }
 }
+
+/* 最終分析區塊樣式 */
+.final-analysis-section {
+  margin-top: 2rem;
+}
+
+.final-analysis-section h3 {
+  color: #2d3748;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #0e2943;
+}
+
+.final-analysis-content {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.final-analysis-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgb(203, 163, 54);
+}
+
+.analysis-text {
+  flex: 1;
+  color: #2d3748;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .final-analysis-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+}
