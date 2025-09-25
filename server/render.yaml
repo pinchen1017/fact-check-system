@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: echo-debate-backend
+    name: echo-debate-api
     env: node
     buildCommand: npm install
     startCommand: npm start
@@ -11,4 +11,6 @@ services:
         generateValue: true
       - key: PORT
         value: 10000
+      - key: NODE_ENV
+        value: production
     healthCheckPath: /api/health
