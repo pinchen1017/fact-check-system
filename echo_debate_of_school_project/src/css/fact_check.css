@@ -1,5 +1,271 @@
 /* FactCheck 頁面樣式 */
 
+/* 過場動畫樣式 */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-content {
+  text-align: center;
+  color: #2d3748;
+  padding: 2rem;
+}
+
+.loading-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  color: #2d3748;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid rgb(203, 163, 54);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 多代理對話欄樣式 */
+.multi-agent-dialogue {
+  margin-top: 2rem;
+}
+
+.multi-agent-dialogue h3 {
+  color: #2d3748;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #0e2943;
+}
+
+.agent-dialogue {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.agent-dialogue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgb(203, 163, 54);
+}
+
+.dialogue-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 1.5rem;
+}
+
+.agent-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 200px;
+}
+
+.agent-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.agent-dialogue:hover .agent-avatar {
+  border-color: rgb(203, 163, 54);
+  transform: scale(1.05);
+}
+
+.agent-details h4 {
+  color: #2d3748;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.agent-details p {
+  color: #4a5568;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.dialogue-metrics {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dialogue-metrics .metric-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 200px;
+}
+
+.dialogue-metrics .metric-item span:first-child {
+  color: #4a5568;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.dialogue-metrics .metric-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.dialogue-metrics .metric-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgb(203, 163, 54), rgb(184, 134, 11));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.dialogue-metrics .metric-value {
+  color: #2d3748;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+.dialogue-actions {
+  display: flex;
+  align-items: center;
+}
+
+.detail-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.llm-btn {
+  background: linear-gradient(135deg, #b8860b, #9a7209);
+  color: white;
+}
+
+.llm-btn:hover {
+  background: linear-gradient(135deg, #9a7209, #7a5d07);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+}
+
+.slm-btn {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: white;
+}
+
+.slm-btn:hover {
+  background: linear-gradient(135deg, #b45309, #92400e);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.judge-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.judge-btn:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .agent-dialogue {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .dialogue-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .agent-info {
+    justify-content: center;
+    min-width: auto;
+  }
+  
+  .dialogue-metrics {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .dialogue-metrics .metric-item {
+    min-width: auto;
+  }
+  
+  .dialogue-actions {
+    justify-content: center;
+  }
+}
+
 /* 主要內容區域 - 確保與trending頁面寬度一致 */
 .main-content-area {
   width: 100%;
@@ -32,6 +298,7 @@
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+  position: relative;
 }
 
 /* .search-input:enabled{

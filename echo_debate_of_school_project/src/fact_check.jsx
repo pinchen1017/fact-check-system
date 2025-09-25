@@ -9,12 +9,19 @@ import { MdOutlineHistoryToggleOff } from "react-icons/md"
 import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
 import cofact from './assets/cofact.png'
+import discuss_cofact from './assets/discuss_cofact.png'
+import discuss from './assets/discuss.png'
+import private_detective from './assets/private_detective.png'
+import professor from './assets/professor.png'
+import judge_character from './assets/judge.png'
 const cofactToken = import.meta.env.VITE_COFACT_TOKEN;
 
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
   const [searchInput, setSearchInput] = useState(searchQuery || '')
   const [isSearching, setIsSearching] = useState(false)
+  const [isCofactLoading, setIsCofactLoading] = useState(false)
+  const [isModelLoading, setIsModelLoading] = useState(false)
 
   // 同步 searchQuery 和 searchInput
   useEffect(() => {
@@ -116,8 +123,20 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     setIsSearching(true)
     setSearchQuery(searchInput) // 更新全局搜尋查詢
 
+    // 顯示 Cofact 協尋動畫
+    setIsCofactLoading(true)
+    
     // 先呼叫 Cofacts 查證 API
     const cofactResult = await fetchCofactResult(searchInput)
+    
+    // 隱藏 Cofact 動畫
+    setIsCofactLoading(false)
+    
+    // 顯示模型執行動畫
+    setIsModelLoading(true)
+    
+    // 模擬模型計算延遲（2-3秒）
+    await new Promise(resolve => setTimeout(resolve, 2500))
 
     // 以下為既有的分析資料（本地模擬），可與 Cofacts 結果並存
     // 使用 response_b1.json 的實際數據
@@ -234,6 +253,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       }
     }
     setAnalysisResult(newAnalysisResult)
+    
+    // 隱藏模型動畫
+    setIsModelLoading(false)
     setIsSearching(false)
   }
 
@@ -273,9 +295,33 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         </div>
 
         {/* 分析結果區域 */}
-        {analysisResult && (
-          <div className="analysis-section">
-            <h2 className="section-title"><MdAnalytics /> 分析結果</h2>
+        <div className="analysis-section">
+          {/* Cofact 協尋過場動畫 */}
+          {isCofactLoading && (
+            <div className="loading-overlay">
+              <div className="loading-content">
+                <img src={discuss_cofact} alt="Cofact 協尋中" className="loading-image" />
+                <h3>Cofact 協尋中...</h3>
+                <div className="loading-spinner"></div>
+              </div>
+            </div>
+          )}
+
+          {/* 模型執行過場動畫 */}
+          {isModelLoading && (
+            <div className="loading-overlay">
+              <div className="loading-content">
+                <img src={discuss} alt="三路並審中" className="loading-image" />
+                <h3>三路並審中...</h3>
+                <div className="loading-spinner"></div>
+              </div>
+            </div>
+          )}
+
+          {/* 分析結果內容 */}
+          {analysisResult && (
+            <>
+              <h2 className="section-title"><MdAnalytics /> 分析結果</h2>
 
             {/* Cofact 搜索结果 */}
             {analysisResult.cofact?.found ? (
@@ -366,134 +412,124 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                         <span className="score-value">{analysisResult.ambiguityScore}%</span>
                       </div>
                     </div>
-                  </div><p/>
-                  <div>
-                    <h3>綜合分析</h3>
-                    <div className="analysis-tree">
-                      <div className="tree-branches">
-                        <div className="tree-branch">
-                          <div className="branch-connector"></div>
-                          <div className="branch-node">
-                            <div className="branch-header">辯論法庭系統</div>
-                            <div className="model-analysis n8n">
-                              <div className="model-metrics">
-                                <div className="metric-item">
-                                  <span>判官信心度</span>
-                                  <div className="metric-bar">
-                                    <div
-                                      className="metric-fill"
-                                      style={{ width: `${analysisResult.final_report_json?.jury_score || 0}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className="metric-value">{analysisResult.final_report_json?.jury_score || 0}%</span>
-                                </div>
-                              </div>
-                            </div>
+                  </div>
+                </div>
 
-                            <div className="branch-actions">
-                              <button
-                                className="detail-btn n8n-btn"
-                                onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
-                                  final_report_json: analysisResult.final_report_json,
-                                  weight_calculation_json: analysisResult.weight_calculation_json
-                                })}
-                              >
-                                詳細分析
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="tree-branch">
-                          <div className="branch-connector"></div>
-                          <div className="branch-node">
-                            <div className="branch-header">LLM 模型判斷</div>
-                            <div className="model-analysis llm">
-                              <div className="model-metrics">
-                                <div className="metric-item">
-                                  <span>消息查證</span>
-                                  <div className="verification-result">
-                                    <span className={`verification-badge ${analysisResult.weight_calculation_json?.llm_label === '正確' ? 'correct' : 'incorrect'}`}>
-                                      {analysisResult.weight_calculation_json?.llm_label || '無資料'}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="metric-item">
-                                  <span>可信度比例</span>
-                                  <div className="metric-bar">
-                                    <div
-                                      className="metric-fill"
-                                      style={{ width: `${(analysisResult.weight_calculation_json?.llm_score || 0) * 100}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className="metric-value">{Math.round((analysisResult.weight_calculation_json?.llm_score || 0) * 100)}%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="branch-actions">
-                              <button
-                                className="detail-btn llm-btn"
-                                onClick={() => {
-                                  console.log('LLM data:', analysisResult?.weight_calculation_json, analysisResult?.fact_check_result_json);
-                                  onOpenAnalysis && onOpenAnalysis('llm', {
-                                    weight_calculation_json: analysisResult.weight_calculation_json,
-                                    fact_check_result_json: analysisResult.fact_check_result_json
-                                  });
-                                }}
-                              >
-                                詳細分析
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="tree-branch">
-                          <div className="branch-connector"></div>
-                          <div className="branch-node">
-                            <div className="branch-header">SLM 模型判斷</div>
-                            <div className="model-analysis slm">
-                              <div className="model-metrics">
-                                <div className="metric-item">
-                                  <span>消息查證</span>
-                                  <div className="verification-result">
-                                    <span className={`verification-badge ${analysisResult.classification_json?.classification === '正確' ? 'correct' : 'incorrect'}`}>
-                                      {analysisResult.classification_json?.classification || '無資料'}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="metric-item">
-                                  <span>機率分數</span>
-                                  <div className="metric-bar">
-                                    <div
-                                      className="metric-fill"
-                                      style={{ width: `${(parseFloat(analysisResult.classification_json?.Probability) || 0) * 100}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className="metric-value">{Math.round((parseFloat(analysisResult.classification_json?.Probability) || 0) * 100)}%</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="branch-actions">
-                              <button
-                                className="detail-btn slm-btn"
-                                onClick={() => {
-                                  console.log('SLM data:', analysisResult?.classification_json);
-                                  onOpenAnalysis && onOpenAnalysis('slm', {
-                                    classification_json: analysisResult.classification_json
-                                  });
-                                }}
-                              >
-                                詳細分析
-                              </button>
-                            </div>
-                          </div>
+                {/* 多代理對話分析 */}
+                <div className="multi-agent-dialogue">
+                  <h3>綜合分析</h3>
+                  
+                  {/* LLM 私家偵探 */}
+                  <div className="agent-dialogue llm-dialogue">
+                    <div className="dialogue-content">
+                      <div className="agent-info">
+                        <img src={private_detective} alt="私家偵探" className="agent-avatar" />
+                        <div className="agent-details">
+                          <h4>私家偵探 (LLM)</h4>
+                          <p>質疑與挑戰</p>
                         </div>
                       </div>
+                      <div className="dialogue-metrics">
+                        <div className="metric-item">
+                          <span>判決信心度</span>
+                          <div className="metric-bar">
+                            <div
+                              className="metric-fill"
+                              style={{ width: `${analysisResult.final_report_json?.jury_score || 0}%` }}
+                            ></div>
+                          </div>
+                          <span className="metric-value">{analysisResult.final_report_json?.jury_score || 0}%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="dialogue-actions">
+                      <button
+                        className="detail-btn llm-btn"
+                        onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
+                          final_report_json: analysisResult.final_report_json,
+                          weight_calculation_json: analysisResult.weight_calculation_json
+                        })}
+                      >
+                        查看詳細分析
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* SLM 業界學者 */}
+                  <div className="agent-dialogue slm-dialogue">
+                    <div className="dialogue-content">
+                      <div className="agent-info">
+                        <img src={professor} alt="業界學者" className="agent-avatar" />
+                        <div className="agent-details">
+                          <h4>業界學者 (SLM)</h4>
+                          <p>辯護與支持</p>
+                        </div>
+                      </div>
+                      <div className="dialogue-metrics">
+                        <div className="metric-item">
+                          <span>消息查證</span>
+                          <div className="metric-bar">
+                            <div
+                              className="metric-fill"
+                              style={{ width: `${analysisResult.ambiguityScore}%` }}
+                            ></div>
+                          </div>
+                          <span className="metric-value">{analysisResult.ambiguityScore}%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="dialogue-actions">
+                      <button
+                        className="detail-btn slm-btn"
+                        onClick={() => onOpenAnalysis && onOpenAnalysis('slm', {
+                          slm_analysis: analysisResult.slm_analysis
+                        })}
+                      >
+                        查看詳細分析
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 法官 */}
+                  <div className="agent-dialogue judge-dialogue">
+                    <div className="dialogue-content">
+                      <div className="agent-info">
+                        <img src={judge_character} alt="法官" className="agent-avatar" />
+                        <div className="agent-details">
+                          <h4>法官 Agent</h4>
+                          <p>公正裁決</p>
+                        </div>
+                      </div>
+                      <div className="dialogue-metrics">
+                        <div className="metric-item">
+                          <span>法庭消息查證</span>
+                          <div className="metric-bar">
+                            <div
+                              className="metric-fill"
+                              style={{ width: `${analysisResult.newsCorrectness === '正確' ? 80 : 20}%` }}
+                            ></div>
+                          </div>
+                          <span className="metric-value">{analysisResult.newsCorrectness === '正確' ? 80 : 20}%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="dialogue-actions">
+                      <button
+                        className="detail-btn judge-btn"
+                        onClick={() => onOpenAnalysis && onOpenAnalysis('judge', {
+                          final_report_json: analysisResult.final_report_json
+                        })}
+                      >
+                        查看詳細分析
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
 
         {/* 最新查證 */}
         <div className="latest-section">
