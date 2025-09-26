@@ -1,0 +1,13 @@
+services:
+  - type: static
+    name: fact-check-system-static
+    env: static
+    buildCommand: cd echo_debate_of_school_project && npm install && npm run build
+    staticPublishPath: ./echo_debate_of_school_project/dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
