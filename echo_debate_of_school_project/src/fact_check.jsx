@@ -166,9 +166,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             side: "Advocate",
             thesis: "國高中改為上午10點上課的提案，旨在改善學生睡眠不足及提升學習效率，是符合學生福祉的改革方向。",
             strongest_points: [
-              "提案已在公共政策網路參與平台獲得萬人附議，顯示強大民意支持。",
-              "延後上課有助於改善學生睡眠品質，提升學習效率與身心發展。",
-              "教育部需在11月14日前做出回應，顯示政策推動的可能性。"
+              "改善學生慢性睡眠不足問題，提升學習效率。",
+              "降低學生憂鬱、自傷風險。",
+              "學生已具備自行通勤能力，不需配合家長作息。",
+              "提案獲萬人附議，顯示廣大學生與家長強烈需求。"
             ],
             weaknesses: [
               "未能有效回應家長接送、交通、補習文化等實際衝擊。",
@@ -180,10 +181,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             side: "Skeptic",
             thesis: "國高中改10點上課的提案，雖立意良善，但實際執行將對家庭作息、學校行政、教學品質及社會運作造成巨大衝擊，且社會反對聲浪高。",
             strongest_points: [
-              "Yahoo新聞網路投票顯示超過六成民眾不贊成，反映社會主流意見。",
-              "家長擔憂接送時間與自身工作衝突，增加家庭負擔。",
-              "教育工作者擔憂課程時數壓縮與教學品質問題。",
-              "過去類似提案(2017年9點上課)最終未被採納，僅放寬彈性。"
+              "政策尚未實施，僅為提案討論中，與「實施中」說法不符。",
+              "若無配套，可能壓縮教學時數，影響教學品質。",
+              "學生可能將多餘時間用於補習，無法真正改善睡眠。",
+              "過去類似提案最終僅給予學校彈性，顯示全面實施的複雜性。"
             ],
             weaknesses: [
               "未能充分考慮學生身心發展需求。",
@@ -443,10 +444,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                           <div className="metric-bar">
                             <div
                               className="metric-fill"
-                              style={{ width: `${analysisResult.final_report_json?.jury_score || 0}%` }}
+                              style={{ width: `${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 100 : 0}%` }}
                             ></div>
                           </div>
-                          <span className="metric-value">{analysisResult.final_report_json?.jury_score || 0}%</span>
+                          <span className="metric-value">{(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}</span>
                         </div>
                       </div>
                     </div>
@@ -523,10 +524,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                           <div className="metric-bar">
                             <div
                               className="metric-fill"
-                              style={{ width: `${analysisResult.newsCorrectness === '正確' ? 80 : 20}%` }}
+                              style={{ width: `${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 100 : 0}%` }}
                             ></div>
                           </div>
-                          <span className="metric-value">{analysisResult.newsCorrectness === '正確' ? 80 : 20}%</span>
+                          <span className="metric-value">{(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}</span>
                         </div>
                       </div>
                     </div>
