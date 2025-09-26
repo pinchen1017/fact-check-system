@@ -206,7 +206,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
     // 計算整體結果
     const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
-    const credibilityScore = Math.round(responseData.weight_calculation_json.final_score * 100);
+    const credibilityScore = (responseData.weight_calculation_json.final_score * 100).toFixed(3);
 
     const newAnalysisResult = {
       // 原始 response_b1.json 數據
