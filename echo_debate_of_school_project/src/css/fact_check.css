@@ -1372,23 +1372,23 @@
 
 .verification-badge {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   text-align: center;
-  min-width: 80px;
+  min-width: 50px;
 }
 
 .verification-badge.correct {
   background-color: #c6f6d5;
-  color: #22543d;
+  color: #495057;
   border: 1px solid #9ae6b4;
 }
 
 .verification-badge.incorrect {
   background-color: #fed7d7;
-  color: #742a2a;
+  color: #495057;
   border: 1px solid #feb2b2;
 }
 
@@ -1649,7 +1649,7 @@
 .verification-result {
   display: flex;
   justify-content: center;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
 }
 
 .analysis-text {
@@ -1729,9 +1729,9 @@
 
 .overall-item {
   background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
+  /* border: 1px solid #e9ecef; */
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1.2rem;
   text-align: center;
 }
 
@@ -2171,12 +2171,12 @@
 
 .verification-badge {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   text-align: center;
-  min-width: 80px;
+  min-width: 50px;
 }
 
 .verification-badge.correct {

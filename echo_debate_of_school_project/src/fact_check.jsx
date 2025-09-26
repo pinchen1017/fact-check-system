@@ -440,14 +440,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <span>判決信心度</span>
-                          <div className="metric-bar">
-                            <div
-                              className="metric-fill"
-                              style={{ width: `${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 100 : 0}%` }}
-                            ></div>
+                          <div className="verification-result">
+                            <span className={`verification-badge ${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 'correct' : 'incorrect'}`}>
+                              {(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}
+                            </span>
                           </div>
-                          <span className="metric-value">{(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}</span>
                         </div>
                       </div>
                     </div>
@@ -477,14 +474,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <span>消息查證</span>
-                          <div className="metric-bar">
-                            <div
-                              className="metric-fill"
-                              style={{ width: `${analysisResult.ambiguityScore}%` }}
-                            ></div>
+                          <div className="verification-result">
+                            <span className={`verification-badge ${analysisResult.newsCorrectness === '正確' ? 'correct' : 'incorrect'}`}>
+                              {analysisResult.newsCorrectness || '無資料'}
+                            </span>
                           </div>
-                          <span className="metric-value">{analysisResult.ambiguityScore}%</span>
                         </div>
                       </div>
                     </div>
@@ -520,14 +514,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <span>法庭判決信心度</span>
-                          <div className="metric-bar">
-                            <div
-                              className="metric-fill"
-                              style={{ width: `${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 100 : 0}%` }}
-                            ></div>
+                          <div className="verification-result">
+                            <span className={`verification-badge ${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 'correct' : 'incorrect'}`}>
+                              {(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}
+                            </span>
                           </div>
-                          <span className="metric-value">{(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}</span>
                         </div>
                       </div>
                     </div>
