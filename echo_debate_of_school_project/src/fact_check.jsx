@@ -440,7 +440,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <span>消息查證</span>
                           <div className="verification-result">
                             <span className={`verification-badge ${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 'correct' : 'incorrect'}`}>
                               {(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}
