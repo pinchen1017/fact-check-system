@@ -127,16 +127,6 @@ function Analysis({ modelKey, data, onBack }) {
                 <div className="judgment-text">
                   <p>{finalReport.jury_brief || '無判決資料'}</p>
                 </div>
-                {/* <div className="confidence-meter">
-                  <span>判決信心度</span>
-                  <div className="confidence-bar">
-                    <div
-                      className="confidence-fill"
-                      style={{ width: `${finalReport.jury_score || 0}%` }}
-                    ></div>
-                  </div>
-                  <span>{finalReport.jury_score || 0}%</span>
-                </div> */}
               </div>
             </div>
 
