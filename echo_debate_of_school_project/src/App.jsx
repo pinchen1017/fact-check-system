@@ -116,7 +116,7 @@ function App() {
 
     // 計算整體結果
     const messageVerification = mockAnalysisResult.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
-    const credibilityScore = Math.round(mockAnalysisResult.weight_calculation_json.final_score * 100);
+    const credibilityScore = (mockAnalysisResult.weight_calculation_json.final_score * 100).toFixed(1);
 
     const newAnalysisResult = {
       ...mockAnalysisResult,
@@ -132,14 +132,14 @@ function App() {
           references: mockAnalysisResult.final_report_json.evidence_digest
         },
         llm: {
-          correctness: Math.round(mockAnalysisResult.weight_calculation_json.llm_score * 100),
-          truthfulness: Math.round(mockAnalysisResult.weight_calculation_json.llm_score * 100),
+          correctness: (mockAnalysisResult.weight_calculation_json.llm_score * 100).toFixed(1),
+          truthfulness: (mockAnalysisResult.weight_calculation_json.llm_score * 100).toFixed(1),
           perspective: mockAnalysisResult.fact_check_result_json.analysis,
           references: mockAnalysisResult.final_report_json.evidence_digest
         },
         slm: {
-          correctness: Math.round(parseFloat(mockAnalysisResult.classification_json.Probability) * 100),
-          truthfulness: Math.round(parseFloat(mockAnalysisResult.classification_json.Probability) * 100),
+          correctness: (parseFloat(mockAnalysisResult.classification_json.Probability) * 100).toFixed(1),
+          truthfulness: (parseFloat(mockAnalysisResult.classification_json.Probability) * 100).toFixed(1),
           perspective: mockAnalysisResult.fact_check_result_json.analysis,
           references: mockAnalysisResult.final_report_json.evidence_digest
         }

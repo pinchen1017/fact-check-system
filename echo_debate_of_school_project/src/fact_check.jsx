@@ -206,7 +206,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
     // 計算整體結果
     const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
-    const credibilityScore = (responseData.weight_calculation_json.final_score * 100).toFixed(3);
+    const credibilityScore = (responseData.weight_calculation_json.final_score * 100).toFixed(1);
 
     const newAnalysisResult = {
       // 原始 response_b1.json 數據
@@ -223,14 +223,14 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           references: responseData.final_report_json.evidence_digest
         },
         llm: {
-          correctness: Math.round(responseData.weight_calculation_json.llm_score * 100),
-          truthfulness: Math.round(responseData.weight_calculation_json.llm_score * 100),
+          correctness: (responseData.weight_calculation_json.llm_score * 100).toFixed(1),
+          truthfulness: (responseData.weight_calculation_json.llm_score * 100).toFixed(1),
           perspective: responseData.fact_check_result_json.analysis,
           references: responseData.final_report_json.evidence_digest
         },
         slm: {
-          correctness: Math.round(parseFloat(responseData.classification_json.Probability) * 100),
-          truthfulness: Math.round(parseFloat(responseData.classification_json.Probability) * 100),
+          correctness: (parseFloat(responseData.classification_json.Probability) * 100).toFixed(1),
+          truthfulness: (parseFloat(responseData.classification_json.Probability) * 100).toFixed(1),
           perspective: responseData.fact_check_result_json.analysis,
           references: responseData.final_report_json.evidence_digest
         }
