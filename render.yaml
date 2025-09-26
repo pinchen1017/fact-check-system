@@ -2,11 +2,13 @@ services:
   - type: static
     name: fact-check-system-static
     env: static
-    buildCommand: cd echo_debate_of_school_project && npm install && npm run build
-    staticPublishPath: ./echo_debate_of_school_project/dist
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
     envVars:
       - key: NODE_VERSION
         value: 18
+      - key: VITE_COFACT_TOKEN
+        sync: false
     routes:
       - type: rewrite
         source: /*
