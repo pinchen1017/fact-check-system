@@ -392,7 +392,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             {!analysisResult.cofact?.found && (
               <div className="ai-analysis-section">
                 <div className="ai-analysis-header">
-                  <h2><TbDeviceDesktopAnalytics /> 多代理模型分析</h2>
+                  <h2><TbDeviceDesktopAnalytics /> 合議判決書</h2>
                 </div>
 
                 <div className='cofact-content'>

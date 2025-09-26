@@ -213,7 +213,7 @@ function Analysis({ modelKey, data, onBack }) {
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
                 </div>
-                <span>{Math.round((parseFloat(classification.Probability) || 0) * 100)}%</span>
+                <span>{((parseFloat(classification.Probability) || 0) * 100).toFixed(2)}%</span>
               </div>
             </div>
           </div>
