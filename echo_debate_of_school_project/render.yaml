@@ -1,6 +1,6 @@
 services:
-  - type: web
-    name: fact-check-system
+  - type: static
+    name: fact-check-system-static
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
