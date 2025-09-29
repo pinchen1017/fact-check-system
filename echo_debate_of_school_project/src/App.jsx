@@ -114,8 +114,19 @@ function App() {
       }
     };
 
+    // 可信度評級函數
+    const getCredibilityLevel = (score) => {
+      if (score <= 1 && score > 0.875) return '可信度極高';
+      if (score <= 0.875 && score > 0.625) return '可信度高';
+      if (score <= 0.625 && score > 0.5) return '可信度稍高';
+      if (score <= 0.5 && score > 0.375) return '可信度稍低';
+      if (score <= 0.375 && score > 0.125) return '可信度低';
+      if (score <= 0.125 && score >= 0) return '可信度極低';
+      return '未知';
+    };
+
     // 計算整體結果
-    const messageVerification = mockAnalysisResult.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
+    const messageVerification = getCredibilityLevel(mockAnalysisResult.weight_calculation_json.final_score);
     const credibilityScore = (mockAnalysisResult.weight_calculation_json.final_score * 100).toFixed(1);
 
     const newAnalysisResult = {

@@ -16,6 +16,22 @@ import professor from './assets/professor.png'
 import judge_character from './assets/judge.png'
 const cofactToken = import.meta.env.VITE_COFACT_TOKEN;
 
+// 可信度評級函數
+const getCredibilityLevel = (score) => {
+  if (score <= 1 && score > 0.875) return '可信度極高';
+  if (score <= 0.875 && score > 0.625) return '可信度高';
+  if (score <= 0.625 && score > 0.5) return '可信度稍高';
+  if (score <= 0.5 && score > 0.375) return '可信度稍低';
+  if (score <= 0.375 && score > 0.125) return '可信度低';
+  if (score <= 0.125 && score >= 0) return '可信度極低';
+  return '未知';
+};
+
+// 將n8n分數從1~-1區間轉換為1~0區間
+const convertN8nScore = (score) => {
+  return (score + 1) / 2;
+};
+
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
   const [searchInput, setSearchInput] = useState(searchQuery || '')
@@ -67,7 +83,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         found = data?.found === true || false
         
         if (data?.answer && typeof data.answer.decision === 'boolean') {
-          correctness = data.answer.decision ? '真實' : '錯誤'
+          correctness = data.answer.decision ? '可信度極高' : '可信度極低'
         }
         if (Array.isArray(data?.hits) && data.hits.length > 0) {
           perspective = data.hits[0]?.text || ''
@@ -98,13 +114,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           const prob = parseFloat(data?.classification_json?.Probability) || data?.probability || data?.score
           const finalScore = typeof data?.weight_calculation_json?.final_score === 'number' ? data.weight_calculation_json.final_score : undefined
           if (label) {
-            if (label.includes('正確') || label.includes('真實')) correctness = '真實'
-            else if (label.includes('錯誤') || label.includes('不實')) correctness = '錯誤'
+            if (label.includes('正確') || label.includes('真實')) correctness = getCredibilityLevel(0.9)
+            else if (label.includes('錯誤') || label.includes('不實')) correctness = getCredibilityLevel(0.1)
             else correctness = '混合'
           } else if (typeof finalScore === 'number') {
-            correctness = finalScore >= 0.5 ? '真實' : '錯誤'
+            correctness = getCredibilityLevel(finalScore)
           } else if (!isNaN(prob)) {
-            correctness = prob >= 0.5 ? '真實' : '錯誤'
+            correctness = getCredibilityLevel(prob)
           }
         }
       }
@@ -205,7 +221,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     }
 
     // 計算整體結果
-    const messageVerification = responseData.weight_calculation_json.final_score >= 0.5 ? '正確' : '錯誤';
+    const messageVerification = getCredibilityLevel(responseData.weight_calculation_json.final_score);
     const credibilityScore = (responseData.weight_calculation_json.final_score * 100).toFixed(1);
 
     const newAnalysisResult = {
@@ -217,20 +233,20 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       analysis: responseData.fact_check_result_json.analysis,
       models: {
         n8n: {
-          correctness: responseData.final_report_json.jury_score,
-          truthfulness: responseData.final_report_json.jury_score,
+          correctness: getCredibilityLevel(convertN8nScore(responseData.weight_calculation_json.jury_score)),
+          truthfulness: getCredibilityLevel(convertN8nScore(responseData.weight_calculation_json.jury_score)),
           perspective: responseData.final_report_json.overall_assessment,
           references: responseData.final_report_json.evidence_digest
         },
         llm: {
-          correctness: (responseData.weight_calculation_json.llm_score * 100).toFixed(1),
-          truthfulness: (responseData.weight_calculation_json.llm_score * 100).toFixed(1),
+          correctness: getCredibilityLevel(responseData.weight_calculation_json.llm_score),
+          truthfulness: getCredibilityLevel(responseData.weight_calculation_json.llm_score),
           perspective: responseData.fact_check_result_json.analysis,
           references: responseData.final_report_json.evidence_digest
         },
         slm: {
-          correctness: (parseFloat(responseData.classification_json.Probability) * 100).toFixed(1),
-          truthfulness: (parseFloat(responseData.classification_json.Probability) * 100).toFixed(1),
+          correctness: getCredibilityLevel(parseFloat(responseData.classification_json.Probability)),
+          truthfulness: getCredibilityLevel(parseFloat(responseData.classification_json.Probability)),
           perspective: responseData.fact_check_result_json.analysis,
           references: responseData.final_report_json.evidence_digest
         }
@@ -359,8 +375,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     </div>
 
                     <div className="cofact-result-bottom-right">
-                      <h3>新聞正確性</h3>
-                      <div className={`correctness-badge ${analysisResult.cofact.correctness === '真實' ? 'true' : 'false'}`}>
+                      <h3>新聞可信度</h3>
+                      <div className={`correctness-badge ${analysisResult.cofact.correctness.includes('高') ? 'true' : 'false'}`}>
                         {analysisResult.cofact.correctness}
                       </div>
                     </div>
@@ -403,14 +419,14 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 {/* 整體結果分析 */}
                 <div className="overall-summary-grid">
                   <div className="overall-item">
-                    <h3>消息查證</h3>
-                    <div className={`verification-badge ${analysisResult.newsCorrectness === '正確' ? 'correct' : 'incorrect'}`}>
+                    <h3>消息查核</h3>
+                    <div className={`verification-badge ${analysisResult.newsCorrectness.includes('高') ? 'correct' : 'incorrect'}`}>
                       {analysisResult.newsCorrectness}
                     </div>
                   </div>
 
                   <div className="overall-item">
-                    <h3>消息可信度</h3>
+                    <h3>可信度分數</h3>
                     <div className="credibility-display">
                       <div className="credibility-score">
                         <div className="score-bar">
@@ -441,8 +457,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="dialogue-metrics">
                         <div className="metric-item">
                           <div className="verification-result">
-                            <span className={`verification-badge ${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 'correct' : 'incorrect'}`}>
-                              {(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}
+                            <span className={`verification-badge ${getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0).includes('高') ? 'correct' : 'incorrect'}`}>
+                              {getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0)}
                             </span>
                           </div>
                         </div>
@@ -475,8 +491,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="dialogue-metrics">
                         <div className="metric-item">
                           <div className="verification-result">
-                            <span className={`verification-badge ${analysisResult.newsCorrectness === '正確' ? 'correct' : 'incorrect'}`}>
-                              {analysisResult.newsCorrectness || '無資料'}
+                            <span className={`verification-badge ${getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0).includes('高') ? 'correct' : 'incorrect'}`}>
+                              {getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0)}
                             </span>
                           </div>
                         </div>
@@ -515,8 +531,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="dialogue-metrics">
                         <div className="metric-item">
                           <div className="verification-result">
-                            <span className={`verification-badge ${(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? 'correct' : 'incorrect'}`}>
-                              {(analysisResult.weight_calculation_json?.jury_score || 0) >= 0 ? '正確' : '錯誤'}
+                            <span className={`verification-badge ${getCredibilityLevel(convertN8nScore(analysisResult.weight_calculation_json?.jury_score || 0)).includes('高') ? 'correct' : 'incorrect'}`}>
+                              {getCredibilityLevel(convertN8nScore(analysisResult.weight_calculation_json?.jury_score || 0))}
                             </span>
                           </div>
                         </div>
@@ -572,7 +588,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
               <article key={item.id} className="fact-check-item">
                 <div className="item-content">
                   <div className="item-header">
-                    <span className={`status-badge ${item.result === '真實' ? 'true' : item.result === '假消息' ? 'false' : 'mixed'}`}>
+                    <span className={`status-badge ${item.result.includes('高') ? 'true' : item.result.includes('低') ? 'false' : 'mixed'}`}>
                       {item.result}
                     </span>
                     <span className="category-badge">{item.category}</span>

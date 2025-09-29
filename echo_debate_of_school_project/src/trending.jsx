@@ -21,7 +21,7 @@ function Trending({ factChecks }) {
                                 <article key={item.id} className="fact-check-item">
                                     <div className="item-content">
                                         <div className="item-header">
-                                            <span className={`status-badge ${item.result === '真實' ? 'true' : item.result === '假消息' ? 'false' : 'mixed'}`}>
+                                            <span className={`status-badge ${item.result.includes('高') ? 'true' : item.result.includes('低') ? 'false' : 'mixed'}`}>
                                                 {item.result}
                                             </span>
                                             <span className="category-badge">{item.category}</span>

@@ -8,6 +8,22 @@ import slm from './assets/slm.jpg'
 import { CiFaceFrown } from "react-icons/ci"
 import { CiFaceSmile } from "react-icons/ci"
 
+// 可信度評級函數
+const getCredibilityLevel = (score) => {
+  if (score <= 1 && score > 0.875) return '可信度極高';
+  if (score <= 0.875 && score > 0.625) return '可信度高';
+  if (score <= 0.625 && score > 0.5) return '可信度稍高';
+  if (score <= 0.5 && score > 0.375) return '可信度稍低';
+  if (score <= 0.375 && score > 0.125) return '可信度低';
+  if (score <= 0.125 && score >= 0) return '可信度極低';
+  return '未知';
+};
+
+// 將n8n分數從1~-1區間轉換為1~0區間
+const convertN8nScore = (score) => {
+  return (score + 1) / 2;
+};
+
 function Analysis({ modelKey, data, onBack }) {
   console.log('Analysis received data:', data);
   console.log('Analysis modelKey:', modelKey);
@@ -43,7 +59,7 @@ function Analysis({ modelKey, data, onBack }) {
   console.log('Analysis - classification_json content:', data.classification_json);
 
   // 計算消息查證結果
-  const messageVerification = weightCalculation.final_score >= 0.5 ? '正確' : '錯誤';
+  const messageVerification = getCredibilityLevel(weightCalculation.final_score || 0);
   const credibilityScore = Math.round((weightCalculation.final_score || 0) * 100);
 
   // 提取辯論觀點
@@ -65,14 +81,14 @@ function Analysis({ modelKey, data, onBack }) {
             <h3>整體結果</h3>
             <div className="summary-grid">
               <div className="summary-item">
-                <h4>消息查證</h4>
-                <div className={`verification-badge ${messageVerification === '正確' ? 'correct' : 'incorrect'}`}>
+                <h4>消息查核</h4>
+                <div className={`verification-badge ${messageVerification.includes('高') ? 'correct' : 'incorrect'}`}>
                   {messageVerification}
                 </div>
-                <p>基於 final_score ≥ 0.5 判斷</p>
+                <p>基於 final_score 可信度評級</p>
               </div>
               <div className="summary-item">
-                <h4>消息可信度</h4>
+                <h4>可信度分數</h4>
                 <div className="credibility-score">
                   <div className="score-bar">
                     <div className="score-fill" style={{ width: `${credibilityScore}%` }}></div>
@@ -101,8 +117,12 @@ function Analysis({ modelKey, data, onBack }) {
                   <span>{weightCalculation.slm_score || 0}</span>
                 </div>
                 <div className="detail-item">
-                  <span>陪審團分數:</span>
+                  <span>陪審團分數 (原始):</span>
                   <span>{weightCalculation.jury_score || 0}</span>
+                </div>
+                <div className="detail-item">
+                  <span>陪審團分數 (轉換後):</span>
+                  <span>{convertN8nScore(weightCalculation.jury_score || 0).toFixed(4)}</span>
                 </div>
                 <div className="detail-item">
                   <span>最終分數:</span>
@@ -166,15 +186,15 @@ function Analysis({ modelKey, data, onBack }) {
         <div className="llm-analysis">
           <div className="summary-grid">
             <div className="summary-item">
-              <h3>消息查證</h3>
+              <h3>消息查核</h3>
               <div className="verification-result">
-                <span className={`verification-badge ${weightCalculation.llm_label === '正確' ? 'correct' : 'incorrect'}`}>
-                  {weightCalculation.llm_label || '無資料'}
+                <span className={`verification-badge ${getCredibilityLevel(weightCalculation.llm_score || 0).includes('高') ? 'correct' : 'incorrect'}`}>
+                  {getCredibilityLevel(weightCalculation.llm_score || 0)}
                 </span>
               </div>
             </div>
             <div className="summary-item">
-              <h3>消息可信度</h3>
+              <h3>可信度分數</h3>
               <div className="credibility-score">
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(weightCalculation.llm_score || 0) * 100}%` }}></div>
@@ -200,15 +220,15 @@ function Analysis({ modelKey, data, onBack }) {
         <div className="slm-analysis">
           <div className="summary-grid">
             <div className="summary-item">
-              <h3>消息查證</h3>
+              <h3>消息查核</h3>
               <div className="verification-result">
-                <span className={`verification-badge ${classification.classification === '正確' ? 'correct' : 'incorrect'}`}>
-                  {classification.classification || '無資料'}
+                <span className={`verification-badge ${getCredibilityLevel(parseFloat(classification.Probability) || 0).includes('高') ? 'correct' : 'incorrect'}`}>
+                  {getCredibilityLevel(parseFloat(classification.Probability) || 0)}
                 </span>
               </div>
             </div>
             <div className="summary-item">
-              <h3>消息可信度</h3>
+              <h3>可信度分數</h3>
               <div className="probability-score">
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
