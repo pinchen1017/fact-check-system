@@ -244,7 +244,7 @@ function Analysis({ modelKey, data, onBack }) {
               </div>
             </div>
             <div className="summary-item">
-              <h3>可信度分數</h3>
+              <h3>消息可信度</h3>
               <div className="probability-score">
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
