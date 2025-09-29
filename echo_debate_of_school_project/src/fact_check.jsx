@@ -35,6 +35,14 @@ const convertN8nScore = (score) => {
   return (score + 1) / 2;
 };
 
+// n8n陪審團評級函數
+const getN8nVerdict = (score) => {
+  if (score > 0) return '勝訴';
+  if (score < 0) return '敗訴';
+  if (score === 0) return '無法判決';
+  return '未知';
+};
+
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
   const [searchInput, setSearchInput] = useState(searchQuery || '')
@@ -236,8 +244,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       analysis: responseData.fact_check_result_json.analysis,
       models: {
         n8n: {
-          correctness: getCredibilityLevel(convertN8nScore(responseData.weight_calculation_json.jury_score)),
-          truthfulness: getCredibilityLevel(convertN8nScore(responseData.weight_calculation_json.jury_score)),
+          correctness: getN8nVerdict(responseData.weight_calculation_json.jury_score),
+          truthfulness: getN8nVerdict(responseData.weight_calculation_json.jury_score),
           perspective: responseData.final_report_json.overall_assessment,
           references: responseData.final_report_json.evidence_digest
         },
@@ -459,10 +467,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <div className="verification-result">
+                           <div className="verification-result">
                             <span className={`verification-badge ${getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0).includes('高') ? 'correct' : 'incorrect'}`}>
                               {getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0)}
-                            </span>
+                             </span>
                           </div>
                         </div>
                       </div>
@@ -493,10 +501,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <div className="verification-result">
+                           <div className="verification-result">
                             <span className={`verification-badge ${getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0).includes('高') ? 'correct' : 'incorrect'}`}>
                               {getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0)}
-                            </span>
+                             </span>
                           </div>
                         </div>
                       </div>
@@ -534,8 +542,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="dialogue-metrics">
                         <div className="metric-item">
                           <div className="verification-result">
-                            <span className={`verification-badge ${getCredibilityLevel(convertN8nScore(analysisResult.weight_calculation_json?.jury_score || 0)).includes('高') ? 'correct' : 'incorrect'}`}>
-                              {getCredibilityLevel(convertN8nScore(analysisResult.weight_calculation_json?.jury_score || 0))}
+                            <span className={`verification-badge ${getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0) === '勝訴' ? 'correct' : 'incorrect'}`}>
+                              {getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0)}
                             </span>
                           </div>
                         </div>

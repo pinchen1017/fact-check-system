@@ -128,6 +128,14 @@ function App() {
       return '未知';
     };
 
+    // n8n陪審團評級函數
+    const getN8nVerdict = (score) => {
+      if (score > 0) return '勝訴';
+      if (score < 0) return '敗訴';
+      if (score === 0) return '無法判決';
+      return '未知';
+    };
+
     // 計算整體結果
     const messageVerification = getCredibilityLevel(mockAnalysisResult.weight_calculation_json.final_score);
     const credibilityScore = (mockAnalysisResult.weight_calculation_json.final_score * 100).toFixed(1);
@@ -140,8 +148,8 @@ function App() {
       analysis: mockAnalysisResult.fact_check_result_json.analysis,
       models: {
         n8n: {
-          correctness: mockAnalysisResult.final_report_json.jury_score,
-          truthfulness: mockAnalysisResult.final_report_json.jury_score,
+          correctness: getN8nVerdict(mockAnalysisResult.weight_calculation_json.jury_score),
+          truthfulness: getN8nVerdict(mockAnalysisResult.weight_calculation_json.jury_score),
           perspective: mockAnalysisResult.final_report_json.overall_assessment,
           references: mockAnalysisResult.final_report_json.evidence_digest
         },

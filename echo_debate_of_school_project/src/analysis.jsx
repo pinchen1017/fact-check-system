@@ -27,6 +27,14 @@ const convertN8nScore = (score) => {
   return (score + 1) / 2;
 };
 
+// n8n陪審團評級函數
+const getN8nVerdict = (score) => {
+  if (score > 0) return '勝訴';
+  if (score < 0) return '敗訴';
+  if (score === 0) return '無法判決';
+  return '未知';
+};
+
 function Analysis({ modelKey, data, onBack }) {
   console.log('Analysis received data:', data);
   console.log('Analysis modelKey:', modelKey);
@@ -147,6 +155,11 @@ function Analysis({ modelKey, data, onBack }) {
                 <h3><GiTribunalJury /> 最終法官判決</h3>
               </div>
               <div className="judgment-content">
+                <div className="judgment-verdict">
+                  <div className={`verdict-badge ${getN8nVerdict(weightCalculation.jury_score || 0) === '勝訴' ? 'correct' : 'incorrect'}`}>
+                    {getN8nVerdict(weightCalculation.jury_score || 0)}
+                  </div>
+                </div>
                 <div className="judgment-text">
                   <p>{finalReport.jury_brief || '無判決資料'}</p>
                 </div>
