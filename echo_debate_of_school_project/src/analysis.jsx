@@ -99,7 +99,7 @@ function Analysis({ modelKey, data, onBack }) {
                 <p>基於 final_score 可信度評級</p>
               </div>
               <div className="summary-item">
-                <h4>可信度分數</h4>
+                <h4>消息可信度</h4>
                 <div className="credibility-score">
                   <div className="score-bar">
                     <div className="score-fill" style={{ width: `${credibilityScore}%` }}></div>
@@ -210,7 +210,7 @@ function Analysis({ modelKey, data, onBack }) {
               </div>
             </div>
             <div className="summary-item">
-              <h3>可信度分數</h3>
+              <h3>消息可信度</h3>
               <div className="credibility-score">
                 <div className="score-bar">
                   <div className="score-fill" style={{ width: `${(weightCalculation.llm_score || 0) * 100}%` }}></div>

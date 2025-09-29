@@ -437,7 +437,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   </div>
 
                   <div className="overall-item">
-                    <h3>可信度分數</h3>
+                    <h3>消息可信度</h3>
                     <div className="credibility-display">
                       <div className="credibility-score">
                         <div className="score-bar">
