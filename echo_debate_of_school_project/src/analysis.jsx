@@ -10,12 +10,15 @@ import { CiFaceSmile } from "react-icons/ci"
 
 // 可信度評級函數
 const getCredibilityLevel = (score) => {
-  if (score <= 1 && score > 0.875) return '可信度極高';
-  if (score <= 0.875 && score > 0.625) return '可信度高';
-  if (score <= 0.625 && score > 0.5) return '可信度稍高';
-  if (score <= 0.5 && score > 0.375) return '可信度稍低';
-  if (score <= 0.375 && score > 0.125) return '可信度低';
-  if (score <= 0.125 && score >= 0) return '可信度極低';
+  if (score === 1) return '完全可信';
+  if (score < 1 && score >= 0.875) return '可信度極高';
+  if (score < 0.875 && score >= 0.625) return '可信度高';
+  if (score < 0.625 && score > 0.5) return '可信度稍高';
+  if (score === 0.5) return '半信半疑';
+  if (score < 0.5 && score >= 0.375) return '可信度稍低';
+  if (score < 0.375 && score >= 0.125) return '可信度低';
+  if (score < 0.125 && score > 0) return '可信度極低';
+  if (score === 0) return '完全不可信';
   return '未知';
 };
 
