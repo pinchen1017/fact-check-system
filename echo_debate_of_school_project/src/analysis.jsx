@@ -258,7 +258,10 @@ function Analysis({ modelKey, data, onBack }) {
                 {groundingUrls.map((source, index) => (
                   <li key={index} className="source-item">
                     <div className="source-info">
-                      <span className="source-title">{source.title}</span>
+                      <span className="source-title">{source.title !== source.domain ? source.title : source.domain}</span>
+                      {source.searchQuery && (
+                        <span className="source-query">相關查詢: {source.searchQuery}</span>
+                      )}
                     </div>
                     <a 
                       href={source.uri} 

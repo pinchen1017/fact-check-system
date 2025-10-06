@@ -323,7 +323,7 @@
 .llm-analysis .sources-list li::before {
   content: counter(source-counter) ".";
   position: absolute;
-  left: 15px;
+  left: 17px;
   top: 50%;
   transform: translateY(-50%);
   font-weight: 600;
@@ -363,6 +363,14 @@
   font-size: 14px;
   color: #495057;
   font-weight: 500;
+}
+
+.llm-analysis .source-query {
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #4f6ac0;
+  font-style: italic;
+  margin-top: 2px;
 }
 
 .llm-analysis .source-link {

@@ -2256,10 +2256,13 @@ function App() {
         if (item.groundingMetadata?.groundingChunks) {
           console.log('Found groundingMetadata in author:', author);
           console.log('groundingChunks:', item.groundingMetadata.groundingChunks);
-          organizedData.llm.grounding_urls = item.groundingMetadata.groundingChunks.map(chunk => ({
+          console.log('webSearchQueries:', item.groundingMetadata.webSearchQueries);
+          
+          organizedData.llm.grounding_urls = item.groundingMetadata.groundingChunks.map((chunk, index) => ({
             domain: chunk.web?.domain,
             title: chunk.web?.title,
-            uri: chunk.web?.uri
+            uri: chunk.web?.uri,
+            searchQuery: item.groundingMetadata.webSearchQueries?.[index] || null
           }));
           console.log('Extracted grounding_urls:', organizedData.llm.grounding_urls);
         }
