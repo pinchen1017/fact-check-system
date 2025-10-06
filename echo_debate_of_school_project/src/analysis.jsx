@@ -29,6 +29,14 @@ const convertN8nScore = (score) => {
 
 // n8n陪審團評級函數
 const getN8nVerdict = (score) => {
+  // 處理字串類型的jury_score
+  if (typeof score === 'string') {
+    if (score === '正方') return '勝訴';
+    if (score === '反方') return '敗訴';
+    return '未知';
+  }
+  
+  // 處理數值類型的score
   if (score > 0) return '勝訴';
   if (score < 0) return '敗訴';
   if (score === 0) return '無法判決';
