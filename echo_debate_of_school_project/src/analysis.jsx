@@ -206,6 +206,17 @@ function Analysis({ modelKey, data, onBack }) {
       )
     } else if (modelKey === 'llm') {
       // LLM 模型分析
+      const llmData = data?.organizedData?.llm;
+      const factCheckResult = llmData?.fact_check_result || data?.fact_check_result_json || {};
+      const groundingUrls = llmData?.grounding_urls || [];
+      
+      // 調試信息
+      console.log('LLM Analysis - data:', data);
+      console.log('LLM Analysis - llmData:', llmData);
+      console.log('LLM Analysis - factCheckResult:', factCheckResult);
+      console.log('LLM Analysis - groundingUrls:', groundingUrls);
+      console.log('LLM Analysis - data.fact_check_result_json:', data?.fact_check_result_json);
+      
       return (
         <div className="llm-analysis">
           <div className="summary-grid">
@@ -232,6 +243,41 @@ function Analysis({ modelKey, data, onBack }) {
             <h3>觀點分析</h3>
             <p>{factCheckResult.analysis || '無資料'}</p>
           </div>
+
+          {/* 調試信息
+          <div style={{margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px'}}>
+            <strong>調試信息：</strong><br/>
+            groundingUrls.length: {groundingUrls.length}<br/>
+            groundingUrls: {JSON.stringify(groundingUrls, null, 2)}
+          </div> */}
+
+          {groundingUrls.length > 0 ? (
+            <div className="reference-sources">
+              <h3>參考資料</h3>
+              <ol className="sources-list">
+                {groundingUrls.map((source, index) => (
+                  <li key={index} className="source-item">
+                    <div className="source-info">
+                      <span className="source-title">{source.title}</span>
+                    </div>
+                    <a 
+                      href={source.uri} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="source-link"
+                    >
+                      查看原文
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : (
+            <div className="reference-sources">
+              <h3>參考資料</h3>
+              <p>暫無參考資料</p>
+            </div>
+          )}
         </div>
       )
     } else if (modelKey === 'slm') {

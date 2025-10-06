@@ -496,11 +496,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     <div className="dialogue-actions">
                       <button
                         className="detail-btn llm-btn"
-                        onClick={() => onOpenAnalysis && onOpenAnalysis('llm', {
-                          final_report_json: analysisResult.final_report_json,
-                          weight_calculation_json: analysisResult.weight_calculation_json,
-                          fact_check_result_json: analysisResult.fact_check_result_json
-                        })}
+                        onClick={() => {
+                          console.log('LLM Button clicked - analysisResult:', analysisResult);
+                          console.log('LLM Button - organizedData:', analysisResult.organizedData);
+                          onOpenAnalysis && onOpenAnalysis('llm', analysisResult);
+                        }}
                       >
                         查看詳細分析
                       </button>
@@ -532,14 +532,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                         className="detail-btn slm-btn"
                         onClick={() => {
                           console.log('SLM Button clicked - analysisResult:', analysisResult);
-                          console.log('SLM Button - classification_json:', analysisResult.classification_json);
-                          const slmData = {
-                            weight_calculation_json: analysisResult.weight_calculation_json,
-                            classification_json: analysisResult.classification_json,
-                            fact_check_result_json: analysisResult.fact_check_result_json
-                          };
-                          console.log('SLM Button - slmData being passed:', slmData);
-                          onOpenAnalysis && onOpenAnalysis('slm', slmData);
+                          console.log('SLM Button - organizedData:', analysisResult.organizedData);
+                          onOpenAnalysis && onOpenAnalysis('slm', analysisResult);
                         }}
                       >
                         查看詳細分析
@@ -570,10 +564,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                     <div className="dialogue-actions">
                       <button
                         className="detail-btn judge-btn"
-                        onClick={() => onOpenAnalysis && onOpenAnalysis('n8n', {
-                          final_report_json: analysisResult.final_report_json,
-                          weight_calculation_json: analysisResult.weight_calculation_json
-                        })}
+                        onClick={() => {
+                          console.log('N8N Button clicked - analysisResult:', analysisResult);
+                          console.log('N8N Button - organizedData:', analysisResult.organizedData);
+                          onOpenAnalysis && onOpenAnalysis('n8n', analysisResult);
+                        }}
                       >
                         查看詳細分析
                       </button>
