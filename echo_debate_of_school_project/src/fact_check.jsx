@@ -437,6 +437,91 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     console.log("=== Session創建測試完成 ===");
   };
 
+  // 測試API回應處理函數
+  const testApiResponseProcessing = async () => {
+    console.log("=== 開始測試API回應處理 ===");
+    
+    // 模擬您提供的API回應格式
+    const mockApiResponse = {
+      "id": "db931764-778a-4e02-aaf6-32e65136e993",
+      "appName": "judge",
+      "userId": "user",
+      "state": {
+        "appName": "judge",
+        "userId": "user",
+        "sessionId": "b006dd0e-9377-405e-a723-e60a6be48e13",
+        "_init_session": "",
+        "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions.",
+        "curation": {
+          "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
+          "results": []
+        }
+      },
+      "events": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合"
+              }
+            ],
+            "role": "user"
+          },
+          "author": "user",
+          "actions": {
+            "stateDelta": {},
+            "artifactDelta": {},
+            "requestedAuthConfigs": {}
+          }
+        },
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
+              }
+            ],
+            "role": "model"
+          },
+          "author": "curator_tool_runner",
+          "actions": {
+            "stateDelta": {
+              "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
+            }
+          }
+        },
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"query\": \"日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合\",\n  \"results\": []\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "author": "curator_schema_validator",
+          "actions": {
+            "stateDelta": {
+              "curation": {
+                "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
+                "results": []
+              }
+            }
+          }
+        }
+      ],
+      "lastUpdateTime": 1759815551.964937
+    };
+    
+    console.log("模擬API回應:", mockApiResponse);
+    
+    // 測試處理函數
+    const processedData = processMultiAgentResponse(mockApiResponse, "測試查詢");
+    console.log("處理後的數據:", processedData);
+    
+    console.log("=== API回應處理測試完成 ===");
+  };
+
   // 獲取預設分析結果函數
   const getDefaultAnalysisResult = (query) => {
     return {
@@ -563,98 +648,176 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       return null;
     }
 
-    // 多agent API回應是一個數組，每個元素都有author字段
-    let responseArray = apiResponse;
-    if (Array.isArray(apiResponse.data)) {
-      responseArray = apiResponse.data;
-    } else if (Array.isArray(apiResponse.result)) {
-      responseArray = apiResponse.result;
-    } else if (!Array.isArray(apiResponse)) {
-      console.log("API回應不是數組格式");
-      return null;
+    // 檢查是否是session創建回應（還沒有分析結果）
+    if (apiResponse.id && apiResponse.appName && apiResponse.userId && 
+        (!apiResponse.state || Object.keys(apiResponse.state).length === 0) &&
+        (!apiResponse.events || apiResponse.events.length === 0)) {
+      console.log("這是session創建回應，還沒有分析結果");
+      return {
+        weight_calculation_json: {
+          llm_label: "分析中",
+          llm_score: 0.5,
+          slm_score: 0.5,
+          jury_score: "分析中",
+          final_score: 0.5
+        },
+        final_report_json: {
+          topic: query,
+          overall_assessment: "正在進行多agent分析...",
+          jury_score: 50,
+          jury_brief: "分析進行中，請稍候",
+          evidence_digest: ["分析進行中..."],
+          stake_summaries: []
+        },
+        fact_check_result_json: {
+          analysis: "正在進行事實查核分析...",
+          classification: "分析中"
+        },
+        classification_json: {
+          Probability: "0.5",
+          classification: "分析中"
+        }
+      };
     }
 
-    // 從不同author的回應中提取數據
-    let curatorData = null;
-    let historianData = null;
-    let moderatorData = null;
-    let finalResult = null;
-
-    // 遍歷回應數組，根據author提取對應數據
-    responseArray.forEach((item, index) => {
-      if (!item.author) return;
+    // 檢查是否有state數據
+    if (apiResponse.state && Object.keys(apiResponse.state).length > 0) {
+      console.log("找到state數據:", apiResponse.state);
+      const stateData = apiResponse.state;
       
-      console.log(`處理author: ${item.author}, 索引: ${index}`);
+      // 從state中提取curation數據
+      const curationData = stateData.curation || {};
+      const curationRaw = stateData.curation_raw || "";
       
-      switch (item.author) {
-        case 'curator_tool_runner':
-        case 'curator_schema_validator':
-          curatorData = item;
-          break;
-        case 'historian_schema_agent':
-          historianData = item;
-          break;
-        case 'moderator_decider':
-        case 'moderator_executor':
-          moderatorData = item;
-          break;
-        case 'stop_checker':
-          finalResult = item;
-          break;
-        default:
-          console.log(`未處理的author: ${item.author}`);
-      }
-    });
+      console.log("curation數據:", curationData);
+      console.log("curation_raw:", curationRaw);
+      
+      return {
+        weight_calculation_json: stateData.weight_calculation_json || {
+          llm_label: "分析中",
+          llm_score: 0.5,
+          slm_score: 0.5,
+          jury_score: "分析中",
+          final_score: 0.5
+        },
+        final_report_json: stateData.final_report_json || {
+          topic: query,
+          overall_assessment: curationRaw || "正在進行多agent分析...",
+          jury_score: 50,
+          jury_brief: curationRaw || "分析進行中",
+          evidence_digest: curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析進行中..."],
+          stake_summaries: []
+        },
+        fact_check_result_json: stateData.fact_check_result_json || {
+          analysis: curationRaw || "正在進行事實查核分析...",
+          classification: "分析中"
+        },
+        classification_json: stateData.classification_json || {
+          Probability: "0.5",
+          classification: "分析中"
+        }
+      };
+    }
 
-    // 從各agent的回應中提取分析數據
-    const extractTextContent = (item) => {
-      if (item.content && item.content.parts && item.content.parts[0]) {
-        return item.content.parts[0].text;
-      }
-      if (item.actions && item.actions.stateDelta) {
-        return Object.values(item.actions.stateDelta)[0];
-      }
-      return "";
-    };
+    // 檢查是否有events數據
+    if (apiResponse.events && apiResponse.events.length > 0) {
+      console.log("找到events數據:", apiResponse.events);
+      
+      // 從events中提取數據
+      let weightCalculationData = null;
+      let finalReportData = null;
+      let factCheckData = null;
+      let classificationData = null;
+      let curationData = null;
+      let curationRaw = null;
 
-    const curatorText = curatorData ? extractTextContent(curatorData) : "";
-    const historianText = historianData ? extractTextContent(historianData) : "";
-    const moderatorText = moderatorData ? extractTextContent(moderatorData) : "";
-    const finalText = finalResult ? extractTextContent(finalResult) : "";
+      // 從最新的event開始查找
+      for (let i = apiResponse.events.length - 1; i >= 0; i--) {
+        const event = apiResponse.events[i];
+        console.log(`檢查event ${i}, author: ${event.author}:`, event);
+        
+        if (event.actions && event.actions.stateDelta) {
+          if (event.actions.stateDelta.weight_calculation_json && !weightCalculationData) {
+            weightCalculationData = event.actions.stateDelta.weight_calculation_json;
+            console.log("找到weight_calculation_json:", weightCalculationData);
+          }
+          if (event.actions.stateDelta.final_report_json && !finalReportData) {
+            finalReportData = event.actions.stateDelta.final_report_json;
+            console.log("找到final_report_json:", finalReportData);
+          }
+          if (event.actions.stateDelta.fact_check_result_json && !factCheckData) {
+            factCheckData = event.actions.stateDelta.fact_check_result_json;
+            console.log("找到fact_check_result_json:", factCheckData);
+          }
+          if (event.actions.stateDelta.classification_json && !classificationData) {
+            classificationData = event.actions.stateDelta.classification_json;
+            console.log("找到classification_json:", classificationData);
+          }
+          if (event.actions.stateDelta.curation && !curationData) {
+            curationData = event.actions.stateDelta.curation;
+            console.log("找到curation:", curationData);
+          }
+          if (event.actions.stateDelta.curation_raw && !curationRaw) {
+            curationRaw = event.actions.stateDelta.curation_raw;
+            console.log("找到curation_raw:", curationRaw);
+          }
+        }
+      }
 
-    // 構建與原有格式兼容的分析數據
-    const processedData = {
+      return {
+        weight_calculation_json: weightCalculationData || {
+          llm_label: "分析中",
+          llm_score: 0.5,
+          slm_score: 0.5,
+          jury_score: "分析中",
+          final_score: 0.5
+        },
+        final_report_json: finalReportData || {
+          topic: query,
+          overall_assessment: curationRaw || "分析中",
+          jury_score: 50,
+          jury_brief: curationRaw || "分析中",
+          evidence_digest: curationData && curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析中..."],
+          stake_summaries: []
+        },
+        fact_check_result_json: factCheckData || {
+          analysis: curationRaw || "分析中",
+          classification: "分析中"
+        },
+        classification_json: classificationData || {
+          Probability: "0.5",
+          classification: "分析中"
+        }
+      };
+    }
+
+    // 如果都沒有找到數據，返回預設值
+    console.log("未找到有效的分析數據，返回預設值");
+    return {
       weight_calculation_json: {
-        llm_label: "多agent分析",
-        llm_score: 0.5, // 可以根據實際分析結果調整
+        llm_label: "無數據",
+        llm_score: 0.5,
         slm_score: 0.5,
-        jury_score: "正方", // 可以根據moderator結果調整
+        jury_score: "無數據",
         final_score: 0.5
       },
       final_report_json: {
         topic: query,
-        overall_assessment: finalText || moderatorText || "多agent分析結果",
+        overall_assessment: "暫無分析結果",
         jury_score: 50,
-        jury_brief: moderatorText || "多agent分析完成",
-        evidence_digest: [
-          curatorText ? `策展人分析: ${curatorText}` : "策展人分析: 無數據",
-          historianText ? `歷史學家分析: ${historianText}` : "歷史學家分析: 無數據",
-          moderatorText ? `調解員分析: ${moderatorText}` : "調解員分析: 無數據"
-        ].filter(item => !item.includes("無數據")),
+        jury_brief: "暫無判決資料",
+        evidence_digest: ["暫無資料"],
         stake_summaries: []
       },
       fact_check_result_json: {
-        analysis: finalText || moderatorText || "多agent分析結果",
-        classification: "分析中"
+        analysis: "暫無分析結果",
+        classification: "無數據"
       },
       classification_json: {
         Probability: "0.5",
-        classification: "分析中"
+        classification: "無數據"
       }
     };
-
-    console.log("處理後的數據:", processedData);
-    return processedData;
   };
 
   // Session驗證函數
@@ -1040,6 +1203,21 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試Session創建
+                </button>
+                <button
+                  className="test-button"
+                  onClick={testApiResponseProcessing}
+                  style={{
+                    marginLeft: '10px',
+                    padding: '10px 20px',
+                    backgroundColor: '#6f42c1',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  測試API回應處理
                 </button>
               </div>
             </div>

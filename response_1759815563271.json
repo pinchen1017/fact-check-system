@@ -1,0 +1,154 @@
+{
+  "id": "db931764-778a-4e02-aaf6-32e65136e993",
+  "appName": "judge",
+  "userId": "user",
+  "state": {
+    "appName": "judge",
+    "userId": "user",
+    "sessionId": "b006dd0e-9377-405e-a723-e60a6be48e13",
+    "_init_session": "",
+    "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions.",
+    "curation": {
+      "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
+      "results": []
+    }
+  },
+  "events": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合"
+          }
+        ],
+        "role": "user"
+      },
+      "invocationId": "e-5b5cd538-b184-41ec-9a88-7b8f4f5d5f47",
+      "author": "user",
+      "actions": {
+        "stateDelta": {},
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "bReBz4pC",
+      "timestamp": 1759815541.875256
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": ""
+          }
+        ],
+        "role": "model"
+      },
+      "usageMetadata": {
+        "promptTokenCount": 43,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 43
+          }
+        ],
+        "thoughtsTokenCount": 43,
+        "totalTokenCount": 86,
+        "trafficType": "ON_DEMAND"
+      },
+      "invocationId": "e-5b5cd538-b184-41ec-9a88-7b8f4f5d5f47",
+      "author": "init_session",
+      "actions": {
+        "stateDelta": {
+          "_init_session": ""
+        },
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "YVBciabr",
+      "timestamp": 1759815541.87553
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
+          }
+        ],
+        "role": "model"
+      },
+      "groundingMetadata": {},
+      "usageMetadata": {
+        "candidatesTokenCount": 19,
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 19
+          }
+        ],
+        "promptTokenCount": 68,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 68
+          }
+        ],
+        "thoughtsTokenCount": 1053,
+        "totalTokenCount": 1140,
+        "trafficType": "ON_DEMAND"
+      },
+      "invocationId": "e-5b5cd538-b184-41ec-9a88-7b8f4f5d5f47",
+      "author": "curator_tool_runner",
+      "actions": {
+        "stateDelta": {
+          "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
+        },
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "j9T1xCdI",
+      "timestamp": 1759815543.866647
+    },
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"query\": \"日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合\",\n  \"results\": []\n}"
+          }
+        ],
+        "role": "model"
+      },
+      "usageMetadata": {
+        "candidatesTokenCount": 40,
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 40
+          }
+        ],
+        "promptTokenCount": 132,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 132
+          }
+        ],
+        "totalTokenCount": 172,
+        "trafficType": "ON_DEMAND"
+      },
+      "invocationId": "e-5b5cd538-b184-41ec-9a88-7b8f4f5d5f47",
+      "author": "curator_schema_validator",
+      "actions": {
+        "stateDelta": {
+          "curation": {
+            "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
+            "results": []
+          }
+        },
+        "artifactDelta": {},
+        "requestedAuthConfigs": {}
+      },
+      "id": "9AMifEAn",
+      "timestamp": 1759815551.964937
+    }
+  ],
+  "lastUpdateTime": 1759815551.964937
+}
