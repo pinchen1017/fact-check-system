@@ -1,69 +1,86 @@
+import './css/fact_check.css'
 import './css/debateCourt.css'
 import { GiTribunalJury } from "react-icons/gi"
+import { CiFaceFrown } from "react-icons/ci"
+import { CiFaceSmile } from "react-icons/ci"
+
+// n8n陪審團評級函數
+const getN8nVerdict = (score) => {
+  // 處理字串類型的jury_score
+  if (typeof score === 'string') {
+    if (score === '正方') return '勝訴';
+    if (score === '反方') return '敗訴';
+    return '未知';
+  }
+  
+  // 處理數值類型的score
+  if (score > 0) return '勝訴';
+  if (score < 0) return '敗訴';
+  if (score === 0) return '無法判決';
+  return '未知';
+};
 
 function DebateCourt({ data }) {
-  if (!data) return null
+  if (!data) return null;
+
+  // 從數據中提取各個模型的結果
+  const weightCalculation = data.weight_calculation_json || {};
+  const finalReport = data.final_report_json || {};
+  
+  // 提取辯論觀點
+  const advocatePoints = finalReport.stake_summaries?.find(s => s.side === 'Advocate')?.strongest_points || [];
+  const skepticPoints = finalReport.stake_summaries?.find(s => s.side === 'Skeptic')?.strongest_points || [];
+  
+  console.log('DebateCourt - finalReport:', finalReport);
+  console.log('DebateCourt - stake_summaries:', finalReport.stake_summaries);
+  console.log('DebateCourt - advocatePoints:', advocatePoints);
+  console.log('DebateCourt - skepticPoints:', skepticPoints);
 
   return (
     <div className="debate-court-section">
-      <h2 className="section-title">⚖️ 辯論法庭系統</h2>
-
       <div className="court-layout">
-        {/* 檢察官區域 */}
-        <div className="prosecution-area">
-          <div className="role-header prosecution">
-            <h3>☺ 正方</h3>
-          </div>
-          <div className="debate-messages">
-            {data?.debate?.prosecution?.map((msg, index) => (
-              <div key={index} className="message prosecution-msg">
-                <div className="message-header">
-                  <span className="speaker">{msg.speaker}</span>
-                  <span className="timestamp">{msg.timestamp}</span>
-                </div>
-                <div className="message-content">{msg.message}</div>
-              </div>
-            )) || []}
-          </div>
-        </div>
-
-        {/* 辯護律師區域 */}
-        <div className="defense-area">
-          <div className="role-header defense">
-            <h3>☹ 反方</h3>
-          </div>
-          <div className="debate-messages">
-            {data?.debate?.defense?.map((msg, index) => (
-              <div key={index} className="message defense-msg">
-                <div className="message-header">
-                  <span className="speaker">{msg.speaker}</span>
-                  <span className="timestamp">{msg.timestamp}</span>
-                </div>
-                <div className="message-content">{msg.message}</div>
-              </div>
-            )) || []}
-          </div>
-        </div>
-
         {/* 法官判決區域 */}
         <div className="judge-area">
           <div className="role-header judge">
-            <h3><GiTribunalJury /> 法官判決</h3>
+            <h3><GiTribunalJury /> 最終法官判決</h3>
           </div>
           <div className="judgment-content">
-            <div className="judgment-text">
-              <p>{data?.debate?.judge?.verdict || '無判決資料'}</p>
-            </div>
-            <div className="confidence-meter">
-              <span>判決信心度</span>
-              <div className="confidence-bar">
-                <div
-                  className="confidence-fill"
-                  style={{ width: `${data?.debate?.judge?.confidence || 0}%` }}
-                ></div>
+            <div className="judgment-verdict">
+              <div className={`verdict-badge ${getN8nVerdict(weightCalculation.jury_score || 0) === '勝訴' ? 'correct' : 'incorrect'}`}>
+                {getN8nVerdict(weightCalculation.jury_score || 0)}
               </div>
-              <span>{data?.debate?.judge?.confidence || 0}%</span>
             </div>
+            <div className="judgment-text">
+              <p>{finalReport.jury_brief || '無判決資料'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 正方辯論觀點 */}
+        <div className="prosecution-area">
+          <div className="role-header prosecution">
+            <h3><CiFaceSmile /> 正方辯論觀點</h3>
+          </div>
+          <div className="debate-messages">
+            {advocatePoints.map((point, index) => (
+              <div key={index} className="message prosecution-msg">
+                <div className="message-content">{point}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 反方辯論觀點 */}
+        <div className="defense-area">
+          <div className="role-header defense">
+            <h3><CiFaceFrown /> 反方辯論觀點</h3>
+          </div>
+          <div className="debate-messages">
+            {skepticPoints.map((point, index) => (
+              <div key={index} className="message defense-msg">
+                <div className="message-content">{point}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

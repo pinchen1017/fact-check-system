@@ -3,10 +3,9 @@ import './css/debateCourt.css'
 import './css/llm.css'
 import './css/slm.css'
 import { IoArrowBack } from 'react-icons/io5'
-import { GiTribunalJury } from "react-icons/gi"
-import slm from './assets/slm.jpg'
-import { CiFaceFrown } from "react-icons/ci"
-import { CiFaceSmile } from "react-icons/ci"
+import DebateCourt from './debateCourt'
+import LlmAnalysis from './llm'
+import SlmAnalysis from './slm'
 
 // 可信度評級函數
 const getCredibilityLevel = (score) => {
@@ -65,30 +64,15 @@ function Analysis({ modelKey, data, onBack }) {
     overall: '整體結果分析',
   }
 
-  // 從數據中提取各個模型的結果
+  // 從數據中提取各個模型的結果（僅用於overall分析）
   const weightCalculation = data.weight_calculation_json || {};
-  const finalReport = data.final_report_json || {};
-  const factCheckResult = data.fact_check_result_json || {};
-  const classification = data.classification_json || {};
   
   console.log('Analysis - data:', data);
-  console.log('Analysis - classification:', classification);
   console.log('Analysis - modelKey:', modelKey);
-  console.log('Analysis - classification_json exists:', !!data.classification_json);
-  console.log('Analysis - classification_json content:', data.classification_json);
 
-  // 計算消息查證結果
+  // 計算消息查證結果（僅用於overall分析）
   const messageVerification = getCredibilityLevel(weightCalculation.final_score || 0);
   const credibilityScore = Math.round((weightCalculation.final_score || 0) * 100);
-
-  // 提取辯論觀點
-  const advocatePoints = finalReport.stake_summaries?.find(s => s.side === 'Advocate')?.strongest_points || [];
-  const skepticPoints = finalReport.stake_summaries?.find(s => s.side === 'Skeptic')?.strongest_points || [];
-  
-  console.log('finalReport:', finalReport);
-  console.log('stake_summaries:', finalReport.stake_summaries);
-  console.log('advocatePoints:', advocatePoints);
-  console.log('skepticPoints:', skepticPoints);
 
   // 根據模型類型渲染不同的內容
   const renderModelContent = () => {
@@ -154,169 +138,13 @@ function Analysis({ modelKey, data, onBack }) {
       )
     } else if (modelKey === 'n8n') {
       // 辯論法庭系統分析
-      return (
-        <div className="debate-court-section">
-          <div className="court-layout">
-            {/* 法官判決區域 */}
-            <div className="judge-area">
-              <div className="role-header judge">
-                <h3><GiTribunalJury /> 最終法官判決</h3>
-              </div>
-              <div className="judgment-content">
-                <div className="judgment-verdict">
-                  <div className={`verdict-badge ${getN8nVerdict(weightCalculation.jury_score || 0) === '勝訴' ? 'correct' : 'incorrect'}`}>
-                    {getN8nVerdict(weightCalculation.jury_score || 0)}
-                  </div>
-                </div>
-                <div className="judgment-text">
-                  <p>{finalReport.jury_brief || '無判決資料'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 正方辯論觀點 */}
-            <div className="prosecution-area">
-              <div className="role-header prosecution">
-                <h3><CiFaceSmile /> 正方辯論觀點</h3>
-              </div>
-              <div className="debate-messages">
-                {advocatePoints.map((point, index) => (
-                  <div key={index} className="message prosecution-msg">
-                    <div className="message-content">{point}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 反方辯論觀點 */}
-            <div className="defense-area">
-              <div className="role-header defense">
-                <h3><CiFaceFrown /> 反方辯論觀點</h3>
-              </div>
-              <div className="debate-messages">
-                {skepticPoints.map((point, index) => (
-                  <div key={index} className="message defense-msg">
-                    <div className="message-content">{point}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )
+      return <DebateCourt data={data} />
     } else if (modelKey === 'llm') {
       // LLM 模型分析
-      const llmData = data?.organizedData?.llm;
-      const factCheckResult = llmData?.fact_check_result || data?.fact_check_result_json || {};
-      const groundingUrls = llmData?.grounding_urls || [];
-      
-      // 調試信息
-      console.log('LLM Analysis - data:', data);
-      console.log('LLM Analysis - llmData:', llmData);
-      console.log('LLM Analysis - factCheckResult:', factCheckResult);
-      console.log('LLM Analysis - groundingUrls:', groundingUrls);
-      console.log('LLM Analysis - data.fact_check_result_json:', data?.fact_check_result_json);
-      
-      return (
-        <div className="llm-analysis">
-          <div className="summary-grid">
-            <div className="summary-item">
-              <h3>消息查核</h3>
-              <div className="verification-result">
-                <span className={`verification-badge ${getCredibilityLevel(weightCalculation.llm_score || 0).includes('高') ? 'correct' : 'incorrect'}`}>
-                  {getCredibilityLevel(weightCalculation.llm_score || 0)}
-                </span>
-              </div>
-            </div>
-            <div className="summary-item">
-              <h3>消息可信度</h3>
-              <div className="credibility-score">
-                <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${(weightCalculation.llm_score || 0) * 100}%` }}></div>
-                </div>
-                <span>{Math.round((weightCalculation.llm_score || 0) * 100)}%</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="analysis-text">
-            <h3>觀點分析</h3>
-            <p>{factCheckResult.analysis || '無資料'}</p>
-          </div>
-
-          {/* 調試信息
-          <div style={{margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px'}}>
-            <strong>調試信息：</strong><br/>
-            groundingUrls.length: {groundingUrls.length}<br/>
-            groundingUrls: {JSON.stringify(groundingUrls, null, 2)}
-          </div> */}
-
-          {groundingUrls.length > 0 ? (
-            <div className="reference-sources">
-              <h3>參考資料</h3>
-              <ol className="sources-list">
-                {groundingUrls.map((source, index) => (
-                  <li key={index} className="source-item">
-                    <div className="source-info">
-                      <span className="source-title">{source.title !== source.domain ? source.title : source.domain}</span>
-                      {source.searchQuery && (
-                        <span className="source-query">相關查詢: {source.searchQuery}</span>
-                      )}
-                    </div>
-                    <a 
-                      href={source.uri} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="source-link"
-                    >
-                      查看原文
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ) : (
-            <div className="reference-sources">
-              <h3>參考資料</h3>
-              <p>暫無參考資料</p>
-            </div>
-          )}
-        </div>
-      )
+      return <LlmAnalysis data={data} />
     } else if (modelKey === 'slm') {
       // SLM 模型分析
-      console.log('SLM Analysis - classification:', classification);
-      console.log('SLM Analysis - classification.classification:', classification.classification);
-      console.log('SLM Analysis - classification.Probability:', classification.Probability);
-      
-      return (
-        <div className="slm-analysis">
-          <div className="summary-grid">
-            <div className="summary-item">
-              <h3>消息查核</h3>
-              <div className="verification-result">
-                <span className={`verification-badge ${getCredibilityLevel(parseFloat(classification.Probability) || 0).includes('高') ? 'correct' : 'incorrect'}`}>
-                  {getCredibilityLevel(parseFloat(classification.Probability) || 0)}
-                </span>
-              </div>
-            </div>
-            <div className="summary-item">
-              <h3>消息可信度</h3>
-              <div className="probability-score">
-                <div className="score-bar">
-                  <div className="score-fill" style={{ width: `${(parseFloat(classification.Probability) || 0) * 100}%` }}></div>
-                </div>
-                <span>{((parseFloat(classification.Probability) || 0) * 100).toFixed(2)}%</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="analysis-text">
-            <h3>模型說明</h3>
-            <p>收集7000多筆真假消息文本數據，並使用bert-base-chinese 將文本轉換成電腦看得懂的數據，這些數據代表文本的語意，並使用transformer的BertForSequenceClassification 去進行分類器的訓練。</p>
-          </div>
-        </div>
-      )
+      return <SlmAnalysis data={data} />
     }
   }
 
