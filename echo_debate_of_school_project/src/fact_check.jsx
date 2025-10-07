@@ -165,9 +165,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
   // 多agent API相關函數
   const apiUrl = 'http://120.107.172.133:10001';
-  
-  // 添加CORS代理URL（如果API服務器支持）
-  const proxyApiUrl = '/api-proxy'; // 使用相對路徑，讓開發服務器代理
+  const proxyApiUrl = '/api-proxy'; // 使用代理避免CORS問題
 
 
   // 手動測試API連接函數
@@ -198,14 +196,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           'Content-Type': 'application/json',
         },
       });
-      console.log(`代理API回應狀態: ${proxyResponse.status}`);
-      console.log(`代理API回應headers:`, Object.fromEntries(proxyResponse.headers.entries()));
+      console.log(`代理連接狀態: ${proxyResponse.status}`);
     } catch (error) {
-      console.log(`代理API錯誤: ${error.message}`);
+      console.log(`代理連接錯誤: ${error.message}`);
     }
     
-    // 測試3: 嘗試Session創建端點
-    console.log("測試3: 嘗試Session創建端點");
+    // 測試3: Session創建端點（使用代理）
+    console.log("測試3: Session創建端點（使用代理）");
     try {
       const sessionData = {
         "appName": "judge",
@@ -227,6 +224,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       if (!sessionResponse.ok) {
         const errorText = await sessionResponse.text();
         console.log(`Session創建錯誤內容: ${errorText}`);
+      } else {
+        console.log("Session創建端點測試成功！");
       }
     } catch (error) {
       console.log(`Session創建錯誤: ${error.message}`);
@@ -235,117 +234,278 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     console.log("=== API連接測試完成 ===");
   };
 
-  // 簡單的代理測試函數
-  const testProxyConnection = async () => {
-    console.log("測試代理連接...");
+  // 測試Session查詢函數
+  const testSessionQuery = async () => {
+    console.log("=== 開始Session查詢測試 ===");
+    
+    // 先創建一個session
+    const testSessionId = generateUUID();
+    console.log("創建測試session，ID:", testSessionId);
     
     try {
-      // 嘗試一個簡單的請求來測試代理是否工作
-      const testUrl = `${proxyApiUrl}/test`;
-      console.log(`測試代理URL: ${testUrl}`);
+      // 嘗試創建session
+      const sessionData = {
+        "appName": "judge",
+        "userId": "user",
+        "sessionId": testSessionId
+      };
       
-      const response = await fetch(testUrl, {
+      const createResponse = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData),
+      });
+      
+      console.log(`Session創建回應狀態: ${createResponse.status}`);
+      
+      if (createResponse.ok) {
+        console.log("Session創建成功，開始查詢測試...");
+        
+        // 等待一下
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // 測試查詢
+        const verifyResult = await verifySession(testSessionId);
+        console.log("Session查詢結果:", verifyResult);
+      } else {
+        console.log("Session創建失敗");
+      }
+    } catch (error) {
+      console.log("Session查詢測試錯誤:", error.message);
+    }
+    
+    console.log("=== Session查詢測試完成 ===");
+  };
+
+  // 測試現有Session函數
+  const testExistingSession = async () => {
+    console.log("=== 測試現有Session ===");
+    
+    // 使用您提到的現有session ID
+    const existingSessionId = "e5cf73eb-50cc-411f-bd97-0d79256fcb9f";
+    console.log("測試現有session ID:", existingSessionId);
+    
+    try {
+      // 直接查詢這個session
+      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${existingSessionId}`;
+      console.log(`查詢現有session端點: ${endpoint}`);
+      
+      const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+
+      console.log(`現有session查詢回應狀態: ${response.status}`);
       
-      console.log(`代理測試回應狀態:`, response.status);
-      console.log(`代理測試回應headers:`, Object.fromEntries(response.headers.entries()));
-      
-      // 即使404也說明代理在工作，只是端點不存在
-      if (response.status === 404) {
-        console.log("代理工作正常，但測試端點不存在");
-        return true;
-      } else if (response.ok) {
-        console.log("代理工作正常");
-        return true;
+      if (response.ok) {
+        const data = await response.json();
+        console.log("現有session查詢成功:", data);
+        
+        // 嘗試使用這個session發送訊息
+        console.log("嘗試使用現有session發送測試訊息...");
+        const testMessage = "測試訊息";
+        const messageData = {
+          "appName": "judge",
+          "userId": "user",
+          "sessionId": existingSessionId,
+          "newMessage": {
+            "role": "user",
+            "parts": [{"text": testMessage}]
+          },
+          "streaming": false
+        };
+        
+        const runResponse = await fetch(`${proxyApiUrl}/run`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messageData),
+        });
+        
+        console.log(`Run端點回應狀態: ${runResponse.status}`);
+        if (runResponse.ok) {
+          const runData = await runResponse.json();
+          console.log("使用現有session發送訊息成功:", runData);
+        } else {
+          const errorText = await runResponse.text();
+          console.log(`Run端點失敗，狀態: ${runResponse.status}`);
+          console.log(`錯誤內容: ${errorText}`);
+        }
       } else {
-        console.log(`代理測試失敗，狀態: ${response.status}`);
-        return false;
+        const errorText = await response.text();
+        console.log(`現有session查詢失敗，狀態: ${response.status}`);
+        console.log(`錯誤內容: ${errorText}`);
       }
     } catch (error) {
-      console.log(`代理測試錯誤:`, error.message);
-      return false;
+      console.log("測試現有session錯誤:", error.message);
     }
+    
+    console.log("=== 測試現有Session完成 ===");
+  };
+
+  // 顯示當前Session狀態函數
+  const showCurrentSessionStatus = () => {
+    console.log("=== 當前Session狀態 ===");
+    console.log("Session ID:", sessionId);
+    console.log("Session是否已創建:", isSessionCreated);
+    console.log("=== Session狀態顯示完成 ===");
+  };
+
+  // 測試Session創建函數
+  const testSessionCreation = async () => {
+    console.log("=== 開始測試Session創建 ===");
+    
+    // 生成新的session ID
+    const testSessionId = generateUUID();
+    console.log("生成的測試Session ID:", testSessionId);
+    
+    try {
+      // 嘗試創建session
+      const sessionUrl = `${proxyApiUrl}/apps/judge/users/user/sessions`;
+      const sessionData = {
+        "appName": "judge",
+        "userId": "user",
+        "sessionId": testSessionId
+      };
+      
+      console.log("創建Session請求:");
+      console.log("URL:", sessionUrl);
+      console.log("數據:", JSON.stringify(sessionData, null, 2));
+      
+      const response = await fetch(sessionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData),
+      });
+
+      console.log(`Session創建回應狀態: ${response.status}`);
+      console.log(`Session創建回應headers:`, Object.fromEntries(response.headers.entries()));
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Session創建成功!");
+        console.log("回應數據:", data);
+        
+        // 使用回應中的實際session ID
+        const actualSessionId = data.id || testSessionId;
+        console.log("使用的Session ID:", actualSessionId);
+        console.log("原始生成的Session ID:", testSessionId);
+        
+        // 等待一下然後查詢session
+        console.log("等待2秒後查詢session...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // 查詢剛創建的session（使用實際的session ID）
+        const queryUrl = `${proxyApiUrl}/apps/judge/users/user/sessions/${actualSessionId}`;
+        console.log("查詢Session URL:", queryUrl);
+        
+        const queryResponse = await fetch(queryUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        console.log(`Session查詢回應狀態: ${queryResponse.status}`);
+        
+        if (queryResponse.ok) {
+          const queryData = await queryResponse.json();
+          console.log("✅ Session查詢成功!");
+          console.log("查詢結果:", queryData);
+        } else {
+          const errorText = await queryResponse.text();
+          console.log("❌ Session查詢失敗");
+          console.log("錯誤內容:", errorText);
+        }
+        
+      } else {
+        const errorText = await response.text();
+        console.log("❌ Session創建失敗");
+        console.log("錯誤內容:", errorText);
+      }
+    } catch (error) {
+      console.log("❌ Session創建錯誤:", error.message);
+    }
+    
+    console.log("=== Session創建測試完成 ===");
+  };
+
+  // 獲取預設分析結果函數
+  const getDefaultAnalysisResult = (query) => {
+    return {
+      weight_calculation_json: {
+        llm_score: 0.5,
+        slm_score: 0.5,
+        jury_score: 0.5,
+        verdict_result: 0.5,
+        llm_label: '分析中'
+      },
+      final_report_json: {
+        jury_brief: '分析中',
+        overall_assessment: '正在進行分析...',
+        evidence_digest: ['分析中...']
+      },
+      fact_check_result_json: {
+        analysis: '正在進行事實查核分析...'
+      },
+      classification_json: {
+        classification: '分析中',
+        Probability: '0.5'
+      }
+    };
   };
 
   // 創建 Session 函數
   const createSession = async () => {
     const newSessionId = generateUUID();
-    const sessionData = {
-      "appName": "judge",
-      "userId": "user",
-      "sessionId": newSessionId
-    };
+    console.log("正在創建新session，ID:", newSessionId);
+    
+    try {
+      // 使用成功的session創建方法
+      const sessionUrl = `${proxyApiUrl}/apps/judge/users/user/sessions`;
+      const sessionData = {
+        "appName": "judge",
+        "userId": "user",
+        "sessionId": newSessionId
+      };
+      
+      console.log(`創建session，URL: ${sessionUrl}`);
+      console.log("Session數據:", sessionData);
+      
+      const response = await fetch(sessionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData),
+      });
 
-    // 測試多個可能的session端點
-    const sessionEndpoints = [
-      '/apps/judge/users/user/sessions',  // 原始端點
-      '/sessions',                        // 簡化端點
-      '/api/sessions',                    // API前綴
-      '/judge/sessions',                  // 應用前綴
-      '/users/user/sessions',             // 無應用前綴
-      '/create-session',                  // 創建端點
-      '/session/create'                   // 創建端點變體
-    ];
-
-    for (const endpoint of sessionEndpoints) {
-      try {
-        const sessionUrl = `${proxyApiUrl}${endpoint}`;
-        console.log(`嘗試創建session，URL: ${sessionUrl}`);
-        console.log("Session數據:", sessionData);
-        
-        const response = await fetch(sessionUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sessionData),
-        });
-
-        console.log(`Session端點 ${endpoint} 回應狀態:`, response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Session created successfully:", data);
-          console.log("Session ID set to:", newSessionId);
-          setSessionId(newSessionId);
-          setIsSessionCreated(true);
-          console.log("Session狀態已更新，isSessionCreated:", true);
-          return newSessionId;
-        } else {
-          console.log(`Session端點 ${endpoint} 失敗，狀態: ${response.status}`);
-          console.log(`回應狀態文本: ${response.statusText}`);
-          console.log(`回應headers:`, Object.fromEntries(response.headers.entries()));
-          
-          // 嘗試獲取錯誤詳情
-          try {
-            const errorText = await response.text();
-            console.log(`Session錯誤回應內容:`, errorText);
-            
-            // 嘗試解析為JSON
-            try {
-              const errorJson = JSON.parse(errorText);
-              console.log(`Session錯誤JSON:`, errorJson);
-            } catch (e) {
-              console.log(`Session錯誤內容不是JSON格式`);
-            }
-          } catch (e) {
-            console.log(`無法讀取Session錯誤內容:`, e.message);
-          }
-          
-          // 繼續嘗試下一個端點，而不是立即失敗
-          console.log(`端點 ${endpoint} 失敗，嘗試下一個端點...`);
-          continue;
-        }
-      } catch (error) {
-        console.log(`Session端點 ${endpoint} 錯誤:`, error.message);
+      console.log(`Session創建回應狀態: ${response.status}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Session創建成功:", data);
+        // 使用回應中的實際session ID，如果沒有則使用生成的ID
+        const actualSessionId = data.id || newSessionId;
+        console.log("返回的Session ID:", actualSessionId);
+        return actualSessionId;
+      } else {
+        const errorText = await response.text();
+        console.log(`Session創建失敗，狀態: ${response.status}`);
+        console.log(`錯誤內容: ${errorText}`);
+        throw new Error(`Session創建失敗: ${response.status} - ${errorText}`);
       }
+    } catch (error) {
+      console.error("Session創建錯誤:", error);
+      throw error;
     }
-
-    throw new Error("所有session端點都失敗");
   };
 
   // 發送訊息函數
@@ -361,60 +521,37 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       "streaming": false
     };
 
-    // 簡化run端點測試，專注於/run端點
-    const runEndpoints = [
-      '/run'  // 原始端點
-    ];
+    try {
+      // 使用成功的run端點
+      const messageUrl = `${proxyApiUrl}/run`;
+      console.log(`發送訊息到run端點，URL: ${messageUrl}`);
+      console.log("訊息數據:", messageData);
+      console.log("使用的session ID:", currentSessionId);
+      
+      const response = await fetch(messageUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData),
+      });
 
-    for (const endpoint of runEndpoints) {
-      try {
-        const messageUrl = `${proxyApiUrl}${endpoint}`;
-        console.log(`嘗試發送訊息，URL: ${messageUrl}`);
-        console.log("訊息數據:", messageData);
-        console.log("使用的session ID:", currentSessionId);
-        console.log("訊息數據中的session ID:", messageData.sessionId);
-        
-        const response = await fetch(messageUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(messageData),
-        });
+      console.log(`Run端點回應狀態: ${response.status}`);
 
-        console.log(`Run端點 ${endpoint} 回應狀態:`, response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Message sent:", data);
-          return data;
-        } else {
-          console.log(`Run端點 ${endpoint} 失敗，狀態: ${response.status}`);
-          console.log(`回應狀態文本: ${response.statusText}`);
-          console.log(`回應headers:`, Object.fromEntries(response.headers.entries()));
-          
-          // 嘗試獲取錯誤詳情
-          try {
-            const errorText = await response.text();
-            console.log(`錯誤回應內容:`, errorText);
-            
-            // 嘗試解析為JSON
-            try {
-              const errorJson = JSON.parse(errorText);
-              console.log(`錯誤JSON:`, errorJson);
-            } catch (e) {
-              console.log(`錯誤內容不是JSON格式`);
-            }
-          } catch (e) {
-            console.log(`無法讀取錯誤內容:`, e.message);
-          }
-        }
-      } catch (error) {
-        console.log(`Run端點 ${endpoint} 錯誤:`, error.message);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Message sent successfully:", data);
+        return data;
+      } else {
+        const errorText = await response.text();
+        console.log(`Run端點失敗，狀態: ${response.status}`);
+        console.log(`錯誤內容: ${errorText}`);
+        throw new Error(`Run端點失敗: ${response.status} - ${errorText}`);
       }
+    } catch (error) {
+      console.error("發送訊息錯誤:", error);
+      throw error;
     }
-
-    throw new Error("所有run端點都失敗");
   };
 
   // 處理多agent API回應格式
@@ -522,148 +659,89 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
   // Session驗證函數
   const verifySession = async (sessionId) => {
+    console.log("驗證Session是否存在，ID:", sessionId);
+    
     try {
-      console.log("驗證Session是否存在，ID:", sessionId);
-      const response = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions/${sessionId}`, {
+      // 使用正確的session查詢端點
+      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionId}`;
+      console.log(`查詢session端點: ${endpoint}`);
+      
+      const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+
+      console.log(`Session查詢回應狀態: ${response.status}`);
       
-      console.log("Session驗證回應狀態:", response.status);
       if (response.ok) {
         const data = await response.json();
         console.log("Session驗證成功:", data);
         return true;
       } else {
-        console.log("Session驗證失敗，狀態:", response.status);
+        const errorText = await response.text();
+        console.log(`Session查詢失敗，狀態: ${response.status}`);
+        console.log(`錯誤內容: ${errorText}`);
+        
+        // 如果查詢失敗，嘗試列出所有sessions來檢查是否存在
+        console.log("嘗試列出所有sessions來檢查...");
+        const listResponse = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (listResponse.ok) {
+          const sessions = await listResponse.json();
+          console.log("所有sessions:", sessions);
+          
+          // 檢查我們的session是否存在
+          const sessionExists = sessions.some(session => session.id === sessionId);
+          console.log(`Session ${sessionId} 是否存在:`, sessionExists);
+          
+          if (sessionExists) {
+            console.log("Session存在於列表中，但單獨查詢失敗");
+            return true;
+          } else {
+            console.log("Session不存在於列表中");
+            return false;
+          }
+        }
+        
         return false;
       }
     } catch (error) {
-      console.error("Session驗證錯誤:", error);
+      console.log(`Session查詢錯誤:`, error.message);
       return false;
     }
   };
 
-  // 代理API測試函數（避免CORS問題）
-  const testProxyAPI = async (query, sessionId) => {
-    const testData = {
-      "appName": "judge",
-      "userId": "user",
-      "sessionId": sessionId,
-      "newMessage": {
-        "role": "user",
-        "parts": [{"text": query}]
-      },
-      "streaming": false
-    };
-
-    console.log("使用代理測試API服務器...");
-    console.log("測試數據:", testData);
-
-    try {
-      // 使用代理調用API
-      const response = await fetch(`${proxyApiUrl}/run`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(testData),
-      });
-
-      console.log("代理API回應狀態:", response.status);
-      console.log("代理API回應headers:", response.headers);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("代理API成功:", data);
-        return data;
-      } else {
-        console.log("代理API失敗，狀態:", response.status);
-        console.log("回應狀態文本:", response.statusText);
-        console.log("回應headers:", Object.fromEntries(response.headers.entries()));
-        
-        // 嘗試獲取錯誤詳情
-        let errorDetails = "";
-        try {
-          errorDetails = await response.text();
-          console.log("錯誤回應內容:", errorDetails);
-        } catch (e) {
-          console.log("無法讀取錯誤內容:", e.message);
-        }
-        
-        // 嘗試解析為JSON
-        try {
-          const errorJson = JSON.parse(errorDetails);
-          console.log("錯誤JSON:", errorJson);
-        } catch (e) {
-          console.log("錯誤內容不是JSON格式");
-        }
-        
-        return null;
-      }
-    } catch (error) {
-      console.error("代理API調用失敗:", error);
-      return null;
-    }
-  };
 
   // 多agent分析函數
   const performMultiAgentAnalysis = async (query) => {
     try {
       console.log("開始多agent分析，查詢內容:", query);
       
-      // 嘗試代理方式，如果失敗則使用預設數據
-      console.log("嘗試使用代理方式進行API調用...");
+      // 使用代理進行session端點連接
+      console.log("使用代理進行session端點API調用...");
       
-      // 簡單測試代理連接
-      console.log("測試代理連接...");
-      const isProxyWorking = await testProxyConnection();
-      if (!isProxyWorking) {
-        console.log("代理連接測試失敗，直接使用預設數據");
-        return {
-          raw: null,
-          data: getDefaultAnalysisResult(query)
-        };
-      }
+      // 創建新session（每次都創建新的以確保成功）
+      console.log("正在創建新session...");
+      const currentSessionId = await createSession();
+      console.log("Session創建成功，ID:", currentSessionId);
       
-      console.log("代理連接正常，繼續進行Session創建...");
+      // 更新全局session狀態
+      setSessionId(currentSessionId);
+      setIsSessionCreated(true);
+      console.log("全局session狀態已更新，ID:", currentSessionId);
       
-      // 創建或重用session
-      let currentSessionId;
-      if (isSessionCreated && sessionId) {
-        console.log("重用現有session，ID:", sessionId);
-        currentSessionId = sessionId;
-      } else {
-        console.log("正在創建新session...");
-        currentSessionId = await createSession();
-        console.log("Session創建成功，ID:", currentSessionId);
-        
-        // 等待一下確保session創建完成
-        console.log("等待session創建完成...");
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // 驗證Session是否存在（使用代理）
-        console.log("驗證Session是否存在...");
-        const sessionExists = await verifySession(currentSessionId);
-        if (!sessionExists) {
-          console.log("Session驗證失敗，重新創建...");
-          currentSessionId = await createSession();
-          console.log("重新創建Session成功，ID:", currentSessionId);
-          // 再次驗證
-          const reVerifyExists = await verifySession(currentSessionId);
-          if (!reVerifyExists) {
-            console.log("重新創建的Session仍然驗證失敗，但繼續嘗試發送訊息...");
-          } else {
-            console.log("重新創建的Session驗證成功！");
-          }
-        } else {
-          console.log("Session驗證成功！");
-        }
-      }
+      // 等待一下確保session創建完成
+      console.log("等待session創建完成...");
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // 發送查詢訊息（使用代理）
+      // 發送查詢訊息
       console.log("正在發送查詢訊息，使用session ID:", currentSessionId);
       const result = await sendMessage(query, currentSessionId);
       console.log("API回應:", result);
@@ -678,23 +756,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           data: processedData
         };
       } else {
-        console.log("多agent分析失敗，嘗試代理測試...");
-        // 嘗試代理測試
-        const proxyResult = await testProxyAPI(query, currentSessionId);
-        if (proxyResult) {
-          console.log("代理測試成功！");
-          const processedData = processMultiAgentResponse(proxyResult, query);
-          return {
-            raw: proxyResult,
-            data: processedData
-          };
-        } else {
-          console.log("代理測試也失敗，使用預設數據");
-          return {
-            raw: null,
-            data: getDefaultAnalysisResult(query)
-          };
-        }
+        console.log("多agent分析失敗，使用預設數據");
+        return {
+          raw: null,
+          data: getDefaultAnalysisResult(query)
+        };
       }
     } catch (error) {
       console.error("Multi-agent analysis failed:", error);
@@ -959,6 +1025,21 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試API連接
+                </button>
+                <button
+                  className="test-button"
+                  onClick={testSessionCreation}
+                  style={{
+                    marginLeft: '10px',
+                    padding: '10px 20px',
+                    backgroundColor: '#17a2b8',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  測試Session創建
                 </button>
               </div>
             </div>
