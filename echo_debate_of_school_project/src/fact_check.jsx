@@ -613,11 +613,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       // 從分類結果中提取新聞正確性
       const classification = stateData.classification_json || {};
       const newsCorrectness = classification.classification === "錯誤" ? "低" : 
-                             classification.classification === "正確" ? "高" : "中";
+                             classification.classification === "正確" ? "高" : 
+                             classification.classification === "部分正確" ? "中" : "中";
       
       // 從權重計算中提取可信度分數
       const weightCalc = stateData.weight_calculation_json || {};
-      const ambiguityScore = Math.round((weightCalc.final_score || 0.5) * 100);
+      const ambiguityScore = ((weightCalc.final_score || 0.5) * 100).toFixed(2);
       
       return {
         weight_calculation_json: stateData.weight_calculation_json || {
@@ -1399,10 +1400,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="credibility-score">
                         <div className="score-bar">
                           <div className="score-fill"
-                            style={{ width: `${analysisResult.ambiguityScore || 50}%` }}
+                            style={{ width: `${analysisResult.ambiguityScore || 0}%` }}
                           ></div>
                         </div>
-                        <span className="score-value">{analysisResult.ambiguityScore || 50}%</span>
+                        <span className="score-value">{analysisResult.ambiguityScore || 0}%</span>
                       </div>
                     </div>
                   </div>

@@ -22,7 +22,15 @@ function LlmAnalysis({ data }){
   const weightCalculation = data.weight_calculation_json || {};
   const llmData = data?.organizedData?.llm;
   const factCheckResult = llmData?.fact_check_result || data?.fact_check_result_json || {};
-  const groundingUrls = llmData?.grounding_urls || [];
+  
+  // 從 curation.results 中提取 grounding URLs
+  const curationResults = data.curation?.results || [];
+  const groundingUrls = curationResults.map(result => ({
+    title: result.title || '無標題',
+    uri: result.url || '',
+    domain: result.url ? new URL(result.url).hostname : '未知來源',
+    searchQuery: data.curation?.query || ''
+  }));
   
   // 調試信息
   console.log('LLM Analysis - data:', data);
