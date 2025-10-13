@@ -1285,19 +1285,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
-              <div className="search-box" style={{ marginTop: '10px' }}>
-                <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="或輸入 Session ID 直接搜尋現有分析..."
-                  value={sessionIdInput}
-                  onChange={(e) => setSessionIdInput(e.target.value)}
-                  className="search-input"
-                  onKeyUp={(e) => e.key === 'Enter' && handleSessionSearch()}
-                />
-              </div>
               <div className="search-buttons">
                 <button
                   className="search-button"
@@ -1306,6 +1293,19 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 >
                   {isSearching ? '分析中...' : '開始分析'}
                 </button>
+                {/* <div className="search-box" style={{ marginTop: '10px' }}>
+                  <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="或輸入 Session ID 直接搜尋現有分析..."
+                    value={sessionIdInput}
+                    onChange={(e) => setSessionIdInput(e.target.value)}
+                    className="search-input"
+                    onKeyUp={(e) => e.key === 'Enter' && handleSessionSearch()}
+                  />
+                </div>
                 <button
                   className="search-button"
                   onClick={handleSessionSearch}
@@ -1316,8 +1316,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   {isSearching ? '搜尋中...' : 'Session 搜尋'}
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   className="test-button"
                   onClick={testApiConnection}
                   style={{
@@ -1331,8 +1331,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試API連接
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   className="test-button"
                   onClick={testSessionCreation}
                   style={{
@@ -1346,7 +1346,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試Session創建
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
