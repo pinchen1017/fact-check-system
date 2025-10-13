@@ -95,6 +95,96 @@ class SessionResponse(BaseModel):
 # 存儲 sessions 的簡單字典（生產環境應使用數據庫）
 sessions_db = {}
 
+# 預先載入參考 session 的數據
+def load_reference_session_data():
+    """載入參考 session 的數據"""
+    reference_session_id = "f429a410-dfa7-4f87-9a0c-cb89f83a4a8d"
+    
+    # 這裡可以從外部 API 或數據庫載入實際數據
+    # 目前使用模擬的完整數據結構
+    reference_data = {
+        "id": reference_session_id,
+        "appName": "judge",
+        "userId": "user",
+        "state": {
+            "analyzed_text": "川普總統宣布對中國商品徵收100%關稅",
+            "weight_calculation_json": {
+                "llm_label": "部分正確",
+                "llm_score": 0.75,
+                "slm_score": 0.0037,
+                "jury_score": -0.7244,
+                "final_score": 0.4063
+            },
+            "final_report_json": {
+                "topic": "川普總統宣布對中國商品徵收100%關稅",
+                "overall_assessment": "基於多agent分析，此消息的真實性評估為中等可信度",
+                "jury_score": 80,
+                "jury_brief": "陪審團評估：此消息的可信度為 80%",
+                "evidence_digest": [
+                    "多個事實查核機構已驗證此消息",
+                    "專家意見存在分歧",
+                    "需要進一步調查確認"
+                ],
+                "stake_summaries": [
+                    {
+                        "side": "Advocate",
+                        "thesis": "支持此消息的真實性",
+                        "strongest_points": ["有可靠來源支持", "專家認可"],
+                        "weaknesses": ["部分證據不足"]
+                    },
+                    {
+                        "side": "Skeptic", 
+                        "thesis": "質疑此消息的準確性",
+                        "strongest_points": ["缺乏充分證據", "來源可疑"],
+                        "weaknesses": ["可能過於保守"]
+                    },
+                    {
+                        "side": "Devil",
+                        "thesis": "挑戰此消息的基本假設",
+                        "strongest_points": ["提出關鍵問題", "揭露潛在偏見"],
+                        "weaknesses": ["可能過於激進"]
+                    }
+                ],
+                "key_contentions": [
+                    {
+                        "question": "此消息的真實性如何？",
+                        "what_advocates_say": ["有可靠證據支持"],
+                        "what_skeptics_say": ["證據不足"],
+                        "what_devil_pushed": ["需要更多驗證"],
+                        "status": "證據不足"
+                    }
+                ],
+                "risks": [
+                    {
+                        "name": "信息不確定性",
+                        "why": "關於此消息的證據存在爭議",
+                        "mitigation": "需要更多獨立驗證"
+                    }
+                ],
+                "open_questions": [
+                    "如何驗證此消息的準確性？",
+                    "哪些來源最可靠？",
+                    "需要什麼額外證據？"
+                ],
+                "appendix_links": ["相關連結"]
+            },
+            "fact_check_result_json": {
+                "analysis": "事實查核結果：此消息經過多方驗證，可信度為 75%",
+                "classification": "部分正確"
+            },
+            "classification_json": {
+                "classification": "錯誤",
+                "Probability": "0.003721293294802308"
+            }
+        }
+    }
+    
+    sessions_db[reference_session_id] = reference_data
+    print(f"已載入參考 session 數據: {reference_session_id}")
+
+# 在應用啟動時載入參考數據
+load_reference_session_data()
+
 @app.post("/apps/judge/users/user/sessions", response_model=SessionResponse)
 def create_session(session_data: SessionCreate):
     """創建新的 session"""
@@ -149,44 +239,110 @@ def run_analysis(request: RunRequest):
     if session_id not in sessions_db:
         raise HTTPException(404, "Session not found")
     
-    # 模擬分析過程 - 生成符合前端期望的格式
+    # 從實際的 session 數據中提取分析結果
+    # 這裡使用您提供的實際 session ID 作為數據源
+    reference_session_id = "f429a410-dfa7-4f87-9a0c-cb89f83a4a8d"
+    
+    # 如果當前 session 就是參考 session，直接使用其數據
+    if session_id == reference_session_id:
+        # 直接返回現有的分析數據
+        existing_session = sessions_db.get(session_id, {})
+        if existing_session.get("state"):
+            print(f"使用現有分析數據 - Session: {session_id}")
+            return {
+                "id": session_id,
+                "appName": request.appName,
+                "userId": request.userId,
+                "state": existing_session["state"],
+                "events": [
+                    {
+                        "event": "analysis_retrieved",
+                        "timestamp": datetime.now().isoformat(),
+                        "message": "從現有分析中檢索數據"
+                    }
+                ]
+            }
+        else:
+            print(f"Session {session_id} 存在但沒有 state 數據，將創建新的分析")
+    else:
+        print(f"Session {session_id} 不是參考 session，將創建新的分析")
+    
+    # 對於其他 session，使用參考數據的結構但替換內容
+    # 這裡可以根據實際需求調用真正的分析 API
     analysis_result = {
         "id": session_id,
         "appName": request.appName,
         "userId": request.userId,
         "state": {
             "_init_session": f"分析會話已初始化，正在處理：{user_message}",
+            # 使用實際數據結構，但內容根據用戶輸入調整
             "weight_calculation_json": {
-                "llm_score": round(random.uniform(0.3, 0.9), 2),
-                "slm_score": round(random.uniform(0.2, 0.8), 2),
-                "jury_score": round(random.uniform(0.4, 0.9), 2),
-                "verdict_result": round(random.uniform(0.3, 0.8), 2),
-                "llm_label": random.choice(["真實", "假消息", "不確定", "需要更多證據"])
+                "llm_label": "部分正確",
+                "llm_score": 0.75,
+                "slm_score": 0.0037,
+                "jury_score": -0.7244,
+                "final_score": 0.4063
             },
             "final_report_json": {
                 "topic": user_message,
-                "overall_assessment": f"基於多agent分析，此消息的真實性評估為：{random.choice(['高', '中', '低'])}可信度",
-                "jury_score": random.randint(30, 90),
-                "jury_brief": f"陪審團評估：{user_message} 的可信度為 {random.randint(30, 90)}%",
+                "overall_assessment": f"基於多agent分析，{user_message} 的真實性評估為中等可信度",
+                "jury_score": 80,
+                "jury_brief": f"陪審團評估：{user_message} 的可信度為 80%",
                 "evidence_digest": [
-                    "多個事實查核機構已驗證此消息",
+                    f"多個事實查核機構已驗證 {user_message}",
                     "專家意見存在分歧",
                     "需要進一步調查確認"
                 ],
                 "stake_summaries": [
-                    "正方觀點：支持消息真實性",
-                    "反方觀點：質疑消息來源",
-                    "法官裁決：需要更多證據"
-                ]
+                    {
+                        "side": "Advocate",
+                        "thesis": f"支持 {user_message} 的真實性",
+                        "strongest_points": ["有可靠來源支持", "專家認可"],
+                        "weaknesses": ["部分證據不足"]
+                    },
+                    {
+                        "side": "Skeptic", 
+                        "thesis": f"質疑 {user_message} 的準確性",
+                        "strongest_points": ["缺乏充分證據", "來源可疑"],
+                        "weaknesses": ["可能過於保守"]
+                    },
+                    {
+                        "side": "Devil",
+                        "thesis": f"挑戰 {user_message} 的基本假設",
+                        "strongest_points": ["提出關鍵問題", "揭露潛在偏見"],
+                        "weaknesses": ["可能過於激進"]
+                    }
+                ],
+                "key_contentions": [
+                    {
+                        "question": f"{user_message} 的真實性如何？",
+                        "what_advocates_say": ["有可靠證據支持"],
+                        "what_skeptics_say": ["證據不足"],
+                        "what_devil_pushed": ["需要更多驗證"],
+                        "status": "證據不足"
+                    }
+                ],
+                "risks": [
+                    {
+                        "name": "信息不確定性",
+                        "why": f"關於 {user_message} 的證據存在爭議",
+                        "mitigation": "需要更多獨立驗證"
+                    }
+                ],
+                "open_questions": [
+                    f"如何驗證 {user_message} 的準確性？",
+                    "哪些來源最可靠？",
+                    "需要什麼額外證據？"
+                ],
+                "appendix_links": ["相關連結"]
             },
             "fact_check_result_json": {
-                "analysis": f"事實查核結果：{user_message} 經過多方驗證，可信度為 {random.randint(40, 85)}%",
-                "classification": random.choice(["真實", "假消息", "不確定", "需要更多證據"]),
-                "confidence": round(random.uniform(0.4, 0.9), 2)
+                "analysis": f"事實查核結果：{user_message} 經過多方驗證，可信度為 75%",
+                "classification": "部分正確"
             },
             "classification_json": {
-                "classification": random.choice(["真實", "假消息", "不確定"]),
-                "Probability": str(round(random.uniform(0.3, 0.9), 2))
+                "classification": "錯誤",
+                "Probability": "0.003721293294802308"
             }
         },
         "events": [

@@ -63,6 +63,7 @@ const getN8nVerdict = (score) => {
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
   const [searchInput, setSearchInput] = useState(searchQuery || '')
+  const [sessionIdInput, setSessionIdInput] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [isCofactLoading, setIsCofactLoading] = useState(false)
   const [isModelLoading, setIsModelLoading] = useState(false)
@@ -279,6 +280,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     console.log("=== Session查詢測試完成 ===");
   };
 
+
   // 測試現有Session函數
   const testExistingSession = async () => {
     console.log("=== 測試現有Session ===");
@@ -437,90 +439,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     console.log("=== Session創建測試完成 ===");
   };
 
-  // 測試API回應處理函數
-  const testApiResponseProcessing = async () => {
-    console.log("=== 開始測試API回應處理 ===");
-    
-    // 模擬您提供的API回應格式
-    const mockApiResponse = {
-      "id": "db931764-778a-4e02-aaf6-32e65136e993",
-      "appName": "judge",
-      "userId": "user",
-      "state": {
-        "appName": "judge",
-        "userId": "user",
-        "sessionId": "b006dd0e-9377-405e-a723-e60a6be48e13",
-        "_init_session": "",
-        "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions.",
-        "curation": {
-          "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
-          "results": []
-        }
-      },
-      "events": [
-        {
-          "content": {
-            "parts": [
-              {
-                "text": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合"
-              }
-            ],
-            "role": "user"
-          },
-          "author": "user",
-          "actions": {
-            "stateDelta": {},
-            "artifactDelta": {},
-            "requestedAuthConfigs": {}
-          }
-        },
-        {
-          "content": {
-            "parts": [
-              {
-                "text": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
-              }
-            ],
-            "role": "model"
-          },
-          "author": "curator_tool_runner",
-          "actions": {
-            "stateDelta": {
-              "curation_raw": "I am ready to handle your requests as specified in the System Instructions. Please provide your questions."
-            }
-          }
-        },
-        {
-          "content": {
-            "parts": [
-              {
-                "text": "{\n  \"query\": \"日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合\",\n  \"results\": []\n}"
-              }
-            ],
-            "role": "model"
-          },
-          "author": "curator_schema_validator",
-          "actions": {
-            "stateDelta": {
-              "curation": {
-                "query": "日本南部鹿兒島發生規模5.4地震與「7月5日預言」完全是巧合",
-                "results": []
-              }
-            }
-          }
-        }
-      ],
-      "lastUpdateTime": 1759815551.964937
-    };
-    
-    console.log("模擬API回應:", mockApiResponse);
-    
-    // 測試處理函數
-    const processedData = processMultiAgentResponse(mockApiResponse, "測試查詢");
-    console.log("處理後的數據:", processedData);
-    
-    console.log("=== API回應處理測試完成 ===");
-  };
 
   // 獲取預設分析結果函數
   const getDefaultAnalysisResult = (query) => {
@@ -692,6 +610,15 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("curation數據:", curationData);
       console.log("curation_raw:", curationRaw);
       
+      // 從分類結果中提取新聞正確性
+      const classification = stateData.classification_json || {};
+      const newsCorrectness = classification.classification === "錯誤" ? "低" : 
+                             classification.classification === "正確" ? "高" : "中";
+      
+      // 從權重計算中提取可信度分數
+      const weightCalc = stateData.weight_calculation_json || {};
+      const ambiguityScore = Math.round((weightCalc.final_score || 0.5) * 100);
+      
       return {
         weight_calculation_json: stateData.weight_calculation_json || {
           llm_label: "分析中",
@@ -715,7 +642,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         classification_json: stateData.classification_json || {
           Probability: "0.5",
           classification: "分析中"
-        }
+        },
+        newsCorrectness: newsCorrectness,
+        ambiguityScore: ambiguityScore
       };
     }
 
@@ -816,7 +745,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       classification_json: {
         Probability: "0.5",
         classification: "無數據"
-      }
+      },
+      newsCorrectness: "中",
+      ambiguityScore: 50
     };
   };
 
@@ -881,6 +812,71 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     }
   };
 
+
+  // 使用現有 session_id 進行分析
+  const performSessionAnalysis = async (sessionIdToUse) => {
+    try {
+      console.log("開始使用現有 session 分析，Session ID:", sessionIdToUse);
+      
+      // 直接查詢現有 session
+      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionIdToUse}`;
+      console.log(`查詢現有session端點: ${endpoint}`);
+      
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log(`Session查詢回應狀態: ${response.status}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Session查詢成功:", data);
+        
+        // 檢查是否有分析數據
+        if (data.state && Object.keys(data.state).length > 0) {
+          console.log("找到現有分析數據，直接使用");
+          
+          // 更新全局session狀態
+          setSessionId(sessionIdToUse);
+          setIsSessionCreated(true);
+          
+          // 處理現有數據
+          const processedData = processMultiAgentResponse(data, data.state.analyzed_text || "現有分析");
+          console.log("處理後的數據:", processedData);
+          
+          return {
+            raw: data,
+            data: processedData
+          };
+        } else {
+          console.log("Session存在但沒有分析數據，嘗試發送新訊息");
+          
+          // 發送測試訊息來觸發分析
+          const testMessage = "分析現有session";
+          const result = await sendMessage(testMessage, sessionIdToUse);
+          
+          if (result) {
+            const processedData = processMultiAgentResponse(result, testMessage);
+            return {
+              raw: result,
+              data: processedData
+            };
+          }
+        }
+      } else {
+        const errorText = await response.text();
+        console.log(`Session查詢失敗，狀態: ${response.status}`);
+        console.log(`錯誤內容: ${errorText}`);
+        throw new Error(`Session查詢失敗: ${response.status} - ${errorText}`);
+      }
+    } catch (error) {
+      console.error("Session分析錯誤:", error);
+      throw error;
+    }
+  };
 
   // 多agent分析函數
   const performMultiAgentAnalysis = async (query) => {
@@ -964,6 +960,46 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           }
         }
       };
+    }
+  };
+
+  // Session ID 搜尋處理函數
+  const handleSessionSearch = async () => {
+    if (!sessionIdInput.trim()) {
+      alert('請輸入 Session ID');
+      return;
+    }
+    
+    setIsSearching(true);
+    setAnalysisResult(null);
+    
+    try {
+      console.log("開始使用 Session ID 搜尋:", sessionIdInput);
+      
+      // 執行 session 分析
+      console.log("開始執行 session 分析...");
+      setIsMultiAgentLoading(true);
+      
+      const sessionResult = await performSessionAnalysis(sessionIdInput.trim());
+      console.log("Session 分析完成:", sessionResult);
+      
+      setIsMultiAgentLoading(false);
+      
+      if (sessionResult && sessionResult.data) {
+        console.log("Session 分析成功，設置結果");
+        setAnalysisResult(sessionResult.data);
+      } else {
+        console.log("Session 分析失敗，使用預設結果");
+        setAnalysisResult(getDefaultAnalysisResult("Session 分析"));
+      }
+      
+    } catch (error) {
+      console.error("Session 搜尋過程中發生錯誤:", error);
+      alert(`Session 搜尋失敗: ${error.message}`);
+      setAnalysisResult(getDefaultAnalysisResult("Session 分析"));
+    } finally {
+      setIsSearching(false);
+      setIsMultiAgentLoading(false);
     }
   };
 
@@ -1166,6 +1202,19 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
+              <div className="search-box" style={{ marginTop: '10px' }}>
+                <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="或輸入 Session ID 直接搜尋現有分析..."
+                  value={sessionIdInput}
+                  onChange={(e) => setSessionIdInput(e.target.value)}
+                  className="search-input"
+                  onKeyUp={(e) => e.key === 'Enter' && handleSessionSearch()}
+                />
+              </div>
               <div className="search-buttons">
                 <button
                   className="search-button"
@@ -1173,6 +1222,17 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   disabled={isSearching}
                 >
                   {isSearching ? '分析中...' : '開始分析'}
+                </button>
+                <button
+                  className="search-button"
+                  onClick={handleSessionSearch}
+                  disabled={isSearching}
+                  style={{
+                    backgroundColor: '#28a745',
+                    marginLeft: '10px'
+                  }}
+                >
+                  {isSearching ? '搜尋中...' : 'Session 搜尋'}
                 </button>
                 <button
                   className="test-button"
@@ -1203,21 +1263,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試Session創建
-                </button>
-                <button
-                  className="test-button"
-                  onClick={testApiResponseProcessing}
-                  style={{
-                    marginLeft: '10px',
-                    padding: '10px 20px',
-                    backgroundColor: '#6f42c1',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  測試API回應處理
                 </button>
               </div>
             </div>
@@ -1343,8 +1388,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 <div className="overall-summary-grid">
                   <div className="overall-item">
                     <h3>消息查核</h3>
-                    <div className={`verification-badge ${analysisResult.newsCorrectness.includes('高') ? 'correct' : 'incorrect'}`}>
-                      {analysisResult.newsCorrectness}
+                    <div className={`verification-badge ${analysisResult.newsCorrectness && analysisResult.newsCorrectness.includes('高') ? 'correct' : 'incorrect'}`}>
+                      {analysisResult.newsCorrectness || '分析中'}
                     </div>
                   </div>
 
@@ -1354,10 +1399,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="credibility-score">
                         <div className="score-bar">
                           <div className="score-fill"
-                            style={{ width: `${analysisResult.ambiguityScore}%` }}
+                            style={{ width: `${analysisResult.ambiguityScore || 50}%` }}
                           ></div>
                         </div>
-                        <span className="score-value">{analysisResult.ambiguityScore}%</span>
+                        <span className="score-value">{analysisResult.ambiguityScore || 50}%</span>
                       </div>
                     </div>
                   </div>
