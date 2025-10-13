@@ -29,7 +29,7 @@ function DebateCourt({ data }) {
   
   // 提取辯論觀點
   const advocatePoints = finalReport.stake_summaries?.find(s => s.side === 'Advocate')?.strongest_points || [];
-  const skepticPoints = finalReport.stake_summaries?.find(s => s.side === 'Disrupter')?.strongest_points || [];
+  const skepticPoints = finalReport.stake_summaries?.find(s => s.side === 'Skeptic')?.strongest_points || [];
   
   console.log('DebateCourt - finalReport:', finalReport);
   console.log('DebateCourt - stake_summaries:', finalReport.stake_summaries);

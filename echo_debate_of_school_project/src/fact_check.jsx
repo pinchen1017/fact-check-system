@@ -649,6 +649,88 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       };
     }
 
+    // 檢查是否是 /run 端點返回的數組格式
+    if (Array.isArray(apiResponse)) {
+      console.log("檢測到 /run 端點返回的數組格式，正在解析...");
+      
+      // 從數組中提取各個組件的數據
+      let weightCalculationData = null;
+      let finalReportData = null;
+      let factCheckData = null;
+      let classificationData = null;
+      let curationData = null;
+      let curationRaw = null;
+
+      // 從最新的event開始查找
+      for (let i = apiResponse.length - 1; i >= 0; i--) {
+        const event = apiResponse[i];
+        console.log(`檢查event ${i}, author: ${event.author}:`, event);
+        
+        if (event.actions && event.actions.stateDelta) {
+          if (event.actions.stateDelta.weight_calculation_json && !weightCalculationData) {
+            weightCalculationData = event.actions.stateDelta.weight_calculation_json;
+            console.log("找到weight_calculation_json:", weightCalculationData);
+          }
+          if (event.actions.stateDelta.final_report_json && !finalReportData) {
+            finalReportData = event.actions.stateDelta.final_report_json;
+            console.log("找到final_report_json:", finalReportData);
+          }
+          if (event.actions.stateDelta.fact_check_result_json && !factCheckData) {
+            factCheckData = event.actions.stateDelta.fact_check_result_json;
+            console.log("找到fact_check_result_json:", factCheckData);
+          }
+          if (event.actions.stateDelta.classification_json && !classificationData) {
+            classificationData = event.actions.stateDelta.classification_json;
+            console.log("找到classification_json:", classificationData);
+          }
+          if (event.actions.stateDelta.curation && !curationData) {
+            curationData = event.actions.stateDelta.curation;
+            console.log("找到curation:", curationData);
+          }
+          if (event.actions.stateDelta.curation_raw && !curationRaw) {
+            curationRaw = event.actions.stateDelta.curation_raw;
+            console.log("找到curation_raw:", curationRaw);
+          }
+        }
+      }
+
+      // 從權重計算中提取可信度分數
+      const ambiguityScore = ((weightCalculationData?.final_score || 0.5) * 100).toFixed(2);
+      
+      // 從分類結果中提取新聞正確性
+      const newsCorrectness = classificationData?.classification === "錯誤" ? "低" : 
+                             classificationData?.classification === "正確" ? "高" : 
+                             classificationData?.classification === "部分正確" ? "中" : "中";
+
+      return {
+        weight_calculation_json: weightCalculationData || {
+          llm_label: "分析中",
+          llm_score: 0.5,
+          slm_score: 0.5,
+          jury_score: "分析中",
+          final_score: 0.5
+        },
+        final_report_json: finalReportData || {
+          topic: query,
+          overall_assessment: curationRaw || "分析中",
+          jury_score: 50,
+          jury_brief: curationRaw || "分析中",
+          evidence_digest: curationData && curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析中..."],
+          stake_summaries: []
+        },
+        fact_check_result_json: factCheckData || {
+          analysis: curationRaw || "分析中",
+          classification: "分析中"
+        },
+        classification_json: classificationData || {
+          Probability: "0.5",
+          classification: "分析中"
+        },
+        newsCorrectness: newsCorrectness,
+        ambiguityScore: ambiguityScore
+      };
+    }
+
     // 檢查是否有events數據
     if (apiResponse.events && apiResponse.events.length > 0) {
       console.log("找到events數據:", apiResponse.events);
