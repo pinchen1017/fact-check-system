@@ -1097,11 +1097,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     // 顯示 Cofact 協尋動畫
     setIsCofactLoading(true)
     
-    // 先呼叫 Cofacts 查證 API (暫時註解用於測試多agent API)
-    // const cofactResult = await fetchCofactResult(searchInput)
-    
-    // 暫時設定Cofact結果為false，用於測試多agent API
-    const cofactResult = { found: false, correctness: '未知', perspective: '', cofactUrl: 'https://cofact.org/search?q=' + encodeURIComponent(searchInput) }
+    // 先呼叫 Cofacts 查證 API
+    const cofactResult = await fetchCofactResult(searchInput)
     
     // 隱藏 Cofact 動畫
     setIsCofactLoading(false)
