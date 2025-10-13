@@ -164,7 +164,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   }
 
   // 多agent API相關函數
-  const apiUrl = 'http://120.107.172.133:10001';
+  const apiUrl = 'http://127.0.0.1:8000';
   const proxyApiUrl = '/api-proxy'; // 使用代理避免CORS問題
 
 
