@@ -28,6 +28,21 @@ function App() {
     });
   }
 
+  // 從分析頁面返回事實查核頁面 - 滾動到分析結果區域
+  const handleBackToFactCheck = () => {
+    setCurrentTab('fact_check');
+    // 延遲滾動到分析結果區域，確保DOM已更新
+    setTimeout(() => {
+      const analysisSection = document.getElementById('analysis-result');
+      if (analysisSection) {
+        analysisSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100);
+  }
+
   // 檢查URL路由和session_id參數
   useEffect(() => {
     const path = window.location.pathname;
@@ -2583,7 +2598,7 @@ function App() {
             <Analysis 
               modelKey={analysisState.modelKey} 
               data={analysisState.data} 
-              onBack={() => handleTabChange('fact_check')}
+              onBack={handleBackToFactCheck}
             />
           </div>
         </main>

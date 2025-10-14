@@ -607,8 +607,15 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const curationData = stateData.curation || {};
       const curationRaw = stateData.curation_raw || "";
       
+      // 提取groundingChunks數據
+      let groundingChunks = [];
+      if (stateData.groundingMetadata && stateData.groundingMetadata.groundingChunks) {
+        groundingChunks = stateData.groundingMetadata.groundingChunks;
+      }
+      
       console.log("curation數據:", curationData);
       console.log("curation_raw:", curationRaw);
+      console.log("groundingChunks:", groundingChunks);
       
       // 從分類結果中提取新聞正確性
       const classification = stateData.classification_json || {};
@@ -633,7 +640,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           overall_assessment: curationRaw || "正在進行多agent分析...",
           jury_score: 50,
           jury_brief: curationRaw || "分析進行中",
-          evidence_digest: curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析進行中..."],
+          evidence_digest: curationData.results ? curationData.results.map(result => {
+            if (typeof result === 'string') return result;
+            if (result.snippet) return result.snippet;
+            if (result.url) return `${result.snippet || result.text || result} (來源: ${result.url})`;
+            return result.snippet || result.text || result;
+          }) : ["分析進行中..."],
           stake_summaries: []
         },
         fact_check_result_json: stateData.fact_check_result_json || {
@@ -645,7 +657,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           classification: "分析中"
         },
         newsCorrectness: newsCorrectness,
-        ambiguityScore: ambiguityScore
+        ambiguityScore: ambiguityScore,
+        curationData: curationData,
+        groundingChunks: groundingChunks
       };
     }
 
@@ -660,6 +674,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       let classificationData = null;
       let curationData = null;
       let curationRaw = null;
+      let groundingChunks = [];
 
       // 從最新的event開始查找
       for (let i = apiResponse.length - 1; i >= 0; i--) {
@@ -691,6 +706,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             curationRaw = event.actions.stateDelta.curation_raw;
             console.log("找到curation_raw:", curationRaw);
           }
+          if (event.actions.stateDelta.groundingMetadata && event.actions.stateDelta.groundingMetadata.groundingChunks && groundingChunks.length === 0) {
+            groundingChunks = event.actions.stateDelta.groundingMetadata.groundingChunks;
+            console.log("找到groundingChunks:", groundingChunks);
+          }
         }
       }
 
@@ -715,7 +734,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           overall_assessment: curationRaw || "分析中",
           jury_score: 50,
           jury_brief: curationRaw || "分析中",
-          evidence_digest: curationData && curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析中..."],
+          evidence_digest: curationData && curationData.results ? curationData.results.map(result => {
+            if (typeof result === 'string') return result;
+            if (result.snippet) return result.snippet;
+            if (result.url) return `${result.snippet || result.text || result} (來源: ${result.url})`;
+            return result.snippet || result.text || result;
+          }) : ["分析中..."],
           stake_summaries: []
         },
         fact_check_result_json: factCheckData || {
@@ -727,7 +751,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           classification: "分析中"
         },
         newsCorrectness: newsCorrectness,
-        ambiguityScore: ambiguityScore
+        ambiguityScore: ambiguityScore,
+        curationData: curationData,
+        groundingChunks: groundingChunks
       };
     }
 
@@ -773,6 +799,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             curationRaw = event.actions.stateDelta.curation_raw;
             console.log("找到curation_raw:", curationRaw);
           }
+          if (event.actions.stateDelta.groundingMetadata && event.actions.stateDelta.groundingMetadata.groundingChunks && groundingChunks.length === 0) {
+            groundingChunks = event.actions.stateDelta.groundingMetadata.groundingChunks;
+            console.log("找到groundingChunks:", groundingChunks);
+          }
         }
       }
 
@@ -789,7 +819,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           overall_assessment: curationRaw || "分析中",
           jury_score: 50,
           jury_brief: curationRaw || "分析中",
-          evidence_digest: curationData && curationData.results ? curationData.results.map(result => result.snippet || result) : ["分析中..."],
+          evidence_digest: curationData && curationData.results ? curationData.results.map(result => {
+            if (typeof result === 'string') return result;
+            if (result.snippet) return result.snippet;
+            if (result.url) return `${result.snippet || result.text || result} (來源: ${result.url})`;
+            return result.snippet || result.text || result;
+          }) : ["分析中..."],
           stake_summaries: []
         },
         fact_check_result_json: factCheckData || {
@@ -799,7 +834,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         classification_json: classificationData || {
           Probability: "0.5",
           classification: "分析中"
-        }
+        },
+        curationData: curationData,
+        groundingChunks: groundingChunks
       };
     }
 
@@ -1086,6 +1123,19 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     }
   };
 
+  // 滚动到分析结果区域的函数
+  const scrollToAnalysisResult = () => {
+    setTimeout(() => {
+      const analysisSection = document.getElementById('analysis-result');
+      if (analysisSection) {
+        analysisSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100); // 稍微延迟确保DOM已更新
+  };
+
   // 搜索功能：先查 Cofacts，再組合分析結果
   const handleSearch = async () => {
     if (!searchInput.trim()) return
@@ -1223,7 +1273,34 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           correctness: getCredibilityLevel(responseData.weight_calculation_json.llm_score),
           truthfulness: getCredibilityLevel(responseData.weight_calculation_json.llm_score),
           perspective: responseData.fact_check_result_json.analysis,
-          references: responseData.final_report_json.evidence_digest
+          references: (() => {
+            // 如果有multiAgent結果且包含groundingChunks，使用groundingChunks的URL信息
+            if (multiAgentResult && multiAgentResult.data && multiAgentResult.data.groundingChunks) {
+              const groundingChunks = multiAgentResult.data.groundingChunks;
+              if (groundingChunks.length > 0) {
+                return groundingChunks.map(chunk => {
+                  if (chunk.web && chunk.web.uri && chunk.web.title) {
+                    return `${chunk.web.title} (來源: ${chunk.web.uri})`;
+                  }
+                  return chunk.web?.title || '未知來源';
+                });
+              }
+            }
+            // 如果有multiAgent結果且包含curation數據，使用curation的URL信息
+            if (multiAgentResult && multiAgentResult.data && multiAgentResult.data.curationData) {
+              const curationData = multiAgentResult.data.curationData;
+              if (curationData.results) {
+                return curationData.results.map(result => {
+                  if (typeof result === 'string') return result;
+                  if (result.snippet) return result.snippet;
+                  if (result.url) return `${result.snippet || result.text || result} (來源: ${result.url})`;
+                  return result.snippet || result.text || result;
+                });
+              }
+            }
+            // 否則使用預設的evidence_digest
+            return responseData.final_report_json.evidence_digest || [];
+          })()
         },
         slm: {
           correctness: getCredibilityLevel(parseFloat(responseData.classification_json.Probability)),
@@ -1256,6 +1333,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     // 隱藏模型動畫
     setIsModelLoading(false)
     setIsSearching(false)
+    
+    // 自動滾動到分析結果區域
+    scrollToAnalysisResult()
   }
 
   return (
@@ -1351,7 +1431,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
         {/* 分析結果區域 - 只在有查詢時顯示 */}
         {(isSearching || isCofactLoading || isModelLoading || isMultiAgentLoading || analysisResult) && (
-          <div className={`analysis-section ${(isCofactLoading || isModelLoading || isMultiAgentLoading) ? 'loading-background' : ''}`}>
+          <div id="analysis-result" className={`analysis-section ${(isCofactLoading || isModelLoading || isMultiAgentLoading) ? 'loading-background' : ''}`}>
             {/* Cofact 協尋過場動畫 */}
             {isCofactLoading && (
               <div className="loading-overlay">
