@@ -4,7 +4,7 @@
 本文檔詳細記錄了前端React應用與後端多agent API系統的完整集成過程，包括問題診斷、解決方案和最終實現。
 
 ## API端點信息
-- **基礎URL**: `http://127.0.0.1:8000`
+- **基礎URL**: `http://120.107.172.133:10001`
 - **開發代理**: `/api-proxy` (通過Vite代理配置)
 - **主要端點**:
   - Session創建: `POST /apps/judge/users/user/sessions`
@@ -31,7 +31,7 @@
 **問題**: 瀏覽器CORS政策阻擋直接API調用
 ```javascript
 // 錯誤的直接調用
-const response = await fetch('http://127.0.0.1:8000/apps/judge/users/user/sessions', {
+const response = await fetch('http://120.107.172.133:10001/apps/judge/users/user/sessions', {
   method: 'POST',
   // ... 會被CORS阻擋
 });
@@ -44,7 +44,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api-proxy': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://120.107.172.133:10001',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-proxy/, '')
       }
@@ -387,7 +387,7 @@ console.log("使用的Session ID:", actualSessionId);
 // 使用環境變量管理不同環境的API URL
 const apiUrl = process.env.NODE_ENV === 'production' 
   ? 'https://production-api.com'
-  : 'http://127.0.0.1:8000';
+  : 'http://120.107.172.133:10001';
 ```
 
 ## 9. 總結
