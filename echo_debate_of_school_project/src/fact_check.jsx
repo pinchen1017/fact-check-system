@@ -111,7 +111,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     try {
       const params = new URLSearchParams(window.location.search)
       let sidParam = params.get('session_id')
-      if (sidParam && sidParam.trim()) {
+      // 檢查是否為有效的 session_id（不是字面值 'session_id'）
+      if (sidParam && sidParam.trim() && sidParam !== 'session_id') {
         hasAutoLoadedFromUrl.current = true
         // 兼容網址帶入的引號或編碼(%27)
         try { sidParam = decodeURIComponent(sidParam) } catch {}
@@ -135,6 +136,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
               handleSessionSearch(sid, userForQuery)
             }
           })
+      } else if (sidParam === 'session_id') {
+        console.log('檢測到字面值 session_id，跳過自動載入')
       }
     } catch (e) {
       console.log('解析 URL 參數失敗:', e?.message || e)

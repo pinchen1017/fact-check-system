@@ -49,10 +49,17 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
     
+    // 處理 /console 路由
+    if (path === '/console') {
+      setCurrentTab('fact_check');
+      setSearchQuery('Console 測試頁面');
+      return;
+    }
+    
     if (path.startsWith('/r/')) {
       setShowRealTimeAnalysis(true);
-    } else if (sessionId) {
-      // 如果有session_id參數，直接跳轉到事實查核頁面並載入分析結果
+    } else if (sessionId && sessionId !== 'session_id') {
+      // 如果有真實的session_id參數，直接跳轉到事實查核頁面並載入分析結果
       setCurrentTab('fact_check');
       setSearchQuery('柯文哲是總統'); // 預設查詢
       // 載入對應的分析結果
