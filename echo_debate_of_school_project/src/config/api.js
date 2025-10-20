@@ -23,6 +23,13 @@ export const API_ENDPOINTS = {
   MESSAGES: '/messages',
   MESSAGE: '/message',
   
+  // Session 相關
+  USER_SESSION: (sessionId) => `/api-proxy/apps/judge/users/user/sessions/${sessionId}`,
+  LOCAL_SESSION: '/local-api/get_user_by_session',
+  
+  // Cofact API
+  COFACT_CHECK: '/cofact/check',
+  
   // 分析相關 (如果後端有這些端點)
   RUNS: '/runs',
   RUN_STREAM: (runId) => `/runs/${runId}/stream`,
