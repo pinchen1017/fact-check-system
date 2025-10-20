@@ -1,0 +1,3 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary  # 若你用 B（不連 DB），也可以留著不會有問題；若要精簡可刪掉
