@@ -101,12 +101,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         return null
       }
     }
-    // 1) 使用新的後端 API
-    let uid = await tryOnce(`${apiUrl}/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
-    if (uid) return uid
-    console.log('後端 API /local-api/get_user_by_session 失敗，改嘗試 session 端點')
-    // 2) 嘗試 session 端點
-    uid = await tryOnce(`${proxyApiUrl}/apps/judge/users/user/sessions/${encodeURIComponent(sid)}`)
+    // 直接使用 session 端點
+    console.log('嘗試從 session 端點獲取用戶資料')
+    const uid = await tryOnce(`${proxyApiUrl}/apps/judge/users/user/sessions/${encodeURIComponent(sid)}`)
     return uid
   }
   useEffect(() => {

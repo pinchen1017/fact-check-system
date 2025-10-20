@@ -26,7 +26,7 @@ export const API_ENDPOINTS = {
   
   // Session 相關
   USER_SESSION: (sessionId) => `/api-proxy/apps/judge/users/user/sessions/${sessionId}`,
-  LOCAL_SESSION: '/local-api/get_user_by_session',
+  LOCAL_SESSION: '/local-api/get_user_by_session', // 注意：此端點在後端不存在，僅用於兼容性
   
   // Cofact API
   COFACT_CHECK: '/cofact/check',
