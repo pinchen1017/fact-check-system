@@ -63,6 +63,28 @@ app.post("/save_session_record", async (req, res) => {
   }
 });
 
+// 由 session_id 查詢對應的 user_id
+app.get("/get_user_by_session", async (req, res) => {
+  try {
+    const sessionId = (req.query.sessionId || req.query.session_id || "").toString();
+    if (!sessionId) return res.status(400).json({ error: "missing sessionId" });
+    const client = await pool.connect();
+    try {
+      const { rows } = await client.query(
+        "SELECT id FROM linebot_v2 WHERE session_id = $1 ORDER BY seq DESC LIMIT 1",
+        [sessionId]
+      );
+      if (!rows || rows.length === 0) return res.status(404).json({ error: "not_found" });
+      res.json({ userId: rows[0].id, sessionId });
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error("get_user_by_session error:", e);
+    res.status(500).json({ error: "db_error", detail: String(e?.message || e) });
+  }
+});
+
 app.post("/api/runs", (req, res) => {
   const id = "rk_" + Math.random().toString(36).slice(2);
   runs.set(id, { id, status: "running", progress: 0, overview: null, analysisResult: null });

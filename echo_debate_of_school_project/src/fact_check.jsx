@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './css/fact_check.css'
 import './css/header.css'
 import './css/debateCourt.css'
@@ -39,6 +39,14 @@ const getCredibilityLevel = (score) => {
   return '未知';
 };
 
+// 將 0~1 或 0~100 的分數正規化為 0~100 百分比字串
+const normalizeScoreToPercent = (score) => {
+  const n = typeof score === 'string' ? parseFloat(score) : score;
+  if (isNaN(n)) return 50;
+  const pct = n <= 1 ? n * 100 : n;
+  return Math.max(0, Math.min(100, pct));
+};
+
 // 將n8n分數從1~-1區間轉換為1~0區間
 const convertN8nScore = (score) => {
   return (score + 1) / 2;
@@ -70,11 +78,48 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   const [isMultiAgentLoading, setIsMultiAgentLoading] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [isSessionCreated, setIsSessionCreated] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState('user')
 
   // 同步 searchQuery 和 searchInput
   useEffect(() => {
     setSearchInput(searchQuery || '')
   }, [searchQuery])
+
+  // 透過 URL 參數自動帶入 session_id 並觸發搜尋
+  const hasAutoLoadedFromUrl = useRef(false)
+  const autoCreateOn404Ref = useRef(false)
+  useEffect(() => {
+    if (hasAutoLoadedFromUrl.current) return
+    try {
+      const params = new URLSearchParams(window.location.search)
+      let sidParam = params.get('session_id')
+      if (sidParam && sidParam.trim()) {
+        hasAutoLoadedFromUrl.current = true
+        // 兼容網址帶入的引號或編碼(%27)
+        try { sidParam = decodeURIComponent(sidParam) } catch {}
+        let sid = sidParam.trim()
+        if (sid.endsWith("'") || sid.endsWith('"')) sid = sid.slice(0, -1)
+        if (sid.startsWith("'") || sid.startsWith('"')) sid = sid.slice(1)
+        setSessionIdInput(sid)
+        // 是否允許 404 時自動建立（需以 URL 帶 auto_create=true 才啟用）
+        autoCreateOn404Ref.current = (params.get('auto_create') === 'true')
+        // 先用 session_id 向本地 API 查 user_id，再以此登入後觸發 Session 搜尋
+        fetch(`/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
+          .then(async r => ({ ok: r.ok, json: await r.json().catch(() => null) }))
+          .then(resp => {
+            if (resp.ok && resp.json?.userId) {
+              setCurrentUserId(resp.json.userId)
+              console.log('透過資料庫查到 userId:', resp.json.userId)
+            }
+          })
+          .finally(() => {
+            handleSessionSearch(sid)
+          })
+      }
+    } catch (e) {
+      console.log('解析 URL 參數失敗:', e?.message || e)
+    }
+  }, [])
 
   // 呼叫 Cofacts Agent API 取得相似查證
   const fetchCofactResult = async (query) => {
@@ -291,7 +336,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     
     try {
       // 直接查詢這個session
-      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${existingSessionId}`;
+      const endpoint = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions/${existingSessionId}`;
       console.log(`查詢現有session端點: ${endpoint}`);
       
       const response = await fetch(endpoint, {
@@ -368,7 +413,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     
     try {
       // 嘗試創建session
-      const sessionUrl = `${proxyApiUrl}/apps/judge/users/user/sessions`;
+      const sessionUrl = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions`;
       const sessionData = {
         "appName": "judge",
         "userId": "user",
@@ -527,8 +572,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   };
 
   // 創建 Session 函數
-  const createSession = async () => {
-    const newSessionId = generateUUID();
+  const createSession = async (overrideSessionId) => {
+    const newSessionId = overrideSessionId || generateUUID();
     console.log("正在創建新session，ID:", newSessionId);
     
     try {
@@ -536,7 +581,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const sessionUrl = `${proxyApiUrl}/apps/judge/users/user/sessions`;
       const sessionData = {
         "appName": "judge",
-        "userId": "user",
+        "userId": currentUserId || "user",
         "sessionId": newSessionId
       };
       
@@ -577,7 +622,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   const sendMessage = async (query, currentSessionId) => {
     const messageData = {
       "appName": "judge",
-      "userId": "user",
+      "userId": currentUserId || "user",
       "sessionId": currentSessionId,
       "newMessage": {
         "role": "user",
@@ -687,7 +732,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       
       // 從權重計算中提取可信度分數
       const weightCalc = stateData.weight_calculation_json || {};
-      const ambiguityScore = ((weightCalc.final_score || 0.5) * 100).toFixed(2);
+      const ambiguityScore = normalizeScoreToPercent(weightCalc.final_score ?? 50).toFixed(2);
       
       return {
         weight_calculation_json: stateData.weight_calculation_json || {
@@ -776,7 +821,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       }
 
       // 從權重計算中提取可信度分數
-      const ambiguityScore = ((weightCalculationData?.final_score || 0.5) * 100).toFixed(2);
+      const ambiguityScore = normalizeScoreToPercent(weightCalculationData?.final_score ?? 50).toFixed(2);
       
       // 從分類結果中提取新聞正確性
       const newsCorrectness = classificationData?.classification === "錯誤" ? "低" : 
@@ -1001,7 +1046,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("開始使用現有 session 分析，Session ID:", sessionIdToUse);
       
       // 直接查詢現有 session
-      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionIdToUse}`;
+      const endpoint = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions/${sessionIdToUse}`;
       console.log(`查詢現有session端點: ${endpoint}`);
       
       const response = await fetch(endpoint, {
@@ -1044,7 +1089,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
             const processedData = processMultiAgentResponse(result, testMessage);
             // 在 run 成功完成後再寫入雲端資料庫
             try {
-              await saveSessionToDatabase("user", sessionIdToUse);
+          await saveSessionToDatabase(currentUserId || "user", sessionIdToUse);
             } catch (e) {
               console.log("儲存 session 記錄到資料庫失敗(不影響分析結果顯示):", e?.message || e);
             }
@@ -1058,6 +1103,22 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         const errorText = await response.text();
         console.log(`Session查詢失敗，狀態: ${response.status}`);
         console.log(`錯誤內容: ${errorText}`);
+        // 若 404：若為由 URL 載入且允許自動建立，嘗試以相同 sessionId 建立並 run
+        if (response.status === 404 && autoCreateOn404Ref.current) {
+          try {
+            console.log("查無現有 session，依 URL 請求允許，自動以相同 sessionId 建立並觸發分析...");
+            const newId = await createSession(sessionIdToUse);
+            const result = await sendMessage("分析現有session", newId);
+            if (result) {
+              const processedData = processMultiAgentResponse(result, "分析現有session");
+              return { raw: result, data: processedData };
+            }
+          } catch (e) {
+            console.log("自動建立 session 失敗:", e?.message || e);
+          }
+          alert(`Session 不存在且自動建立失敗: ${errorText}`);
+          return null;
+        }
         throw new Error(`Session查詢失敗: ${response.status} - ${errorText}`);
       }
     } catch (error) {
@@ -1099,7 +1160,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         console.log("處理後的數據:", processedData);
         // 在 run 成功完成後再寫入雲端資料庫
         try {
-          await saveSessionToDatabase("user", currentSessionId);
+          await saveSessionToDatabase(currentUserId || "user", currentSessionId);
         } catch (e) {
           console.log("儲存 session 記錄到資料庫失敗(不影響分析結果顯示):", e?.message || e);
         }
@@ -1158,8 +1219,9 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   };
 
   // Session ID 搜尋處理函數
-  const handleSessionSearch = async () => {
-    if (!sessionIdInput.trim()) {
+  const handleSessionSearch = async (overrideSessionId) => {
+    const targetSessionId = (overrideSessionId ?? sessionIdInput ?? '').trim()
+    if (!targetSessionId) {
       alert('請輸入 Session ID');
       return;
     }
@@ -1174,7 +1236,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("開始執行 session 分析...");
       setIsMultiAgentLoading(true);
       
-      const sessionResult = await performSessionAnalysis(sessionIdInput.trim());
+      const sessionResult = await performSessionAnalysis(targetSessionId);
       console.log("Session 分析完成:", sessionResult);
       
       setIsMultiAgentLoading(false);
@@ -1182,9 +1244,17 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       if (sessionResult && sessionResult.data) {
         console.log("Session 分析成功，設置結果");
         setAnalysisResult(sessionResult.data);
+        // 將查詢欄位同步成該 session 的主題（若有）
+        const topic = sessionResult.data?.final_report_json?.topic || sessionResult.data?.state?.analyzed_text || '';
+        if (topic) {
+          setSearchInput(topic);
+        }
+        // 自動滾動到結果
+        scrollToAnalysisResult();
       } else {
         console.log("Session 分析失敗，使用預設結果");
         setAnalysisResult(getDefaultAnalysisResult("Session 分析"));
+        scrollToAnalysisResult();
       }
       
     } catch (error) {
@@ -1326,7 +1396,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
     // 計算整體結果
     const messageVerification = getCredibilityLevel(responseData.weight_calculation_json.final_score);
-    const credibilityScore = (responseData.weight_calculation_json.final_score * 100).toFixed(1);
+    const credibilityScore = normalizeScoreToPercent(responseData.weight_calculation_json.final_score).toFixed(1);
 
     const newAnalysisResult = {
       // 原始 response_b1.json 數據
