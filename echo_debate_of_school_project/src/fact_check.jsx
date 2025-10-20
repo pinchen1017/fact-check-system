@@ -88,6 +88,27 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   // 透過 URL 參數自動帶入 session_id 並觸發搜尋
   const hasAutoLoadedFromUrl = useRef(false)
   const autoCreateOn404Ref = useRef(false)
+
+  // 從本地 API 查詢 userId（含備援重試）
+  const fetchUserIdBySession = async (sid) => {
+    const tryOnce = async (url) => {
+      try {
+        const r = await fetch(url)
+        if (!r.ok) return null
+        const j = await r.json().catch(() => null)
+        return j?.userId || null
+      } catch {
+        return null
+      }
+    }
+    // 1) 經由 Vite 代理
+    let uid = await tryOnce(`/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
+    if (uid) return uid
+    console.log('本地代理 /local-api/get_user_by_session 失敗，改嘗試直連 127.0.0.1:4000')
+    // 2) 直連本地 Node（避免代理錯誤）
+    uid = await tryOnce(`http://127.0.0.1:4000/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
+    return uid
+  }
   useEffect(() => {
     if (hasAutoLoadedFromUrl.current) return
     try {
@@ -103,17 +124,19 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         setSessionIdInput(sid)
         // 是否允許 404 時自動建立（需以 URL 帶 auto_create=true 才啟用）
         autoCreateOn404Ref.current = (params.get('auto_create') === 'true')
-        // 先用 session_id 向本地 API 查 user_id，再以此登入後觸發 Session 搜尋
-        fetch(`/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
-          .then(async r => ({ ok: r.ok, json: await r.json().catch(() => null) }))
-          .then(resp => {
-            if (resp.ok && resp.json?.userId) {
-              setCurrentUserId(resp.json.userId)
-              console.log('透過資料庫查到 userId:', resp.json.userId)
+        // 先用 session_id 向本地 API 查 user_id（含備援），再以此登入後觸發 Session 搜尋
+        fetchUserIdBySession(sid)
+          .then((fetchedUserId) => {
+            if (fetchedUserId) {
+              setCurrentUserId(fetchedUserId)
+              console.log('透過資料庫查到 userId:', fetchedUserId)
+              // 直接使用查到的 userId，不等 state 更新
+              handleSessionSearch(sid, fetchedUserId)
+            } else {
+              console.log('資料庫未查到 userId，改用當前使用者或預設 user')
+              const userForQuery = currentUserId || 'user'
+              handleSessionSearch(sid, userForQuery)
             }
-          })
-          .finally(() => {
-            handleSessionSearch(sid)
           })
       }
     } catch (e) {
@@ -1041,12 +1064,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
 
   // 使用現有 session_id 進行分析
-  const performSessionAnalysis = async (sessionIdToUse) => {
+  const performSessionAnalysis = async (sessionIdToUse, userIdOverride) => {
     try {
       console.log("開始使用現有 session 分析，Session ID:", sessionIdToUse);
+      const userPathId = userIdOverride || currentUserId || 'user'
       
       // 直接查詢現有 session
-      const endpoint = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions/${sessionIdToUse}`;
+      const endpoint = `${proxyApiUrl}/apps/judge/users/${userPathId}/sessions/${sessionIdToUse}`;
       console.log(`查詢現有session端點: ${endpoint}`);
       
       const response = await fetch(endpoint, {
@@ -1219,7 +1243,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   };
 
   // Session ID 搜尋處理函數
-  const handleSessionSearch = async (overrideSessionId) => {
+  const handleSessionSearch = async (overrideSessionId, overrideUserId) => {
     const targetSessionId = (overrideSessionId ?? sessionIdInput ?? '').trim()
     if (!targetSessionId) {
       alert('請輸入 Session ID');
@@ -1236,7 +1260,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("開始執行 session 分析...");
       setIsMultiAgentLoading(true);
       
-      const sessionResult = await performSessionAnalysis(targetSessionId);
+      const sessionResult = await performSessionAnalysis(targetSessionId, overrideUserId);
       console.log("Session 分析完成:", sessionResult);
       
       setIsMultiAgentLoading(false);
