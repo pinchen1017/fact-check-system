@@ -1095,69 +1095,50 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       
       const data = await simpleApiCall(endpoint);
       console.log("Session查詢成功:", data);
+      
+      // 檢查是否有分析數據
+      if (data.state && Object.keys(data.state).length > 0) {
+        console.log("找到現有分析數據，直接使用");
         
-        // 檢查是否有分析數據
-        if (data.state && Object.keys(data.state).length > 0) {
-          console.log("找到現有分析數據，直接使用");
-          
-          // 更新全局session狀態
-          setSessionId(sessionIdToUse);
-          setIsSessionCreated(true);
-          
-          // 處理現有數據
-          const processedData = processMultiAgentResponse(data, data.state.analyzed_text || "現有分析");
-          console.log("處理後的數據:", processedData);
-          
-          return {
-            raw: data,
-            data: processedData
-          };
-        } else {
-          console.log("Session存在但沒有分析數據，嘗試發送新訊息");
-          
-          // 發送測試訊息來觸發分析
-          const testMessage = "分析現有session";
-          const result = await sendMessage(testMessage, sessionIdToUse);
-          
-          if (result) {
-            const processedData = processMultiAgentResponse(result, testMessage);
-            // 在 run 成功完成後再寫入雲端資料庫
-            try {
-          await saveSessionToDatabase(currentUserId || "user", sessionIdToUse);
-            } catch (e) {
-              console.log("儲存 session 記錄到資料庫失敗(不影響分析結果顯示):", e?.message || e);
-            }
-            return {
-              raw: result,
-              data: processedData
-            };
-          }
-        }
+        // 更新全局session狀態
+        setSessionId(sessionIdToUse);
+        setIsSessionCreated(true);
+        
+        // 處理現有數據
+        const processedData = processMultiAgentResponse(data, data.state.analyzed_text || "現有分析");
+        console.log("處理後的數據:", processedData);
+        
+        return {
+          raw: data,
+          data: processedData
+        };
       } else {
-        const errorText = await response.text();
-        console.log(`Session查詢失敗，狀態: ${response.status}`);
-        console.log(`錯誤內容: ${errorText}`);
-        // 若 404：若為由 URL 載入且允許自動建立，嘗試以相同 sessionId 建立並 run
-        if (response.status === 404 && autoCreateOn404Ref.current) {
-          try {
-            console.log("查無現有 session，依 URL 請求允許，自動以相同 sessionId 建立並觸發分析...");
-            const newId = await createSession(sessionIdToUse);
-            const result = await sendMessage("分析現有session", newId);
-            if (result) {
-              const processedData = processMultiAgentResponse(result, "分析現有session");
-              return { raw: result, data: processedData };
-            }
-          } catch (e) {
-            console.log("自動建立 session 失敗:", e?.message || e);
-          }
-          alert(`Session 不存在且自動建立失敗: ${errorText}`);
-          return null;
-        }
-        throw new Error(`Session查詢失敗: ${response.status} - ${errorText}`);
+        console.log("Session存在但沒有分析數據，使用預設結果");
+        return {
+          raw: data,
+          data: getDefaultAnalysisResult("Session 存在但無分析數據")
+        };
       }
     } catch (error) {
-      console.error("Session分析錯誤:", error);
-      throw error;
+      console.log(`Session分析錯誤:`, error.message);
+      
+      // 如果查詢失敗，嘗試創建新session
+      if (autoCreateOn404Ref.current) {
+        console.log("Session不存在，嘗試創建新session");
+        try {
+          const newSessionResult = await createNewSession(sessionIdToUse);
+          if (newSessionResult) {
+            return newSessionResult;
+          }
+        } catch (createError) {
+          console.log("創建新session失敗:", createError.message);
+        }
+      }
+      
+      return {
+        raw: null,
+        data: getDefaultAnalysisResult("Session 分析錯誤")
+      };
     }
   };
 
