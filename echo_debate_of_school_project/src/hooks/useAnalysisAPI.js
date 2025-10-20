@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-
-// API基礎URL
-const API_BASE_URL = 'http://localhost:3000/api';
+import { API_BASE_URL, API_ENDPOINTS, createApiUrl, handleApiError } from '../config/api';
 
 // 自定義Hook用於處理分析API
 export const useAnalysisAPI = (runId, token) => {
@@ -17,7 +15,7 @@ export const useAnalysisAPI = (runId, token) => {
     
     try {
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/runs/${runId}?t=${token}`);
+      const response = await fetch(createApiUrl(`${API_ENDPOINTS.RUN_DETAIL(runId)}?t=${token}`));
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -38,7 +36,7 @@ export const useAnalysisAPI = (runId, token) => {
   const connectSSE = useCallback(() => {
     if (!runId || !token) return;
 
-    const eventSource = new EventSource(`${API_BASE_URL}/runs/${runId}/stream?t=${token}`);
+    const eventSource = new EventSource(createApiUrl(`${API_ENDPOINTS.RUN_STREAM(runId)}?t=${token}`));
     
     eventSource.onopen = () => {
       setIsConnected(true);
@@ -79,7 +77,7 @@ export const useAnalysisAPI = (runId, token) => {
       setError(null);
       setStatus('creating');
       
-      const response = await fetch(`${API_BASE_URL}/runs`, {
+      const response = await fetch(createApiUrl(API_ENDPOINTS.RUNS), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
