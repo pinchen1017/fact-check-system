@@ -89,24 +89,24 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   const hasAutoLoadedFromUrl = useRef(false)
   const autoCreateOn404Ref = useRef(false)
 
-  // 從本地 API 查詢 userId（含備援重試）
+  // 從後端 API 查詢 userId（含備援重試）
   const fetchUserIdBySession = async (sid) => {
     const tryOnce = async (url) => {
       try {
         const r = await fetch(url)
         if (!r.ok) return null
         const j = await r.json().catch(() => null)
-        return j?.userId || null
+        return j?.userId || j?.user_data?.id || null
       } catch {
         return null
       }
     }
-    // 1) 經由 Vite 代理
-    let uid = await tryOnce(`/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
+    // 1) 使用新的後端 API
+    let uid = await tryOnce(`${apiUrl}/local-api/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
     if (uid) return uid
-    console.log('本地代理 /local-api/get_user_by_session 失敗，改嘗試直連 127.0.0.1:4000')
-    // 2) 直連本地 Node（避免代理錯誤）
-    uid = await tryOnce(`http://127.0.0.1:4000/get_user_by_session?sessionId=${encodeURIComponent(sid)}`)
+    console.log('後端 API /local-api/get_user_by_session 失敗，改嘗試 session 端點')
+    // 2) 嘗試 session 端點
+    uid = await tryOnce(`${proxyApiUrl}/apps/judge/users/user/sessions/${encodeURIComponent(sid)}`)
     return uid
   }
   useEffect(() => {
@@ -233,8 +233,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   }
 
   // 多agent API相關函數
-  const apiUrl = 'http://120.107.172.133:10001/';
-  const proxyApiUrl = '/api-proxy'; // 使用代理避免CORS問題
+  const apiUrl = 'https://fact-check-backend-vqvl.onrender.com/api'; // 使用新的後端 API
+  const proxyApiUrl = 'https://fact-check-backend-vqvl.onrender.com/api-proxy'; // 使用新的後端代理
 
 
   // 手動測試API連接函數
@@ -1069,8 +1069,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("開始使用現有 session 分析，Session ID:", sessionIdToUse);
       const userPathId = userIdOverride || currentUserId || 'user'
       
-      // 直接查詢現有 session
-      const endpoint = `${proxyApiUrl}/apps/judge/users/${userPathId}/sessions/${sessionIdToUse}`;
+      // 直接查詢現有 session - 使用新的後端 API
+      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionIdToUse}`;
       console.log(`查詢現有session端點: ${endpoint}`);
       
       const response = await fetch(endpoint, {
