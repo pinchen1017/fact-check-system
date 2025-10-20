@@ -93,11 +93,21 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   const fetchUserIdBySession = async (sid) => {
     const tryOnce = async (url) => {
       try {
+        console.log('正在查詢 session 端點:', url)
         const r = await fetch(url)
-        if (!r.ok) return null
+        console.log('Session 端點回應狀態:', r.status)
+        if (!r.ok) {
+          console.log('Session 端點回應失敗:', r.status, r.statusText)
+          return null
+        }
         const j = await r.json().catch(() => null)
-        return j?.userId || j?.user_data?.id || null
-      } catch {
+        console.log('Session 端點回應數據:', j)
+        // 修復：正確解析 user_data.id
+        const userId = j?.userId || j?.user_data?.id || null
+        console.log('解析到的 userId:', userId)
+        return userId
+      } catch (error) {
+        console.log('Session 端點查詢錯誤:', error)
         return null
       }
     }
