@@ -1444,7 +1444,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 >
                   {isSearching ? '分析中...' : '開始分析'}
                 </button>
-                <div className="search-box" style={{ marginTop: '10px' }}>
+                {/*<div className="search-box" style={{ marginTop: '10px' }}>
                   <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -1467,7 +1467,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   {isSearching ? '搜尋中...' : 'Session 搜尋'}
-                </button>
+                </button>*/}
                 {/* <button
                   className="test-button"
                   onClick={testApiConnection}
