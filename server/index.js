@@ -3,6 +3,7 @@ import cors from "cors";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+import pg from "pg";
 
 const app = express();
 app.use(cors());
@@ -26,6 +27,41 @@ const verifyToken = (req, res, next) => {
 };
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
+
+// Cloud SQL 連線設定（使用與 test_cloud_sql.py 相同參數）
+const pool = new pg.Pool({
+  host: process.env.DB_HOST || "35.221.147.151",
+  port: Number(process.env.DB_PORT || 5432),
+  user: process.env.DB_USER || "postgres",
+  password: process.env.DB_PASSWORD || "@Aa123456",
+  database: process.env.DB_NAME || "linebot_v2",
+  max: 5,
+  ssl: (process.env.DB_SSL === "true" || process.env.RENDER === "true" || process.env.NODE_ENV === "production")
+    ? { rejectUnauthorized: false }
+    : false,
+});
+
+// 直接寫入 session 記錄
+app.post("/save_session_record", async (req, res) => {
+  try {
+    const { userId, sessionId } = req.body || {};
+    if (!userId || !sessionId) return res.status(400).json({ error: "missing userId or sessionId" });
+    const client = await pool.connect();
+    try {
+      const now = new Date();
+      await client.query(
+        "INSERT INTO linebot_v2 (id, session_id, timestamp) VALUES ($1, $2, $3)",
+        [userId, sessionId, now]
+      );
+      res.json({ ok: true, userId, sessionId, timestamp: now.toISOString() });
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error("save_session_record error:", e);
+    res.status(500).json({ error: "db_error", detail: String(e?.message || e) });
+  }
+});
 
 app.post("/api/runs", (req, res) => {
   const id = "rk_" + Math.random().toString(36).slice(2);

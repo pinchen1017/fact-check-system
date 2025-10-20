@@ -465,6 +465,67 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     };
   };
 
+  // 儲存 session 記錄到資料庫的函數
+  const saveSessionToDatabase = async (userId, sessionId) => {
+    try {
+      console.log("正在儲存 session 記錄到資料庫...");
+      console.log(`User ID: ${userId}, Session ID: ${sessionId}`);
+      
+      // 先嘗試呼叫本地專用儲存端點（Node 直連 Cloud SQL）
+      try {
+        const saveUrl = `/local-api/save_session_record`;
+        const savePayload = { userId, sessionId };
+        console.log("嘗試呼叫專用儲存端點:", saveUrl, savePayload);
+        const saveResp = await fetch(saveUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(savePayload),
+        });
+        const saveText = await saveResp.text().catch(() => '');
+        console.log("專用端點回應狀態:", saveResp.status, "內容:", saveText);
+        if (saveResp.ok) {
+          console.log("✅ Session 記錄已儲存到資料庫(專用端點)");
+          return true;
+        }
+      } catch (e) {
+        console.log("專用儲存端點不可用，改用後備方案(/run)");
+      }
+
+      // 後備方案：調用 run 端點，附上 role 以符合後端期望
+      const runUrl = `${proxyApiUrl}/run`;
+      const runData = {
+        "appName": "judge",
+        "userId": userId,
+        "sessionId": sessionId,
+        "newMessage": {
+          "role": "user",
+          "parts": [{ "text": "初始化 session（僅用於儲存資料紀錄）" }]
+        },
+        "streaming": false
+      };
+      
+      console.log("調用 run 端點作為後備以觸發 session 記錄儲存...");
+      const response = await fetch(runUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(runData),
+      });
+      const respText = await response.text().catch(() => '');
+      console.log("後備 /run 回應狀態:", response.status, "內容:", respText);
+      if (response.ok) {
+        console.log("✅ Session 記錄已儲存到資料庫(/run 後備)");
+        return true;
+      }
+      console.log("❌ Session 記錄儲存失敗:", response.status);
+      return false;
+    } catch (error) {
+      console.error("❌ 儲存 session 記錄時發生錯誤:", error);
+      return false;
+    }
+  };
+
   // 創建 Session 函數
   const createSession = async () => {
     const newSessionId = generateUUID();
@@ -498,6 +559,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         // 使用回應中的實際session ID，如果沒有則使用生成的ID
         const actualSessionId = data.id || newSessionId;
         console.log("返回的Session ID:", actualSessionId);
+        
         return actualSessionId;
       } else {
         const errorText = await response.text();
@@ -980,6 +1042,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           
           if (result) {
             const processedData = processMultiAgentResponse(result, testMessage);
+            // 在 run 成功完成後再寫入雲端資料庫
+            try {
+              await saveSessionToDatabase("user", sessionIdToUse);
+            } catch (e) {
+              console.log("儲存 session 記錄到資料庫失敗(不影響分析結果顯示):", e?.message || e);
+            }
             return {
               raw: result,
               data: processedData
@@ -1029,6 +1097,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         // 處理API回應
         const processedData = processMultiAgentResponse(result, query);
         console.log("處理後的數據:", processedData);
+        // 在 run 成功完成後再寫入雲端資料庫
+        try {
+          await saveSessionToDatabase("user", currentSessionId);
+        } catch (e) {
+          console.log("儲存 session 記錄到資料庫失敗(不影響分析結果顯示):", e?.message || e);
+        }
         
         return {
           raw: result,

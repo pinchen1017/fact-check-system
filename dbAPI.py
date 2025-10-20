@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
+import psycopg2
 
 load_dotenv()
 PG_DSN = os.getenv("PG_DSN")
@@ -34,11 +35,65 @@ def _norm(v):
     return v
 def row2dict(row): return {k: _norm(v) for k, v in dict(row).items()}
 
+# 儲存 session 記錄的函數
+def save_session_record(user_id, session_id):
+    """儲存 session 記錄到現有的資料庫表"""
+    try:
+        conn = psycopg2.connect(
+            host="35.221.147.151",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="linebot_v2"
+        )
+        
+        cur = conn.cursor()
+        
+        # 插入到現有的 linebot_v2 表，使用正確的欄位名稱
+        insert_sql = """
+        INSERT INTO linebot_v2 (id, session_id, timestamp)
+        VALUES (%s, %s, %s)
+        """
+        
+        current_time = datetime.datetime.now()
+        cur.execute(insert_sql, (user_id, session_id, current_time))
+        conn.commit()
+        
+        print(f"✅ Session 記錄已儲存: user_id={user_id}, session_id={session_id}, timestamp={current_time}")
+        
+        cur.close()
+        conn.close()
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ 儲存 session 記錄失敗: {e}")
+        return False
+
 @app.get("/health")
 def health():
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
     return {"ok": True}
+
+# 新增儲存 session 記錄的端點
+from pydantic import BaseModel
+
+class SessionSaveRequest(BaseModel):
+    user_id: str
+    session_id: str
+
+@app.post("/save-session")
+def save_session_endpoint(request: SessionSaveRequest):
+    """儲存 session 記錄到資料庫"""
+    try:
+        success = save_session_record(request.user_id, request.session_id)
+        if success:
+            return {"status": "success", "message": "Session 記錄已儲存"}
+        else:
+            return {"status": "error", "message": "Session 記錄儲存失敗"}
+    except Exception as e:
+        return {"status": "error", "message": f"儲存失敗: {str(e)}"}
 
 @app.get("/analysis/{t}")
 def analysis(t: str):
@@ -189,16 +244,23 @@ load_reference_session_data()
 def create_session(session_data: SessionCreate):
     """創建新的 session"""
     session_id = session_data.sessionId
+    user_id = session_data.userId
+    
+    # 儲存到記憶體中的 sessions_db
     sessions_db[session_id] = {
         "id": session_id,
         "appName": session_data.appName,
-        "userId": session_data.userId,
+        "userId": user_id,
         "state": {}
     }
+    
+    # 儲存到雲端資料庫
+    save_session_record(user_id, session_id)
+    
     return SessionResponse(
         id=session_id,
         appName=session_data.appName,
-        userId=session_data.userId,
+        userId=user_id,
         state={}
     )
 
@@ -232,12 +294,16 @@ def run_analysis(request: RunRequest):
     # 獲取用戶訊息
     user_message = request.newMessage.get("parts", [{}])[0].get("text", "")
     session_id = request.sessionId
+    user_id = request.userId
     
     print(f"收到分析請求 - Session: {session_id}, Message: {user_message}")
     
     # 檢查 session 是否存在
     if session_id not in sessions_db:
         raise HTTPException(404, "Session not found")
+    
+    # 在開始分析時，確保 session 記錄已存在於資料庫中
+    save_session_record(user_id, session_id)
     
     # 從實際的 session 數據中提取分析結果
     # 這裡使用您提供的實際 session ID 作為數據源

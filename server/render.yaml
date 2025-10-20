@@ -6,11 +6,25 @@ services:
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: 18
+        value: 20
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
         value: 10000
       - key: NODE_ENV
         value: production
+      - key: RENDER
+        value: "true"
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: linebot_v2
+      - key: DB_SSL
+        value: "true"
     healthCheckPath: /api/health

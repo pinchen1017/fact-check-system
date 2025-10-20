@@ -17,6 +17,11 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     proxy: {
+      '/local-api': {
+        target: 'http://127.0.0.1:4000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/local-api/, ''),
+      },
       '/api-proxy': {
         target: 'http://120.107.172.133:10001',
         changeOrigin: true,
