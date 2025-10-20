@@ -2,14 +2,15 @@
 // 根據環境自動選擇 API 端點
 
 const getApiBaseUrl = () => {
-  // 檢查是否在生產環境
-  if (import.meta.env.PROD) {
-    // 生產環境：使用 Render 部署的後端
-    return import.meta.env.VITE_API_BASE_URL || 'https://fact-check-backend-xxxx.onrender.com/api';
-  } else {
-    // 開發環境：使用本地後端
-    return 'http://localhost:3000/api';
-  }
+  // 強制使用後端 URL（暫時解決環境變數問題）
+  return 'https://fact-check-backend-vqvl.onrender.com/api';
+  
+  // 原始邏輯（如果環境變數設置成功後可以恢復）
+  // if (import.meta.env.PROD) {
+  //   return import.meta.env.VITE_API_BASE_URL || 'https://fact-check-backend-vqvl.onrender.com/api';
+  // } else {
+  //   return 'http://localhost:3000/api';
+  // }
 };
 
 export const API_BASE_URL = getApiBaseUrl();
