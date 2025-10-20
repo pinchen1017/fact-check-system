@@ -235,6 +235,27 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   // 多agent API相關函數
   const apiUrl = 'https://fact-check-backend-vqvl.onrender.com/api'; // 使用新的後端 API
   const proxyApiUrl = 'https://fact-check-backend-vqvl.onrender.com/api-proxy'; // 使用新的後端代理
+  
+  // 簡化的 API 調用函數
+  const simpleApiCall = async (endpoint, options = {}) => {
+    try {
+      const response = await fetch(endpoint, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        ...options
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API 調用失敗:', error);
+      throw error;
+    }
+  };
 
 
   // 手動測試API連接函數
@@ -1067,24 +1088,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   const performSessionAnalysis = async (sessionIdToUse, userIdOverride) => {
     try {
       console.log("開始使用現有 session 分析，Session ID:", sessionIdToUse);
-      const userPathId = userIdOverride || currentUserId || 'user'
       
-      // 直接查詢現有 session - 使用新的後端 API
+      // 使用簡化的 API 調用
       const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionIdToUse}`;
       console.log(`查詢現有session端點: ${endpoint}`);
       
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log(`Session查詢回應狀態: ${response.status}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Session查詢成功:", data);
+      const data = await simpleApiCall(endpoint);
+      console.log("Session查詢成功:", data);
         
         // 檢查是否有分析數據
         if (data.state && Object.keys(data.state).length > 0) {
