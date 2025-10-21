@@ -103,7 +103,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         const j = await r.json().catch(() => null)
         console.log('Session 端點回應數據:', j)
         // 修復：根據新的後端 API 結構解析 userId
-        const userId = j?.session?.id || j?.userId || j?.user_data?.id || null
+        const userId = j?.session?.id || j?.userId || j?.user_data?.id || j?.id || null
         console.log('解析到的 userId:', userId)
         return userId
       } catch (error) {
@@ -135,14 +135,15 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         // 先用 session_id 向本地 API 查 user_id（含備援），再以此登入後觸發 Session 搜尋
         fetchUserIdBySession(sid)
           .then((fetchedUserId) => {
-            if (fetchedUserId) {
+            if (fetchedUserId && fetchedUserId !== 'user') {
               setCurrentUserId(fetchedUserId)
-              console.log('透過資料庫查到 userId:', fetchedUserId)
+              console.log('透過資料庫查到真實 userId:', fetchedUserId)
               // 直接使用查到的 userId，不等 state 更新
               handleSessionSearch(sid, fetchedUserId)
             } else {
-              console.log('資料庫未查到 userId，改用當前使用者或預設 user')
-              const userForQuery = currentUserId || 'user'
+              console.log('資料庫未查到真實 userId，使用預設 user')
+              const userForQuery = 'user'
+              setCurrentUserId(userForQuery)
               handleSessionSearch(sid, userForQuery)
             }
           })
@@ -563,25 +564,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("正在儲存 session 記錄到資料庫...");
       console.log(`User ID: ${userId}, Session ID: ${sessionId}`);
       
-      // 先嘗試呼叫本地專用儲存端點（Node 直連 Cloud SQL）
-      try {
-        const saveUrl = `/local-api/save_session_record`;
-        const savePayload = { userId, sessionId };
-        console.log("嘗試呼叫專用儲存端點:", saveUrl, savePayload);
-        const saveResp = await fetch(saveUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(savePayload),
-        });
-        const saveText = await saveResp.text().catch(() => '');
-        console.log("專用端點回應狀態:", saveResp.status, "內容:", saveText);
-        if (saveResp.ok) {
-          console.log("✅ Session 記錄已儲存到資料庫(專用端點)");
-          return true;
-        }
-      } catch (e) {
-        console.log("專用儲存端點不可用，改用後備方案(/run)");
-      }
+      // 修復：直接使用後端 API，不再調用不存在的 /local-api 端點
+      console.log("使用後端 API 儲存 session 記錄...");
 
       // 後備方案：調用 run 端點，附上 role 以符合後端期望
       const runUrl = `${proxyApiUrl}/run`;
@@ -1171,10 +1155,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const currentSessionId = await createSession();
       console.log("Session創建成功，ID:", currentSessionId);
       
-      // 注意：createSession 函數內部已經更新了全局狀態
-      // 這裡不需要重複設置，但我們可以確認狀態
-      console.log("確認全局session狀態，ID:", sessionId);
-      console.log("確認session是否已創建:", isSessionCreated);
+      // 強制更新全局狀態，確保使用正確的 session_id
+      setSessionId(currentSessionId);
+      setIsSessionCreated(true);
+      console.log("強制更新全局session狀態，ID:", currentSessionId);
+      console.log("確認session是否已創建:", true);
       
       // 等待一下確保session創建完成
       console.log("等待session創建完成...");
