@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: fact-check-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DB_HOST
+        value: 35.221.147.151
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: linebot_v2
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASS
+        value: "@Aa123456"
