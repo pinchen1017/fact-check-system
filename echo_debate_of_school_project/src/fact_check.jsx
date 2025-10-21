@@ -102,8 +102,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         }
         const j = await r.json().catch(() => null)
         console.log('Session 端點回應數據:', j)
-        // 修復：正確解析 user_data.id
-        const userId = j?.userId || j?.user_data?.id || null
+        // 修復：根據新的後端 API 結構解析 userId
+        const userId = j?.session?.id || j?.userId || j?.user_data?.id || null
         console.log('解析到的 userId:', userId)
         return userId
       } catch (error) {
@@ -111,7 +111,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         return null
       }
     }
-    // 直接使用 session 端點
+    // 使用新的後端 API 結構
     console.log('嘗試從 session 端點獲取用戶資料')
     const uid = await tryOnce(`${proxyApiUrl}/apps/judge/users/user/sessions/${encodeURIComponent(sid)}`)
     return uid
@@ -648,10 +648,17 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       if (response.ok) {
         const data = await response.json();
         console.log("Session創建成功:", data);
-        // 修復：正確使用後端返回的 session_id
-        const actualSessionId = data.session_id || data.id || newSessionId;
-        console.log("後端返回的 session_id:", data.session_id);
-        console.log("使用的 Session ID:", actualSessionId);
+        
+        // 關鍵修復：必須使用服務器返回的 session_id，覆寫本地生成的 ID
+        const serverSessionId = data.session_id || data.id;
+        if (serverSessionId && serverSessionId !== newSessionId) {
+          console.log("⚠️ 服務器返回了不同的 session_id，覆寫本地 ID");
+          console.log("本地生成的 ID:", newSessionId);
+          console.log("服務器返回的 ID:", serverSessionId);
+        }
+        
+        const actualSessionId = serverSessionId || newSessionId;
+        console.log("最終使用的 Session ID:", actualSessionId);
         
         // 更新全局 session 狀態
         setSessionId(actualSessionId);
@@ -672,14 +679,15 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
   // 發送訊息函數
   const sendMessage = async (query, currentSessionId) => {
+    // 確保使用正確的 session_id（服務器返回的 ID）
+    const actualSessionId = currentSessionId || sessionId;
+    console.log("發送訊息時使用的 Session ID:", actualSessionId);
+    
     const messageData = {
       "appName": "judge",
       "userId": currentUserId || "user",
-      "sessionId": currentSessionId,
-      "newMessage": {
-        "role": "user",
-        "parts": [{"text": query}]
-      },
+      "sessionId": actualSessionId,
+      "message": query,  // 簡化訊息格式
       "streaming": false
     };
 
@@ -688,7 +696,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const messageUrl = `${proxyApiUrl}/run`;
       console.log(`發送訊息到run端點，URL: ${messageUrl}`);
       console.log("訊息數據:", messageData);
-      console.log("使用的session ID:", currentSessionId);
+      console.log("使用的session ID:", actualSessionId);
       
       const response = await fetch(messageUrl, {
         method: 'POST',
@@ -1163,10 +1171,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       const currentSessionId = await createSession();
       console.log("Session創建成功，ID:", currentSessionId);
       
-      // 更新全局session狀態
-      setSessionId(currentSessionId);
-      setIsSessionCreated(true);
-      console.log("全局session狀態已更新，ID:", currentSessionId);
+      // 注意：createSession 函數內部已經更新了全局狀態
+      // 這裡不需要重複設置，但我們可以確認狀態
+      console.log("確認全局session狀態，ID:", sessionId);
+      console.log("確認session是否已創建:", isSessionCreated);
       
       // 等待一下確保session創建完成
       console.log("等待session創建完成...");
