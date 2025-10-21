@@ -156,20 +156,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
 
   // 呼叫 Cofacts Agent API 取得相似查證
   const fetchCofactResult = async (query) => {
-    const url = 'https://unknown4853458-cofacts-agent-rag.hf.space/agent/check_message'
+    // 修復：使用後端的 Cofact 代理端點
+    const url = `${apiUrl}/cofact/check`
     const headers = {
-      'Authorization': cofactToken,
-      'accept': 'application/json',
-      'X-API-Key': 'CofactChecker123',
       'Content-Type': 'application/json',
     }
     const payload = {
       text: query,
-      top_k: 5,
-      jaccard_threshold: 0.0,
-      use_api: true,
-      use_hf: true,
-      allow_llm: true,
     }
 
     try {
@@ -655,9 +648,14 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       if (response.ok) {
         const data = await response.json();
         console.log("Session創建成功:", data);
-        // 使用回應中的實際session ID，如果沒有則使用生成的ID
-        const actualSessionId = data.id || newSessionId;
-        console.log("返回的Session ID:", actualSessionId);
+        // 修復：正確使用後端返回的 session_id
+        const actualSessionId = data.session_id || data.id || newSessionId;
+        console.log("後端返回的 session_id:", data.session_id);
+        console.log("使用的 Session ID:", actualSessionId);
+        
+        // 更新全局 session 狀態
+        setSessionId(actualSessionId);
+        setIsSessionCreated(true);
         
         return actualSessionId;
       } else {
