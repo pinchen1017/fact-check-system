@@ -114,6 +114,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     try {
       const params = new URLSearchParams(window.location.search)
       let sidParam = params.get('session_id')
+      let userIdParam = params.get('user_id')
       if (sidParam && sidParam.trim()) {
         hasAutoLoadedFromUrl.current = true
         // 兼容網址帶入的引號或編碼(%27)
@@ -124,7 +125,16 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         setSessionIdInput(sid)
         // 是否允許 404 時自動建立（需以 URL 帶 auto_create=true 才啟用）
         autoCreateOn404Ref.current = (params.get('auto_create') === 'true')
-        // 先用 session_id 向本地 API 查 user_id（含備援），再以此登入後觸發 Session 搜尋
+        // 若 URL 直接帶 user_id，優先使用
+        if (userIdParam && userIdParam.trim()) {
+          try { userIdParam = decodeURIComponent(userIdParam) } catch {}
+          const u = userIdParam.trim()
+          setCurrentUserId(u)
+          console.log('以 URL user_id 直接指定使用者:', u)
+          handleSessionSearch(sid, u)
+          return
+        }
+        // 否則先用 session_id 向本地 API 查 user_id（含備援）
         fetchUserIdBySession(sid)
           .then((fetchedUserId) => {
             if (fetchedUserId) {
@@ -133,7 +143,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
               // 直接使用查到的 userId，不等 state 更新
               handleSessionSearch(sid, fetchedUserId)
             } else {
-              console.log('資料庫未查到 userId，改用當前使用者或預設 user')
+              console.log('資料庫未查到 userId，改用當前使用者或預設 user (可能導致 404)')
               const userForQuery = currentUserId || 'user'
               handleSessionSearch(sid, userForQuery)
             }
@@ -279,7 +289,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         "sessionId": generateUUID()
       };
       
-      const sessionResponse = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions`, {
+      const sessionResponse = await fetch(`${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -319,7 +329,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         "sessionId": testSessionId
       };
       
-      const createResponse = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions`, {
+      const createResponse = await fetch(`${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -473,7 +483,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // 查詢剛創建的session（使用實際的session ID）
-        const queryUrl = `${proxyApiUrl}/apps/judge/users/user/sessions/${actualSessionId}`;
+        const queryUrl = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions/${actualSessionId}`;
         console.log("查詢Session URL:", queryUrl);
         
         const queryResponse = await fetch(queryUrl, {
@@ -601,7 +611,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     
     try {
       // 使用成功的session創建方法
-      const sessionUrl = `${proxyApiUrl}/apps/judge/users/user/sessions`;
+      const sessionUrl = `${proxyApiUrl}/apps/judge/users/${currentUserId || 'user'}/sessions`;
       const sessionData = {
         "appName": "judge",
         "userId": currentUserId || "user",
@@ -1002,12 +1012,13 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   };
 
   // Session驗證函數
-  const verifySession = async (sessionId) => {
+  const verifySession = async (sessionId, userIdOverride) => {
     console.log("驗證Session是否存在，ID:", sessionId);
     
     try {
       // 使用正確的session查詢端點
-      const endpoint = `${proxyApiUrl}/apps/judge/users/user/sessions/${sessionId}`;
+      const userPathId = userIdOverride || currentUserId || 'user'
+      const endpoint = `${proxyApiUrl}/apps/judge/users/${userPathId}/sessions/${sessionId}`;
       console.log(`查詢session端點: ${endpoint}`);
       
       const response = await fetch(endpoint, {
@@ -1030,7 +1041,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         
         // 如果查詢失敗，嘗試列出所有sessions來檢查是否存在
         console.log("嘗試列出所有sessions來檢查...");
-        const listResponse = await fetch(`${proxyApiUrl}/apps/judge/users/user/sessions/`, {
+        const listResponse = await fetch(`${proxyApiUrl}/apps/judge/users/${userPathId}/sessions/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -1577,7 +1588,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 >
                   測試API連接
                 </button> */}
-                <button
+                {/* <button
                   className="test-button"
                   onClick={testSessionCreation}
                   style={{
@@ -1591,7 +1602,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                   }}
                 >
                   測試Session創建
-                </button> 
+                </button>  */}
               </div>
             </div>
           </div>
