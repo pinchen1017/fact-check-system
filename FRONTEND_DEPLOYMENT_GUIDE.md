@@ -32,7 +32,7 @@
 NODE_VERSION=18
 VITE_COFACT_TOKEN=您的_Cofact_Token
 VITE_API_URL=https://your-backend-url.onrender.com (如果需要後端)
-VITE_FASTAPI_URL=http://120.107.172.133:10001
+VITE_FASTAPI_URL=http://127.0.0.1:8000
 ```
 
 ### 3. 啟用 Auto-Deploy

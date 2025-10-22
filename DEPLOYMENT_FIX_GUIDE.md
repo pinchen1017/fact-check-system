@@ -32,7 +32,7 @@
    - `NODE_VERSION`: `18`
    - `VITE_COFACT_TOKEN`: 您的 Cofact Token
    - `VITE_API_URL`: 後端 API URL (如果需要)
-   - `VITE_FASTAPI_URL`: `http://120.107.172.133:10001`
+   - `VITE_FASTAPI_URL`: `http://127.0.0.1:8000`
 
 ### 2. 設置 GitHub Webhook
 

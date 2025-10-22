@@ -51,7 +51,7 @@ echo.
 echo 3. 設置環境變量：
 echo    - NODE_VERSION: 18
 echo    - VITE_COFACT_TOKEN: 您的 Cofact Token
-echo    - VITE_FASTAPI_URL: http://120.107.172.133:10001
+echo    - VITE_FASTAPI_URL: http://127.0.0.1:8000
 echo.
 echo 4. 啟用 Auto-Deploy：
 echo    - 設置為 "Yes"
