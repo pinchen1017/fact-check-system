@@ -340,7 +340,31 @@ const NewsCourtroom = ({ data }) => {
     }
   }
   
-  const jury = data?.jury_result || {};
+  // 嘗試多種可能的 jury 資料路徑，並從現有資料構造
+  let jury = data?.jury_result || 
+             data?.raw?.jury_result || 
+             data?.final_report_json?.jury_result ||
+             data?.jury ||
+             {};
+  
+  // 如果沒有找到 jury_result，嘗試從 final_report_json 構造
+  if (!jury || Object.keys(jury).length === 0) {
+    const fr = data?.final_report_json || {};
+    if (fr.jury_score) {
+      jury = {
+        verdict: fr.jury_brief || '無判決',
+        verdict_result: fr.jury_score > 50 ? '正方' : '反方',
+        scores: {
+          evidence_quality: Math.round(fr.jury_score * 0.3),
+          logical_rigor: Math.round(fr.jury_score * 0.25),
+          robustness: Math.round(fr.jury_score * 0.2),
+          social_impact: Math.round(fr.jury_score * 0.25),
+          total: fr.jury_score
+        }
+      };
+    }
+  }
+  
   const social = data?.social || {};
   
   return (
@@ -502,7 +526,7 @@ const NewsCourtroom = ({ data }) => {
         <h3 className="np-subtitle">最終法官裁決</h3>
         
         {/* 四維評分 */}
-        {jury.scores && (
+        {jury.scores ? (
           <div className="np-jury-scores">
             <h4>四維評分</h4>
             <div className="np-scores-grid">
@@ -528,6 +552,36 @@ const NewsCourtroom = ({ data }) => {
               </div>
             </div>
           </div>
+        ) : (
+          <div>
+            <p className="np-muted">暫無四維評分資料</p>
+            <details style={{marginTop: '8px', fontSize: '12px', color: '#666'}}>
+              <summary>調試資訊</summary>
+              <pre style={{fontSize: '10px', marginTop: '4px'}}>
+                {JSON.stringify({
+                  jury: jury,
+                  juryResult: data?.jury_result,
+                  rawJuryResult: data?.raw?.jury_result,
+                  finalReportJuryResult: data?.final_report_json?.jury_result,
+                  dataJury: data?.jury,
+                  juryScores: jury.scores,
+                  dataKeys: Object.keys(data || {}),
+                  finalReport: data?.final_report_json,
+                  hasJuryResult: !!data?.jury_result,
+                  hasRawJuryResult: !!data?.raw?.jury_result,
+                  hasFinalReportJuryResult: !!data?.final_report_json?.jury_result,
+                  hasDataJury: !!data?.jury,
+                  juryResultKeys: data?.jury_result ? Object.keys(data.jury_result) : [],
+                  allPossiblePaths: {
+                    'data.jury_result': data?.jury_result,
+                    'data.raw.jury_result': data?.raw?.jury_result,
+                    'data.final_report_json.jury_result': data?.final_report_json?.jury_result,
+                    'data.jury': data?.jury
+                  }
+                }, null, 2)}
+              </pre>
+            </details>
+          </div>
         )}
         
         {/* 判決結果 */}
@@ -540,6 +594,48 @@ const NewsCourtroom = ({ data }) => {
                 {jury.verdict_result}
               </div>
             )}
+          </div>
+        )}
+        
+        {/* 優點分析 */}
+        {jury.strengths && jury.strengths.length > 0 && (
+          <div className="np-strengths">
+            <h4>優點分析</h4>
+            <ul className="np-strengths-list">
+              {jury.strengths.map((strength, index) => (
+                <li key={index} className="np-strength-item">
+                  <span className="np-strength-point">{strength.point}</span>
+                  {strength.refs && strength.refs.length > 0 && (
+                    <div className="np-strength-refs">
+                      {strength.refs.map((ref, refIndex) => (
+                        <span key={refIndex} className="np-ref-tag">{ref}</span>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {/* 弱點分析 */}
+        {jury.weaknesses && jury.weaknesses.length > 0 && (
+          <div className="np-weaknesses">
+            <h4>弱點分析</h4>
+            <ul className="np-weaknesses-list">
+              {jury.weaknesses.map((weakness, index) => (
+                <li key={index} className="np-weakness-item">
+                  <span className="np-weakness-point">{weakness.point}</span>
+                  {weakness.refs && weakness.refs.length > 0 && (
+                    <div className="np-weakness-refs">
+                      {weakness.refs.map((ref, refIndex) => (
+                        <span key={refIndex} className="np-ref-tag">{ref}</span>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         
@@ -564,7 +660,7 @@ const NewsCourtroom = ({ data }) => {
       
       {/* 民眾視角 - 社會擾動 */}
       <div className="np-court-section">
-        <h3 className="np-subtitle">民眾視角</h3>
+        <h3 className="np-subtitle">The Masses 視角</h3>
         <div className="np-social-grid">
           {social.disrupter && (
             <div className="np-social-item">
@@ -714,7 +810,30 @@ const JuryAndEvidence = ({ data }) => {
 
 const NewspaperView = ({ data }) => {
   const stakes = data?.final_report_json?.stake_summaries || [];
-  const jury = data?.jury_result;
+  // 嘗試多種可能的 jury 資料路徑，並從現有資料構造
+  let jury = data?.jury_result || 
+             data?.raw?.jury_result || 
+             data?.final_report_json?.jury_result ||
+             data?.jury ||
+             {};
+  
+  // 如果沒有找到 jury_result，嘗試從 final_report_json 構造
+  if (!jury || Object.keys(jury).length === 0) {
+    const fr = data?.final_report_json || {};
+    if (fr.jury_score) {
+      jury = {
+        verdict: fr.jury_brief || '無判決',
+        verdict_result: fr.jury_score > 50 ? '正方' : '反方',
+        scores: {
+          evidence_quality: Math.round(fr.jury_score * 0.3),
+          logical_rigor: Math.round(fr.jury_score * 0.25),
+          robustness: Math.round(fr.jury_score * 0.2),
+          social_impact: Math.round(fr.jury_score * 0.25),
+          total: fr.jury_score
+        }
+      };
+    }
+  }
   // 嘗試多種可能的資料路徑，並從 groundingSupports 提取資料
   let chunks = data?.groundingChunks || data?.raw?.groundingChunks || data?.curationData?.results || [];
   

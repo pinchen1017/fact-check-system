@@ -107,6 +107,24 @@
 .np-grounding-text p{font-size:13px;line-height:1.5;color:#4a5568;margin:0}
 .np-source-link{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:#3b82f6;text-decoration:none;margin-top:8px}
 .np-source-link:hover{text-decoration:underline}
+
+/* 判決結果樣式 */
+.np-verdict{margin-top:16px;padding:12px;border:1px solid var(--rule);border-radius:6px;background:#fff;position:relative}
+.np-verdict h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-verdict-text{font-size:14px;line-height:1.5;color:#4a5568;margin:0 0 8px}
+.np-verdict-badge{display:inline-block;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;position:absolute;top:12px;right:12px}
+.np-verdict-badge.adv{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}
+.np-verdict-badge.skp{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+
+/* 優點和弱點分析樣式 */
+.np-strengths,.np-weaknesses{margin-top:16px;padding:12px;border:1px solid var(--rule);border-radius:6px;background:#fff}
+.np-strengths h4,.np-weaknesses h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-strengths-list,.np-weaknesses-list{list-style:none;padding:0;margin:0}
+.np-strength-item,.np-weakness-item{padding:8px 0;border-bottom:1px dashed var(--rule)}
+.np-strength-item:last-child,.np-weakness-item:last-child{border-bottom:none}
+.np-strength-point,.np-weakness-point{font-size:13px;line-height:1.5;color:#4a5568;display:block}
+.np-strength-refs,.np-weakness-refs{margin-top:4px}
+.np-ref-tag{display:inline-block;padding:2px 6px;background:#f3f4f6;color:#6b7280;border-radius:4px;font-size:11px;margin-right:4px;margin-top:2px}
 .np-advocate{background:#f0f9ff;border-color:#0ea5e9}
 .np-skeptic{background:#fef2f2;border-color:#ef4444}
 .np-debate-side h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
