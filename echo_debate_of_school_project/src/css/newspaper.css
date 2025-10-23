@@ -125,6 +125,23 @@
 .np-strength-point,.np-weakness-point{font-size:13px;line-height:1.5;color:#4a5568;display:block}
 .np-strength-refs,.np-weakness-refs{margin-top:4px}
 .np-ref-tag{display:inline-block;padding:2px 6px;background:#f3f4f6;color:#6b7280;border-radius:4px;font-size:11px;margin-right:4px;margin-top:2px}
+
+/* 辯論角色圖卡樣式 */
+.np-roles-section{margin-top:16px}
+.np-roles-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;margin-top:12px}
+.np-role-card{border:1px solid var(--rule);border-radius:8px;padding:16px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.np-role-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.np-role-name{font-size:18px;font-weight:700;color:#2d3748;margin:0}
+.np-role-count{font-size:14px;color:#059669;background:#ecfdf5;padding:4px 8px;border-radius:4px;font-weight:600}
+.np-role-content{display:grid;gap:12px}
+.np-role-thesis,.np-role-characteristics,.np-role-points,.np-role-weaknesses{margin-bottom:8px}
+.np-role-thesis strong,.np-role-characteristics strong,.np-role-points strong,.np-role-weaknesses strong{display:block;font-size:14px;color:#2d3748;margin-bottom:4px}
+.np-role-thesis p{font-size:13px;line-height:1.5;color:#4a5568;margin:4px 0 0}
+.np-role-characteristics ul,.np-role-points ul,.np-role-weaknesses ul{list-style:none;padding:0;margin:4px 0 0}
+.np-role-characteristics li,.np-role-points li,.np-role-weaknesses li{font-size:12px;color:#6b7280;padding:2px 0;position:relative;padding-left:12px}
+.np-role-characteristics li:before{content:"•";color:#059669;position:absolute;left:0}
+.np-role-points li:before{content:"→";color:#3b82f6;position:absolute;left:0}
+.np-role-weaknesses li:before{content:"⚠";color:#dc2626;position:absolute;left:0}
 .np-advocate{background:#f0f9ff;border-color:#0ea5e9}
 .np-skeptic{background:#fef2f2;border-color:#ef4444}
 .np-debate-side h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
@@ -170,7 +187,7 @@
 
 /* 評審與論證樣式 */
 .np-roles-section{margin-bottom:20px}
-.np-roles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:8px}
+.np-roles-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;margin-top:8px}
 .np-role-card{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:12px;text-align:center}
 .np-role-card h4{font-size:14px;font-weight:600;margin:0 0 4px;color:#2d3748}
 .np-role-count{color:#3182ce;font-size:18px;font-weight:700}
@@ -209,7 +226,201 @@
   .np-grounding-grid{grid-template-columns:1fr}
   .np-social-grid{grid-template-columns:1fr}
   .np-roles-detail-grid{grid-template-columns:1fr}
+  .np-roles-grid{grid-template-columns:1fr}
 }
+
+@media (max-width: 768px){
+  .np-roles-grid{grid-template-columns:1fr;gap:16px}
+}
+/* 角色分類樣式 - 報紙風格設計 */
+.np-role-category {
+  margin-bottom: 40px;
+  background: #F8F8F8;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #E5E5E5;
+}
+
+.np-category-title {
+  font-family: serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #333333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 角色類型樣式 - 報紙風格設計 */
+.np-role-type{
+  font-family: serif;
+  font-size: 12px;
+  color: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 主辯角色 - 報紙藍色系 */
+.np-role-type[data-type='主辯']{
+  background: #6699CC;
+  border: 1px solid #6699CC;
+}
+
+/* 檢察官角色 - 中藍色系 */
+.np-role-type[data-type='evidence']{
+  background: #85B8CB;
+  border: 1px solid #85B8CB;
+}
+
+/* 法官角色 - 深藍色系 */
+.np-role-type[data-type='jury']{
+  background: #1D6A96;
+  border: 1px solid #1D6A96;
+}
+
+/* 陪審團角色 - 中灰色系 */
+.np-role-type[data-type='陪審團']{
+  background: #666666;
+  border: 1px solid #666666;
+}
+
+/* 角色卡片樣式 - 報紙風格設計 */
+.np-role-card {
+  background: #FFFFFF;
+  color: #333333;
+  padding: 24px;
+  border-radius: 4px;
+  text-align: left;
+  position: relative;
+  border: 2px solid #E5E5E5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-family: serif;
+}
+
+.np-role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #6699CC;
+}
+
+.np-role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #333333;
+}
+
+.np-role-name {
+  font-family: serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333333;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.np-role-content {
+  text-align: left;
+}
+
+.np-role-thesis {
+  margin-bottom: 20px;
+  background: #F8F8F8;
+  padding: 20px;
+  border-radius: 4px;
+  border-left: 4px solid #6699CC;
+  border: 1px solid #E5E5E5;
+}
+
+.np-role-thesis strong {
+  color: #333333;
+  font-family: serif;
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.np-role-thesis p {
+  color: #333333;
+  font-family: serif;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+  text-align: justify;
+}
+
+.np-role-characteristics {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.np-role-characteristics strong {
+  color: #333333;
+  font-family: serif;
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+.np-role-characteristics ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.np-role-characteristics li {
+  color: #333333;
+  font-family: serif;
+  font-size: 14px;
+  padding: 8px 0;
+  position: relative;
+  padding-left: 20px;
+  font-weight: 400;
+  border-bottom: 1px solid #E5E5E5;
+  transition: all 0.2s ease;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.np-role-characteristics li:last-child {
+  border-bottom: none;
+}
+
+.np-role-characteristics li:before {
+  content: "•";
+  color: #6699CC;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 8px;
+  font-size: 16px;
+}
+
+.np-role-characteristics li:hover {
+  color: #6699CC;
+  padding-left: 24px;
+}
+
 @media print {
   .np-badge-wrap{display:none}
   .np-grid{grid-template-columns:2fr 1fr;padding:0}

@@ -5,6 +5,7 @@ import { GiTribunalJury } from "react-icons/gi";
 import { FaChessRook } from "react-icons/fa6";
 import { FaRegChessKnight } from "react-icons/fa6";
 import { AiTwotoneSmile, AiTwotoneFrown } from "react-icons/ai";
+import { FaAngleRight } from "react-icons/fa6";
 import "../css/newspaper.css";
 
 // 可信度徽章計算（與你的版本等價，做健壯處理）
@@ -679,7 +680,7 @@ const NewsCourtroom = ({ data }) => {
       
       {/* 民眾視角 - 社會擾動 */}
       <div className="np-court-section">
-        <h3 className="np-subtitle">The Masses 視角</h3>
+        <h3 className="np-subtitle">陪審團見解</h3>
         <div className="np-social-grid">
           {social.disrupter || social.influencer_1 || social.influencer_2 || social.echo_chamber ? (
             <>
@@ -737,78 +738,104 @@ const JuryAndEvidence = ({ data }) => {
   const stakes = fr.stake_summaries || [];
   const weightCalculation = data?.weight_calculation_json || {};
   
-  // 統計角色出現次數
-  const roleStats = stakes.reduce((acc, stake) => {
-    const role = roleName(stake.side);
-    acc[role] = (acc[role] || 0) + 1;
-    return acc;
-  }, {});
+  // 定義辯論角色 - 按類型分組
+  const roleCategories = {
+    '主辯角色': [
+      {
+        name: '正方',
+        type: '主辯',
+        thesis: stakes.find(s => s.side === 'Advocate')?.thesis || '支持主流觀點',
+        characteristics: ['支持主流觀點', '推動政策改革', '強調正面影響']
+      },
+      {
+        name: '反方', 
+        type: '主辯',
+        thesis: stakes.find(s => s.side === 'Skeptic')?.thesis || '質疑現有觀點',
+        characteristics: ['質疑現有觀點', '要求更多證據', '指出潛在問題']
+      }
+    ],
+    '檢察官': [
+      {
+        name: '檢察官',
+        type: 'evidence',
+        thesis: '負責查核事實證據',
+        characteristics: ['查核資料來源', '驗證事實真偽', '提供客觀證據']
+      }
+    ],
+    '法官': [
+      {
+        name: '法官',
+        type: 'jury', 
+        thesis: '做出最終裁決',
+        characteristics: ['客觀評判', '綜合考量', '做出判決']
+      }
+    ],
+    '陪審團': [
+      {
+        name: '擾動者',
+        type: '陪審團',
+        thesis: '挑戰既有觀點',
+        characteristics: ['提出質疑', '挑戰權威', '引發思考']
+      },
+      {
+        name: '影響者1',
+        type: '陪審團', 
+        thesis: '影響公眾認知',
+        characteristics: ['引導輿論', '傳播觀點', '影響判斷']
+      },
+      {
+        name: '影響者2',
+        type: '陪審團',
+        thesis: '提供專業見解', 
+        characteristics: ['專業分析', '深度思考', '平衡觀點']
+      },
+      {
+        name: '主持人',
+        type: '陪審團',
+        thesis: '引導辯論進行',
+        characteristics: ['控制流程', '維持秩序', '確保公平']
+      }
+    ]
+  };
   
   return (
     <section className="np-section">
-      <h2 className="np-sec-title"><GiTribunalJury /> 評審與論證</h2>
+      <h2 className="np-sec-title"><GiTribunalJury /> 辯論角色圖卡</h2>
       
-      {/* 角色統計 */}
+      {/* 辯論角色 - 按類型分組 */}
       <div className="np-roles-section">
-        <h3 className="np-subtitle">所有角色作用以及出現次數</h3>
-        <div className="np-roles-grid">
-          {Object.entries(roleStats).map(([role, count]) => (
-            <div key={role} className="np-role-card">
-              <h4>{role}</h4>
-              <div className="np-role-count">{count} 次</div>
+        {Object.entries(roleCategories).map(([categoryName, roles]) => (
+          <div key={categoryName} className="np-role-category">
+            <h5 className="np-category-title"><FaAngleRight />&nbsp;{categoryName}</h5>
+            <div className="np-roles-grid">
+              {roles.map((role, index) => (
+                <div key={index} className="np-role-card">
+                  <div className="np-role-header">
+                    <h5 className="np-role-name">{role.name}</h5>
+                    <div className="np-role-type" data-type={role.type}>{role.type}</div>
+                  </div>
+
+                  <div className="np-role-characteristics">
+                    <strong>角色特色：</strong>
+                    <ul>
+                      {role.characteristics.map((char, i) => (
+                        <li key={i}>{char}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="np-role-content">
+                    <div className="np-role-thesis">
+                      <strong>核心立場：</strong>
+                      <p>{role.thesis}</p>
+                    </div>
+
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* 詳細角色資訊 */}
-      <div className="np-roles-detail">
-        <h3 className="np-subtitle">詳細角色資訊</h3>
-        <div className="np-roles-detail-grid">
-          {stakes.map((stake, i) => (
-            <div key={i} className="np-role-detail-card">
-              <div className="np-role-header">
-                <h4>{roleName(stake.side)}</h4>
-                <span className="np-role-badge">{roleName(stake.side)}</span>
-              </div>
-              
-              {stake.thesis && (
-                <div className="np-role-thesis">
-                  <h5>立場</h5>
-                  <p>{stake.thesis}</p>
-                </div>
-              )}
-              
-              {stake.strongest_points?.length > 0 && (
-                <div className="np-role-points">
-                  <h5>主要論點 ({stake.strongest_points.length} 個)</h5>
-                  <ul>
-                    {stake.strongest_points.slice(0, 3).map((point, j) => (
-                      <li key={j}>{point}</li>
-                    ))}
-                    {stake.strongest_points.length > 3 && (
-                      <li>...還有 {stake.strongest_points.length - 3} 個論點</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-              
-              {stake.weaknesses?.length > 0 && (
-                <div className="np-role-weaknesses">
-                  <h5>弱點 ({stake.weaknesses.length} 個)</h5>
-                  <ul>
-                    {stake.weaknesses.slice(0, 2).map((weakness, j) => (
-                      <li key={j}>{weakness}</li>
-                    ))}
-                    {stake.weaknesses.length > 2 && (
-                      <li>...還有 {stake.weaknesses.length - 2} 個弱點</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
       
       {/* 評審分數 */}
@@ -920,11 +947,9 @@ const NewspaperView = ({ data }) => {
         </main>
         {/* 右欄：側欄 */}
         <aside className="np-aside">
-          <VerdictBox jury={jury} />
           <QuickFacts data={data} />
           <RolesMini stakes={stakes} />
           <Timeline data={data} />
-          <SourcesBox chunks={chunks} />
         </aside>
       </div>
     </div>
