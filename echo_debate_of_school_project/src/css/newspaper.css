@@ -230,25 +230,26 @@
 }
 
 @media (max-width: 768px){
-  .np-roles-grid{grid-template-columns:1fr;gap:16px}
+  .np-roles-grid{grid-template-columns:1fr;gap:10px}
 }
 /* 角色分類樣式 - 報紙風格設計 */
 .np-role-category {
-  margin-bottom: 40px;
-  background: #F8F8F8;
-  padding: 24px;
-  border-radius: 8px;
-  border: 1px solid #E5E5E5;
+  margin-bottom: 32px;
+  background: #FAFAFA;
+  padding: 20px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .np-category-title {
   font-family: serif;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  color: #333333;
-  margin-bottom: 20px;
+  color: var(--ink);
+  margin-bottom: 16px;
   padding-bottom: 8px;
-  border-bottom: 2px solid #333333;
+  border-bottom: 2px solid var(--ink);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -294,37 +295,37 @@
 /* 角色卡片樣式 - 報紙風格設計 */
 .np-role-card {
   background: #FFFFFF;
-  color: #333333;
-  padding: 24px;
-  border-radius: 4px;
+  color: var(--ink);
+  padding: 16px;
+  border-radius: 0;
   text-align: left;
   position: relative;
-  border: 2px solid #E5E5E5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border: 2px solid var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
   font-family: serif;
 }
 
 .np-role-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-color: #6699CC;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-color: var(--ink);
 }
 
 .np-role-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #333333;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
 }
 
 .np-role-name {
   font-family: serif;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
-  color: #333333;
+  color: var(--ink);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 1px;

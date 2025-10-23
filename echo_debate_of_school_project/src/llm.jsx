@@ -72,37 +72,6 @@ function LlmAnalysis({ data }){
         groundingUrls.length: {groundingUrls.length}<br/>
         groundingUrls: {JSON.stringify(groundingUrls, null, 2)}
       </div> */}
-
-      {groundingUrls.length > 0 ? (
-        <div className="reference-sources">
-          <h3>參考資料</h3>
-          <ol className="sources-list">
-            {groundingUrls.map((source, index) => (
-              <li key={index} className="source-item">
-                <div className="source-info">
-                  <span className="source-title">{source.title !== source.domain ? source.title : source.domain}</span>
-                  {source.searchQuery && (
-                    <span className="source-query">相關查詢: {source.searchQuery}</span>
-                  )}
-                </div>
-                <a 
-                  href={source.uri} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="source-link"
-                >
-                  查看原文
-                </a>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ) : (
-        <div className="reference-sources">
-          <h3>參考資料</h3>
-          <p>暫無參考資料</p>
-        </div>
-      )}
     </div>
   )
 }

@@ -634,7 +634,7 @@ const NewsCourtroom = ({ data }) => {
         {/* 判決結果 */}
         {jury.verdict && (
           <div className="np-verdict">
-            <h4>判決結果</h4>
+            <h4>Judgement result</h4>
             <p className="np-verdict-text">{jury.verdict}</p>
             {jury.verdict_result && (
               <div className={`np-verdict-badge ${jury.verdict_result === '正方' ? 'adv' : 'skp'}`}>
