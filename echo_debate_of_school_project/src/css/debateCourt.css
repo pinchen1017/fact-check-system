@@ -1,12 +1,846 @@
-/* 辯論法庭系统 */
-.debate-court-section {
-  width: 90%;
+/* 辯論法庭系统 - 重新設計 */
+
+/* 主要頁面容器 */
+.debate-court-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* 通用容器 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header區域 */
+.debate-header-section {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 2rem 0;
+}
+
+.debate-header-content {
+  text-align: center;
+}
+
+.debate-title {
+  color: #2d3748;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.credibility-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.verification-badge.correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.verification-badge.incorrect {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.verification-badge.unknown {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.badge-icon {
+  font-size: 1rem;
+}
+
+.credibility-score {
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.verdict-text {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.judge-conclusion {
+  color: #4a5568;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Tabs區域 */
+.debate-tabs-section {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 0;
+}
+
+.debate-tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.debate-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: #f7fafc;
+  color: #4a5568;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.debate-tab:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.debate-tab.active {
+  background: #2d3748;
+  color: white;
+}
+
+.tab-icon {
+  font-size: 1rem;
+}
+
+/* 主內容區域 */
+.debate-main-content {
+  padding: 2rem 0;
+}
+
+.debate-header-content{
+  text-align: left;
+}
+
+/* 通用section樣式 */
+.timeline-section,
+.courtroom-section,
+.jury-section,
+.social-section {
+  padding: 2rem 0;
+}
+
+.section-header {
+  text-align: center;
   margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  color: #2d3748;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.section-header h2 svg {
+  color: rgb(203, 163, 54);
+}
+
+.section-subtitle {
+  color: #4a5568;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Timeline樣式 */
+.timeline-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.contentions-overview {
+  margin-bottom: 3rem;
+}
+
+.contentions-overview h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.contentions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.contention-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.contention-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.contention-header h4 {
+  color: #2d3748;
+  font-weight: 600;
+  margin: 0;
+}
+
+.role-badge {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.contention-thesis {
+  color: #4a5568;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.contention-points,
+.contention-weaknesses {
+  margin-top: 1rem;
+}
+
+.contention-points h5,
+.contention-weaknesses h5 {
+  color: #2d3748;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.contention-points ul,
+.contention-weaknesses ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contention-points li,
+.contention-weaknesses li {
+  color: #4a5568;
+  padding: 0.5rem 0;
+  border-left: 3px solid #e2e8f0;
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.contention-weaknesses li {
+  border-left-color: #feb2b2;
+}
+
+.events-timeline {
+  margin-top: 2rem;
+}
+
+.events-timeline h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-item {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.timeline-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.timeline-author {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.timeline-time {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.timeline-content-text p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Courtroom樣式 */
+.courtroom-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.main-debate-section,
+.prosecutor-section,
+.judge-section,
+.public-section {
   background: white;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+}
+
+.main-debate-section h3,
+.prosecutor-section h3,
+.judge-section h3,
+.public-section h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.main-debate-section h3 svg,
+.prosecutor-section h3 svg,
+.judge-section h3 svg,
+.public-section h3 svg {
+  color: rgb(203, 163, 54);
+}
+
+.debate-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.debate-side {
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.advocate-side {
+  background: #f0f9ff;
+  border-color: #0ea5e9;
+}
+
+.skeptic-side {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.debate-side h4 {
+  color: #2d3748;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.debate-content .thesis {
+  color: #4a5568;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.debate-content .points,
+.debate-content .weaknesses {
+  margin-top: 1rem;
+}
+
+.debate-content .points h5,
+.debate-content .weaknesses h5 {
+  color: #2d3748;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.debate-content .points ul,
+.debate-content .weaknesses ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.debate-content .points li,
+.debate-content .weaknesses li {
+  color: #4a5568;
+  padding: 0.5rem 0;
+  border-left: 3px solid #e2e8f0;
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.debate-content .weaknesses li {
+  border-left-color: #feb2b2;
+}
+
+.grounding-chunks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.grounding-block {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.grounding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.grounding-header h4 {
+  color: #2d3748;
+  font-weight: 600;
+  margin: 0;
+}
+
+.domain-badge {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.grounding-link {
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.grounding-link:hover {
+  color: #2c5282;
+  text-decoration: underline;
+}
+
+.jury-scores h4,
+.verdict-result h4,
+.evidence-summary h4 {
+  color: #2d3748;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.score-item.total-score {
+  background: #2d3748;
+  color: white;
+  font-weight: 600;
+}
+
+.score-label {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.score-value {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.total-score .score-label,
+.total-score .score-value {
+  color: white;
+}
+
+.verdict-result {
+  margin-top: 1.5rem;
+}
+
+.verdict-text {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.verdict-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.verdict-badge.advocate {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.verdict-badge.skeptic {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.evidence-summary {
+  margin-top: 1.5rem;
+}
+
+.evidence-content {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.evidence-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.evidence-content li {
+  color: #4a5568;
+  padding: 0.5rem 0;
+  border-left: 3px solid #3182ce;
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.social-disturbance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.disturbance-item {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.disturbance-item h4 {
+  color: #2d3748;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.disturbance-item p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Jury樣式 */
+.jury-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.role-stats,
+.role-details,
+.jury-scores,
+.jury-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.role-stats h3,
+.role-details h3,
+.jury-scores h3,
+.jury-summary h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-card h4 {
+  color: #2d3748;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stat-count {
+  color: #3182ce;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.role-card {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.role-header h4 {
+  color: #2d3748;
+  font-weight: 600;
+  margin: 0;
+}
+
+.role-thesis,
+.role-points,
+.role-weaknesses {
+  margin-top: 1rem;
+}
+
+.role-thesis h5,
+.role-points h5,
+.role-weaknesses h5 {
+  color: #2d3748;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.role-thesis p {
+  color: #4a5568;
+  font-style: italic;
+  margin: 0;
+}
+
+.role-points ul,
+.role-weaknesses ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.role-points li,
+.role-weaknesses li {
+  color: #4a5568;
+  padding: 0.5rem 0;
+  border-left: 3px solid #e2e8f0;
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.role-weaknesses li {
+  border-left-color: #feb2b2;
+}
+
+.scores-card {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary-content {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-content p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Social樣式 */
+.social-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.social-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.social-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.social-card-header h3 {
+  color: #2d3748;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-card-header h3 svg {
+  color: rgb(203, 163, 54);
+}
+
+.social-card-content p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 空狀態 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #718096;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .debate-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .debate-tabs {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .debate-tab {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+  
+  .contentions-grid,
+  .roles-grid,
+  .social-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .debate-title {
+    font-size: 2rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .scores-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .court-layout {
