@@ -421,6 +421,42 @@
   padding-left: 24px;
 }
 
+/* 導航連結樣式 */
+.np-nav-links {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.np-nav-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #F8F8F8;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: #333333;
+  font-family: serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.np-nav-link:hover {
+  background: #6699CC;
+  color: #FFFFFF;
+  border-color: #6699CC;
+  transform: translateX(4px);
+}
+
+.np-nav-link:last-child {
+  margin-bottom: 0;
+}
+
 @media print {
   .np-badge-wrap{display:none}
   .np-grid{grid-template-columns:2fr 1fr;padding:0}

@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaGavel, FaExternalLinkAlt, FaUsers } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaGavel, FaExternalLinkAlt, FaUsers, FaInfoCircle } from "react-icons/fa";
 import { MdTimeline } from "react-icons/md";
 import { GiTribunalJury } from "react-icons/gi";
 import { FaChessRook } from "react-icons/fa6";
 import { FaRegChessKnight } from "react-icons/fa6";
 import { AiTwotoneSmile, AiTwotoneFrown } from "react-icons/ai";
 import { FaAngleRight } from "react-icons/fa6";
+import { CiLink } from "react-icons/ci";
 import "../css/newspaper.css";
 
 // 可信度徽章計算（與你的版本等價，做健壯處理）
@@ -108,8 +109,34 @@ const QuickFacts = ({ data }) => {
     return cleaned;
   }).filter(item => item.length > 0); // 過濾空字串
   
+  // 導航到指定區域的函數
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <section className="np-box">
+      {/* 新聞綱要 */}
+      <h3 className="np-sec-title"><CiLink />&nbsp;新聞綱要</h3>
+      {/* 導航連結 */}
+      <div className="np-nav-links">
+        <button 
+          className="np-nav-link" 
+          onClick={() => scrollToSection('news-courtroom')}
+        >
+          新聞辯論法庭
+        </button>
+        <button 
+          className="np-nav-link" 
+          onClick={() => scrollToSection('debate-roles')}
+        >
+          辯論角色圖卡
+        </button>
+      </div>
+      {/* 快速看懂新聞 */}
       <h3 className="np-sec-title"><FaChessRook /> 快速看懂新聞</h3>
       <ul className="np-bullets">
         {typeof trust.value === "number" && <li>可信度分數：<b>{trust.value}</b></li>}
@@ -388,7 +415,7 @@ const NewsCourtroom = ({ data }) => {
   }
   
   return (
-    <section className="np-section">
+    <section id="news-courtroom" className="np-section">
       <h2 className="np-sec-title"><FaGavel /> 新聞辯論法庭</h2>
       
       {/* 主辯 - 正方反方辯論 */}
@@ -799,7 +826,7 @@ const JuryAndEvidence = ({ data }) => {
   };
   
   return (
-    <section className="np-section">
+    <section id="debate-roles" className="np-section">
       <h2 className="np-sec-title"><GiTribunalJury /> 辯論角色圖卡</h2>
       
       {/* 辯論角色 - 按類型分組 */}
@@ -836,39 +863,6 @@ const JuryAndEvidence = ({ data }) => {
             </div>
           </div>
         ))}
-      </div>
-      
-      {/* 評審分數 */}
-      <div className="np-jury-scores-section">
-        <h3 className="np-subtitle">評審分數</h3>
-        <div className="np-scores-card">
-          <div className="np-scores-list">
-            <div className="np-score-row">
-              <span>LLM評分</span>
-              <b>{weightCalculation.llm_score || 'N/A'}</b>
-            </div>
-            <div className="np-score-row">
-              <span>SLM評分</span>
-              <b>{weightCalculation.slm_score || 'N/A'}</b>
-            </div>
-            <div className="np-score-row">
-              <span>陪審團評分</span>
-              <b>{weightCalculation.jury_score || 'N/A'}</b>
-            </div>
-            <div className="np-score-row np-final-score">
-              <span>最終評分</span>
-              <b>{weightCalculation.final_score || 'N/A'}</b>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* 判決摘要 */}
-      <div className="np-summary-section">
-        <h3 className="np-subtitle">判決摘要</h3>
-        <div className="np-summary-content">
-          <p>{fr.jury_brief || '無判決摘要'}</p>
-        </div>
       </div>
     </section>
   );
