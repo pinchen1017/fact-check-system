@@ -365,7 +365,26 @@ const NewsCourtroom = ({ data }) => {
     }
   }
   
-  const social = data?.social || {};
+  // 嘗試多種可能的 social 資料路徑，並從現有資料構造
+  let social = data?.social || 
+               data?.raw?.social || 
+               data?.final_report_json?.social ||
+               data?.social_disturbance ||
+               {};
+  
+  // 如果沒有找到 social 資料，嘗試從 final_report_json 構造
+  if (!social || Object.keys(social).length === 0) {
+    const fr = data?.final_report_json || {};
+    const stakes = fr.stake_summaries || [];
+    
+    // 從角色立場中構造民眾視角
+    social = {
+      disrupter: stakes.find(s => s.side === 'Devil')?.thesis || '挑戰現有觀點，質疑主流論述',
+      influencer_1: stakes.find(s => s.side === 'Advocate')?.thesis || '支持主流觀點，推動政策改革',
+      influencer_2: stakes.find(s => s.side === 'Skeptic')?.thesis || '質疑現有觀點，要求更多證據',
+      echo_chamber: fr.risks?.find(r => r.name === '過度簡化問題')?.why || '媒體報道可能過度簡化複雜問題'
+    };
+  }
   
   return (
     <section className="np-section">
@@ -662,28 +681,48 @@ const NewsCourtroom = ({ data }) => {
       <div className="np-court-section">
         <h3 className="np-subtitle">The Masses 視角</h3>
         <div className="np-social-grid">
-          {social.disrupter && (
-            <div className="np-social-item">
-              <h4>擾動者</h4>
-              <p>{social.disrupter}</p>
-            </div>
-          )}
-          {social.influencer_1 && (
-            <div className="np-social-item">
-              <h4>影響者1</h4>
-              <p>{social.influencer_1}</p>
-            </div>
-          )}
-          {social.influencer_2 && (
-            <div className="np-social-item">
-              <h4>影響者2</h4>
-              <p>{social.influencer_2}</p>
-            </div>
-          )}
-          {social.echo_chamber && (
-            <div className="np-social-item">
-              <h4>回音室</h4>
-              <p>{social.echo_chamber}</p>
+          {social.disrupter || social.influencer_1 || social.influencer_2 || social.echo_chamber ? (
+            <>
+              {social.disrupter && (
+                <div className="np-social-item">
+                  <h4>擾動者</h4>
+                  <p>{social.disrupter}</p>
+                </div>
+              )}
+              {social.influencer_1 && (
+                <div className="np-social-item">
+                  <h4>影響者1</h4>
+                  <p>{social.influencer_1}</p>
+                </div>
+              )}
+              {social.influencer_2 && (
+                <div className="np-social-item">
+                  <h4>影響者2</h4>
+                  <p>{social.influencer_2}</p>
+                </div>
+              )}
+              {social.echo_chamber && (
+                <div className="np-social-item">
+                  <h4>主持人</h4>
+                  <p>{social.echo_chamber}</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <div>
+              <p className="np-muted">暫無民眾視角資料</p>
+              <details style={{marginTop: '8px', fontSize: '12px', color: '#666'}}>
+                <summary>調試資訊</summary>
+                <pre style={{fontSize: '10px', marginTop: '4px'}}>
+                  {JSON.stringify({
+                    social: social,
+                    dataKeys: Object.keys(data || {}),
+                    finalReport: data?.final_report_json,
+                    hasSocial: !!data?.social,
+                    socialKeys: data?.social ? Object.keys(data.social) : []
+                  }, null, 2)}
+                </pre>
+              </details>
             </div>
           )}
         </div>
