@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import './css/fact_check.css'
 import './css/debateCourt.css'
+import './css/newspaper.css'
 import { GiTribunalJury } from "react-icons/gi"
 import { MdTimeline, MdGavel, MdAssessment, MdPeople, MdAccountBalance, MdGroups } from "react-icons/md"
 import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaGavel, FaUsers, FaBrain, FaChartLine, FaExternalLinkAlt } from "react-icons/fa"
 import { HiAcademicCap, HiAdjustmentsHorizontal, HiChatBubbleLeftRight, HiClipboardDocumentList, HiBolt } from "react-icons/hi2"
+import { AiTwotoneSmile, AiTwotoneFrown } from "react-icons/ai";
+// 新聞報紙版元件
+import NewspaperView from './components/NewspaperView'
 
 // 可信度徽章計算函數
 const computeTrustBadge = (data) => {
@@ -197,7 +201,7 @@ function CourtroomPanel({ data }) {
             <div className="debate-layout">
               {/* 正方 */}
               <div className="debate-side advocate-side">
-                <h4>正方</h4>
+                <h4><AiTwotoneSmile />&nbsp;正方</h4>
                 {keyContentions.find(c => c.side === 'Advocate') && (
                   <div className="debate-content">
                     <p className="thesis">{keyContentions.find(c => c.side === 'Advocate').thesis}</p>
@@ -615,48 +619,8 @@ function DebateCourt({ data }) {
 
   return (
     <div className="debate-court-page">
-      {/* Header */}
-      <HeaderTopDown data={data} />
-      
-      {/* Tabs */}
-      <div className="debate-tabs-section">
-        <div className="container">
-          <nav className="debate-tabs">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    // 添加錨點導航
-                    setTimeout(() => {
-                      scrollToSection(tab.id);
-                    }, 100);
-                  }}
-                  className={`debate-tab ${activeTab === tab.id ? 'active' : ''}`}
-                >
-                  <Icon className="tab-icon" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-      
-      {/* 主內容 */}
-      <main className="debate-main-content">
-        <div id="timeline">
-          <TimelinePanel data={data} />
-        </div>
-        <div id="courtroom">
-          <CourtroomPanel data={data} />
-        </div>
-        <div id="jury">
-          <JuryPanel data={data} />
-        </div>
-      </main>
+      {/* 直接使用報紙版布局；需要保留舊分頁時，可改成條件渲染 */}
+      <NewspaperView data={data} />
     </div>
   );
 }

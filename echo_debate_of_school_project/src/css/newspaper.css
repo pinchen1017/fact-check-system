@@ -1,0 +1,199 @@
+/* 報紙風格：簡潔、可列印、兩欄格局 */
+.np-container { --ink:#111; --muted:#6b7280; --rule:#e5e7eb; --ok:#16a34a; --bad:#ef4444; --unk:#6b7280; color:var(--ink); }
+.np-masthead{max-width:1100px;margin:0 auto;padding:32px 16px 12px;}
+.np-badge-wrap{display:flex;justify-content:flex-end}
+.np-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);padding:6px 10px;border-radius:999px;font-weight:600}
+.np-badge.ok{color:#fff;background:var(--ok);border-color:var(--ok)}
+.np-badge.bad{color:#fff;background:var(--bad);border-color:var(--bad)}
+.np-badge.unk{color:#fff;background:var(--unk);border-color:var(--unk)}
+.np-badge svg{font-size:14px}
+.np-badge-text{font-size:13px;letter-spacing:.02em}
+.np-title{font-family:serif;font-size:40px;line-height:1.2;margin:10px 0 6px}
+.np-deck{font-size:18px;line-height:1.6;color:#222;margin:0 0 10px}
+.np-rule{height:1px;background:var(--rule);margin-top:10px}
+.np-grid{display:grid;grid-template-columns:2.2fr 1fr;gap:28px;max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.np-main{min-width:0}
+.np-aside{min-width:0}
+
+.np-section{margin-bottom:28px}
+.np-sec-title{font-size:22px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:8px;margin:0 0 14px}
+.np-sec-title svg{opacity:.9}
+.np-lead{font-size:18px;line-height:1.8;margin:8px 0 18px}
+.dropcap:first-letter{float:left;font-family:serif;font-size:44px;line-height:1;margin-right:8px;margin-top:3px;font-weight:700}
+.np-muted{color:var(--muted)}
+
+/* timeline */
+.np-timeline{position:relative}
+.np-tl-day{position:relative;padding-left:18px;margin-bottom:20px}
+.np-tl-date{font-weight:700;margin-bottom:6px}
+.np-tl-list{list-style:none;margin:0;padding:0;border-left:2px solid var(--rule)}
+.np-tl-item{position:relative;padding:10px 0 10px 14px}
+.np-tl-dot{position:absolute;left:-6px;top:18px;width:10px;height:10px;border-radius:999px;background:#111;border:2px solid #fff;box-shadow:0 0 0 2px var(--rule)}
+.np-tl-meta{display:flex;gap:10px;align-items:center;margin-bottom:4px}
+.np-tl-time{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
+.np-tl-author{font-size:12px;color:#111;background:#f3f4f6;border:1px solid var(--rule);padding:2px 6px;border-radius:999px}
+.np-tl-text{line-height:1.7}
+
+/* 側欄中的時間線樣式 */
+.np-aside .np-timeline .np-tl-day{margin-bottom:16px;padding-left:14px}
+.np-aside .np-tl-date{font-size:14px;margin-bottom:4px}
+.np-aside .np-tl-item{padding:8px 0 8px 12px}
+.np-aside .np-tl-dot{width:8px;height:8px;left:-5px;top:16px}
+.np-aside .np-tl-meta{flex-direction:column;align-items:flex-start;gap:4px}
+.np-aside .np-tl-time{font-size:11px}
+.np-aside .np-tl-author{font-size:11px;padding:1px 4px}
+.np-aside .np-tl-text{font-size:13px;line-height:1.5}
+
+/* cards & grids */
+.np-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+.np-brief-card,.np-point-card{border:1px solid var(--rule);padding:14px;border-radius:10px;background:#fff}
+.np-brief-q{font-weight:800;margin:0 0 8px}
+.np-kicker{display:inline-block;font-size:12px;color:#374151;background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:2px 6px;margin:8px 0}
+.np-status{margin-top:8px;font-size:12px;color:var(--muted)}
+.np-point-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.np-point-thesis{margin:4px 0 8px}
+.np-bullets{padding-left:18px}
+.np-bullets li{margin:6px 0}
+.np-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);padding:3px 8px;border-radius:999px;font-size:12px}
+.np-chip.adv{background:#ecfdf5;border-color:#a7f3d0}
+.np-chip.skp{background:#fef2f2;border-color:#fecaca}
+
+/* sidebar boxes */
+.np-box{border:1px solid var(--rule);border-radius:12px;background:#fff;padding:14px;margin-bottom:16px}
+.np-box-title{font-weight:800;margin:0 0 8px;display:flex;gap:8px;align-items:center}
+.np-verdict-main{font-size:16px;margin:2px 0 6px}
+.np-score-list{list-style:none;margin:8px 0 0;padding:0}
+.np-score-list li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--rule)}
+.np-score-list li:last-child{border-bottom:none}
+.np-score-total b{font-size:18px}
+.np-roles{display:flex;flex-wrap:wrap;gap:8px}
+.np-role-pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:999px;padding:4px 10px}
+.np-sources{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.np-source-title{font-weight:600}
+.np-source-domain{color:var(--muted);font-size:12px;margin-right:6px}
+.np-link{display:inline-flex;gap:6px;align-items:center;font-size:13px}
+
+/* 主文區域的組件樣式 */
+.np-main .np-box{border:1px solid var(--rule);border-radius:8px;background:#fff;padding:16px;margin-bottom:28px}
+.np-main .np-box-title{font-size:22px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:8px;margin:0 0 14px}
+.np-main .np-box-title svg{opacity:.9}
+.np-main .np-bullets{padding-left:18px}
+.np-main .np-bullets li{margin:6px 0}
+.np-main .np-roles{display:flex;flex-wrap:wrap;gap:8px}
+.np-main .np-role-pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:999px;padding:4px 10px}
+
+/* 新聞辯論法庭樣式 */
+.np-court-section{margin-bottom:24px;padding:16px;border:1px solid var(--rule);border-radius:8px;background:#fff}
+.np-subtitle{font-size:18px;font-weight:700;margin:0 0 12px;color:#2d3748}
+.np-debate-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+
+/* 挑戰權威者樣式 */
+.np-devil{background:#faf5ff;border:2px solid #8b5cf6;border-radius:8px;padding:16px;margin-top:16px}
+.np-devil h4{color:#2d3748;font-weight:700;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.np-devil .np-thesis{color:#4a5568;font-weight:600;margin-bottom:12px}
+.np-devil .np-points h5,.np-devil .np-weaknesses h5{color:#2d3748;font-size:14px;font-weight:600;margin:8px 0 4px}
+.np-devil ul{list-style:none;padding:0;margin:0}
+.np-devil li{padding:4px 0;color:#4a5568}
+.np-debate-side{padding:12px;border-radius:6px;border:1px solid var(--rule)}
+
+/* 檢察官查核樣式 */
+.np-grounding-grid{display:grid;gap:12px;margin-top:8px}
+.np-grounding-item{border:1px solid var(--rule);border-radius:6px;padding:12px;background:#fff}
+.np-grounding-header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.np-grounding-header h4{font-size:14px;font-weight:600;margin:0;color:#2d3748}
+.np-domain{font-size:12px;color:var(--muted);background:#f3f4f6;padding:2px 6px;border-radius:4px}
+.np-confidence{font-size:12px;color:#059669;background:#ecfdf5;padding:2px 6px;border-radius:4px;font-weight:600}
+.np-grounding-text{margin-top:8px}
+.np-grounding-text p{font-size:13px;line-height:1.5;color:#4a5568;margin:0}
+.np-source-link{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:#3b82f6;text-decoration:none;margin-top:8px}
+.np-source-link:hover{text-decoration:underline}
+.np-advocate{background:#f0f9ff;border-color:#0ea5e9}
+.np-skeptic{background:#fef2f2;border-color:#ef4444}
+.np-debate-side h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-thesis{font-style:italic;margin-bottom:8px;color:#4a5568}
+.np-points,.np-weaknesses{margin-top:8px}
+.np-points h5,.np-weaknesses h5{font-size:14px;font-weight:600;margin:0 0 4px;color:#2d3748}
+.np-points ul,.np-weaknesses ul{list-style:none;padding:0;margin:0}
+.np-points li,.np-weaknesses li{padding:4px 0;border-left:2px solid #e2e8f0;padding-left:8px;margin-bottom:4px;font-size:14px}
+.np-weaknesses li{border-left-color:#feb2b2}
+
+.np-grounding-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:8px}
+.np-grounding-item{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:12px}
+.np-grounding-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.np-grounding-header h4{font-size:14px;font-weight:600;margin:0;color:#2d3748}
+.np-domain{background:#ebf8ff;color:#2b6cb0;padding:2px 6px;border-radius:4px;font-size:12px}
+.np-source-link{color:#3182ce;text-decoration:none;font-size:12px;display:flex;align-items:center;gap:4px}
+.np-source-link:hover{text-decoration:underline}
+
+.np-jury-scores{margin-top:12px}
+.np-jury-scores h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-scores-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.np-score-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#f8fafc;border:1px solid var(--rule);border-radius:4px}
+.np-total-score{background:#2d3748;color:white;font-weight:600}
+.np-total-score span,.np-total-score b{color:white}
+
+.np-verdict{margin-top:12px}
+.np-verdict h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-verdict-text{color:#4a5568;line-height:1.6;margin-bottom:8px}
+.np-verdict-badge{display:inline-block;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:600}
+.np-verdict-badge.adv{background:#d1fae5;color:#065f46}
+.np-verdict-badge.skp{background:#fee2e2;color:#991b1b}
+
+.np-evidence{margin-top:12px}
+.np-evidence h4{font-size:16px;font-weight:600;margin:0 0 8px;color:#2d3748}
+.np-evidence-content{background:#f8fafc;border-radius:4px;padding:12px;border:1px solid var(--rule)}
+.np-evidence-content ul{list-style:none;padding:0;margin:0}
+.np-evidence-content li{padding:4px 0;border-left:2px solid #3182ce;padding-left:8px;margin-bottom:4px}
+
+.np-social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
+.np-social-item{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:12px}
+.np-social-item h4{font-size:14px;font-weight:600;margin:0 0 4px;color:#2d3748}
+.np-social-item p{color:#4a5568;line-height:1.5;margin:0;font-size:14px}
+
+/* 評審與論證樣式 */
+.np-roles-section{margin-bottom:20px}
+.np-roles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:8px}
+.np-role-card{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:12px;text-align:center}
+.np-role-card h4{font-size:14px;font-weight:600;margin:0 0 4px;color:#2d3748}
+.np-role-count{color:#3182ce;font-size:18px;font-weight:700}
+
+.np-roles-detail{margin-bottom:20px}
+.np-roles-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:8px}
+.np-role-detail-card{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:16px}
+.np-role-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.np-role-header h4{font-size:16px;font-weight:600;margin:0;color:#2d3748}
+.np-role-badge{background:#ebf8ff;color:#2b6cb0;padding:2px 6px;border-radius:4px;font-size:12px}
+
+.np-role-thesis,.np-role-points,.np-role-weaknesses{margin-top:8px}
+.np-role-thesis h5,.np-role-points h5,.np-role-weaknesses h5{font-size:14px;font-weight:600;margin:0 0 4px;color:#2d3748}
+.np-role-thesis p{color:#4a5568;font-style:italic;margin:0;font-size:14px}
+.np-role-points ul,.np-role-weaknesses ul{list-style:none;padding:0;margin:0}
+.np-role-points li,.np-role-weaknesses li{padding:4px 0;border-left:2px solid #e2e8f0;padding-left:8px;margin-bottom:4px;font-size:14px}
+.np-role-weaknesses li{border-left-color:#feb2b2}
+
+.np-jury-scores-section{margin-bottom:20px}
+.np-scores-card{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:16px}
+.np-scores-list{display:flex;flex-direction:column;gap:8px}
+.np-score-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed var(--rule)}
+.np-score-row:last-child{border-bottom:none}
+.np-final-score{font-weight:600;background:#2d3748;color:white;padding:8px 12px;border-radius:4px;margin-top:8px}
+.np-final-score span,.np-final-score b{color:white}
+
+.np-summary-section{margin-bottom:20px}
+.np-summary-content{background:#f8fafc;border-radius:6px;padding:16px;border:1px solid var(--rule)}
+.np-summary-content p{color:#4a5568;line-height:1.6;margin:0}
+
+/* 響應式 & 列印 */
+@media (max-width: 960px){
+  .np-grid{grid-template-columns:1fr}
+  .np-grid-2{grid-template-columns:1fr}
+  .np-debate-layout{grid-template-columns:1fr}
+  .np-grounding-grid{grid-template-columns:1fr}
+  .np-social-grid{grid-template-columns:1fr}
+  .np-roles-detail-grid{grid-template-columns:1fr}
+}
+@media print {
+  .np-badge-wrap{display:none}
+  .np-grid{grid-template-columns:2fr 1fr;padding:0}
+  .np-box,.np-brief-card,.np-point-card{break-inside:avoid}
+}
