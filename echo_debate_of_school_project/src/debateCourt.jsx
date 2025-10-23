@@ -22,7 +22,8 @@ const getN8nVerdict = (score) => {
 
 function DebateCourt({ data }) {
   if (!data) return null;
-
+  
+  // console.log('DebateCourt - data:', data);
   // 從數據中提取各個模型的結果
   const weightCalculation = data.weight_calculation_json || {};
   const finalReport = data.final_report_json || {};

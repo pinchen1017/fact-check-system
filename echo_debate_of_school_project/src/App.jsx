@@ -62,6 +62,7 @@ function App() {
     }
   }, []);
 
+
   // 根據session_id載入分析結果的函數
   const loadAnalysisBySessionId = (sessionId) => {
     console.log('loadAnalysisBySessionId called with sessionId:', sessionId);

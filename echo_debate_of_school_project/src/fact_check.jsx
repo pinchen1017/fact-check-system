@@ -1109,6 +1109,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           const processedData = processMultiAgentResponse(data, data.state.analyzed_text || "現有分析");
           console.log("處理後的數據:", processedData);
           
+          // 在找到現有分析數據後更新URL
+          updateUrlWithSessionId(sessionIdToUse);
+          console.log("找到現有數據後URL已更新為session_id:", sessionIdToUse);
+          
           return {
             raw: data,
             data: processedData
@@ -1122,6 +1126,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           
           if (result) {
             const processedData = processMultiAgentResponse(result, testMessage);
+            
+            // 在 run 成功完成後更新URL
+            updateUrlWithSessionId(sessionIdToUse);
+            console.log("發送新訊息完成後URL已更新為session_id:", sessionIdToUse);
+            
             // 在 run 成功完成後再寫入雲端資料庫
             try {
           await saveSessionToDatabase(currentUserId || "user", sessionIdToUse);
@@ -1162,6 +1171,14 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     }
   };
 
+  // 更新URL的函數
+  const updateUrlWithSessionId = (newSessionId) => {
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('session_id', newSessionId);
+    window.history.pushState({}, '', currentUrl.toString());
+    console.log("URL已更新為:", currentUrl.toString());
+  };
+
   // 多agent分析函數
   const performMultiAgentAnalysis = async (query) => {
     try {
@@ -1193,6 +1210,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
         // 處理API回應
         const processedData = processMultiAgentResponse(result, query);
         console.log("處理後的數據:", processedData);
+        
+        // 在 run 成功完成後更新URL
+        updateUrlWithSessionId(currentSessionId);
+        console.log("Run完成後URL已更新為新的session_id:", currentSessionId);
+        
         // 在 run 成功完成後再寫入雲端資料庫
         try {
           await saveSessionToDatabase(currentUserId || "user", currentSessionId);
@@ -1279,6 +1301,11 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       if (sessionResult && sessionResult.data) {
         console.log("Session 分析成功，設置結果");
         setAnalysisResult(sessionResult.data);
+        
+        // 在成功搜尋session後更新URL
+        updateUrlWithSessionId(targetSessionId);
+        console.log("搜尋session成功後URL已更新為session_id:", targetSessionId);
+        
         // 將查詢欄位同步成該 session 的主題（若有）
         const topic = sessionResult.data?.final_report_json?.topic || sessionResult.data?.state?.analyzed_text || '';
         if (topic) {
