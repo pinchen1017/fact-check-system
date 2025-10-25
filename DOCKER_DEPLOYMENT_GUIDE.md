@@ -148,7 +148,7 @@ sudo chown -R $USER:$USER .
 - `DB_SSL`: SSL 連接 (true)
 - `JWT_SECRET`: JWT 密鑰
 - `NODE_ENV`: 環境模式 (production)
-- `VITE_FASTAPI_URL`: FastAPI 服務 URL (http://127.0.0.1:8000)
+- `VITE_FASTAPI_URL`: FastAPI 服務 URL (http://120.107.172.133:10001)
 
 ## 服務架構
 
