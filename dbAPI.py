@@ -482,6 +482,243 @@ def get_session_details(userId: str, sessionId: str):
         print(f"獲取 session 詳細信息失敗: {e}")
         raise HTTPException(500, f"獲取 session 詳細信息失敗: {str(e)}")
 
+@app.get("/get_user_session_ids")
+def get_user_session_ids(userId: str):
+    """根據 userId 獲取該用戶的所有 session_id 陣列"""
+    try:
+        # 從資料庫查詢該用戶的所有 session_id
+        conn = psycopg2.connect(
+            host="35.221.147.151",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="linebot_v2"
+        )
+        
+        cur = conn.cursor()
+        
+        # 查詢該用戶的所有 session_id
+        query = """
+        SELECT session_id, timestamp
+        FROM linebot_v2 
+        WHERE id = %s 
+        ORDER BY timestamp DESC
+        """
+        
+        cur.execute(query, (userId,))
+        sessions = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        # 轉換為 session_id 陣列
+        session_ids = []
+        for session in sessions:
+            session_ids.append({
+                "session_id": session[0],
+                "timestamp": session[1].isoformat() if session[1] else None
+            })
+        
+        print(f"找到用戶 {userId} 的 {len(session_ids)} 個 session_id")
+        return {
+            "status": "success",
+            "user_id": userId,
+            "session_count": len(session_ids),
+            "session_ids": session_ids
+        }
+        
+    except Exception as e:
+        print(f"獲取用戶 session_ids 失敗: {e}")
+        raise HTTPException(500, f"獲取用戶 session_ids 失敗: {str(e)}")
+
+@app.get("/get_session_analysis")
+def get_session_analysis(sessionId: str):
+    """根據 sessionId 獲取並分析該 session 的內容"""
+    try:
+        # 首先嘗試從記憶體中的 sessions_db 獲取
+        if sessionId in sessions_db:
+            session_data = sessions_db[sessionId]
+            print(f"從記憶體獲取 session {sessionId} 的數據")
+            
+            # 分析 session 內容
+            analysis_result = analyze_session_content(session_data)
+            return {
+                "status": "success",
+                "session_id": sessionId,
+                "analysis": analysis_result
+            }
+        else:
+            print(f"Session {sessionId} 不存在於記憶體中")
+            return {
+                "status": "not_found",
+                "session_id": sessionId,
+                "message": "Session not found in memory"
+            }
+            
+    except Exception as e:
+        print(f"獲取 session 分析失敗: {e}")
+        raise HTTPException(500, f"獲取 session 分析失敗: {str(e)}")
+
+def analyze_session_content(session_data):
+    """分析 session 內容並返回結構化數據"""
+    try:
+        state = session_data.get("state", {})
+        
+        # 提取基本信息
+        analyzed_text = state.get("analyzed_text", "未知內容")
+        
+        # 提取權重計算結果
+        weight_calc = state.get("weight_calculation_json", {})
+        llm_score = weight_calc.get("llm_score", 0)
+        slm_score = weight_calc.get("slm_score", 0)
+        jury_score = weight_calc.get("jury_score", 0)
+        final_score = weight_calc.get("final_score", 0)
+        
+        # 提取最終報告
+        final_report = state.get("final_report_json", {})
+        topic = final_report.get("topic", analyzed_text)
+        overall_assessment = final_report.get("overall_assessment", "無評估內容")
+        jury_brief = final_report.get("jury_brief", "無陪審團簡報")
+        
+        # 提取事實查核結果
+        fact_check = state.get("fact_check_result_json", {})
+        fact_analysis = fact_check.get("analysis", "無事實查核結果")
+        classification = fact_check.get("classification", "未知")
+        
+        # 提取分類結果
+        classification_json = state.get("classification_json", {})
+        model_classification = classification_json.get("classification", "未知")
+        probability = classification_json.get("Probability", "0")
+        
+        # 計算可信度等級
+        credibility_level = get_credibility_level(final_score)
+        
+        return {
+            "analyzed_text": analyzed_text,
+            "topic": topic,
+            "overall_assessment": overall_assessment,
+            "jury_brief": jury_brief,
+            "credibility_level": credibility_level,
+            "scores": {
+                "llm_score": llm_score,
+                "slm_score": slm_score,
+                "jury_score": jury_score,
+                "final_score": final_score
+            },
+            "fact_check": {
+                "analysis": fact_analysis,
+                "classification": classification
+            },
+            "model_classification": {
+                "classification": model_classification,
+                "probability": probability
+            },
+            "timestamp": session_data.get("created_at", None)
+        }
+        
+    except Exception as e:
+        print(f"分析 session 內容失敗: {e}")
+        return {
+            "error": f"分析失敗: {str(e)}",
+            "analyzed_text": "分析失敗",
+            "topic": "未知",
+            "credibility_level": "未知"
+        }
+
+def get_credibility_level(score):
+    """根據分數計算可信度等級"""
+    if score >= 0.8:
+        return "高可信度"
+    elif score >= 0.6:
+        return "中等可信度"
+    elif score >= 0.4:
+        return "低可信度"
+    else:
+        return "極低可信度"
+
+@app.get("/get_user_history_analysis")
+def get_user_history_analysis(userId: str):
+    """根據 userId 獲取該用戶所有 session 的歷史分析結果"""
+    try:
+        print(f"開始獲取用戶 {userId} 的歷史分析")
+        
+        # 1. 首先獲取該用戶的所有 session_id
+        session_ids_response = get_user_session_ids(userId)
+        
+        if session_ids_response["status"] != "success":
+            return {
+                "status": "error",
+                "message": "無法獲取用戶的 session_ids",
+                "user_id": userId,
+                "history_data": []
+            }
+        
+        session_ids = session_ids_response["session_ids"]
+        print(f"找到 {len(session_ids)} 個 session_ids")
+        
+        # 2. 對每個 session_id 進行分析
+        history_data = []
+        
+        for session_info in session_ids:
+            session_id = session_info["session_id"]
+            timestamp = session_info["timestamp"]
+            
+            try:
+                print(f"分析 session: {session_id}")
+                
+                # 獲取 session 分析結果
+                analysis_response = get_session_analysis(session_id)
+                
+                if analysis_response["status"] == "success":
+                    analysis = analysis_response["analysis"]
+                    
+                    # 構建歷史記錄項目
+                    history_item = {
+                        "session_id": session_id,
+                        "timestamp": timestamp,
+                        "topic": analysis.get("topic", "未知主題"),
+                        "analyzed_text": analysis.get("analyzed_text", "未知內容"),
+                        "overall_assessment": analysis.get("overall_assessment", "無評估內容"),
+                        "credibility_level": analysis.get("credibility_level", "未知"),
+                        "final_score": analysis.get("scores", {}).get("final_score", 0),
+                        "jury_brief": analysis.get("jury_brief", "無陪審團簡報"),
+                        "fact_check_classification": analysis.get("fact_check", {}).get("classification", "未知"),
+                        "model_classification": analysis.get("model_classification", {}).get("classification", "未知"),
+                        "scores": analysis.get("scores", {}),
+                        "fact_check": analysis.get("fact_check", {}),
+                        "model_classification": analysis.get("model_classification", {})
+                    }
+                    
+                    history_data.append(history_item)
+                    print(f"Session {session_id} 分析完成")
+                else:
+                    print(f"Session {session_id} 分析失敗: {analysis_response.get('message', '未知錯誤')}")
+                    
+            except Exception as e:
+                print(f"分析 session {session_id} 時發生錯誤: {e}")
+                continue
+        
+        # 3. 按時間排序（最新的在前）
+        history_data.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        
+        print(f"用戶 {userId} 的歷史分析完成，共 {len(history_data)} 條記錄")
+        
+        return {
+            "status": "success",
+            "user_id": userId,
+            "total_records": len(history_data),
+            "history_data": history_data
+        }
+        
+    except Exception as e:
+        print(f"獲取用戶歷史分析失敗: {e}")
+        return {
+            "status": "error",
+            "message": f"獲取用戶歷史分析失敗: {str(e)}",
+            "user_id": userId,
+            "history_data": []
+        }
+
 # 添加 run 端點
 class RunRequest(BaseModel):
     appName: str
