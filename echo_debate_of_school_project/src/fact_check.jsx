@@ -64,7 +64,7 @@ const getN8nVerdict = (score) => {
   // 處理數值類型的score
   if (score > 0) return '勝訴';
   if (score < 0) return '敗訴';
-  if (score === 0) return '無法判決';
+  if (score === 0) return '有待釐清';
   return '未知';
 };
 
@@ -1904,36 +1904,6 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
           </div>
         )}
 
-        {/* 最新查證 - 只在非 loading 狀態時顯示 */}
-        {!(isCofactLoading || isModelLoading || isMultiAgentLoading) && (
-          <div className="latest-section">
-          <div className="section-header">
-            <h2><MdOutlineHistoryToggleOff /> 歷史查證</h2>
-            <a href="#" className="view-all-link">查看全部</a>
-          </div>
-
-          <div className="fact-checks-list">
-            {factChecks && factChecks.map((item) => (
-              <article key={item.id} className="fact-check-item">
-                <div className="item-content">
-                  <div className="item-header">
-                    <span className={`status-badge ${item.result.includes('高') ? 'true' : item.result.includes('低') ? 'false' : 'mixed'}`}>
-                      {item.result}
-                    </span>
-                    <span className="category-badge">{item.category}</span>
-                  </div>
-                  <h3 className="item-title">{item.title}</h3>
-                  <p className="item-summary">{item.summary}</p>
-                  <div className="item-meta">
-                    <span className="item-author">作者：{item.author}</span>
-                    <span className="item-date">{item.date}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-          </div>
-        )}
       </div>
     </>
   )
