@@ -272,9 +272,215 @@ def get_session(session_id: str):
     return SessionResponse(**sessions_db[session_id])
 
 @app.get("/apps/judge/users/user/sessions/")
-def list_sessions():
-    """列出所有 sessions"""
-    return list(sessions_db.values())
+def list_all_sessions():
+    """列出所有 sessions（用於測試）"""
+    try:
+        # 從資料庫獲取所有 sessions
+        conn = psycopg2.connect(
+            host="35.221.147.151",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="linebot_v2"
+        )
+        
+        cur = conn.cursor()
+        
+        # 查詢所有 sessions
+        query = """
+        SELECT session_id, id, timestamp
+        FROM linebot_v2 
+        ORDER BY timestamp DESC
+        """
+        
+        cur.execute(query)
+        sessions = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        # 轉換為字典格式
+        all_sessions = []
+        for session in sessions:
+            all_sessions.append({
+                "id": session[0],
+                "userId": session[1],
+                "created_at": session[2].isoformat() if session[2] else None,
+                "updated_at": session[2].isoformat() if session[2] else None
+            })
+        
+        print(f"從資料庫找到 {len(all_sessions)} 個 sessions")
+        return all_sessions
+        
+    except Exception as e:
+        print(f"獲取所有 sessions 失敗: {e}")
+        return []
+
+@app.get("/apps/judge/users/{user_id}/sessions/")
+@app.get("/apps/judge/users/{user_id}/sessions")
+def list_user_sessions(user_id: str):
+    """根據 user_id 列出該用戶的所有 sessions"""
+    try:
+        # 首先嘗試從記憶體中的 sessions_db 獲取
+        user_sessions = []
+        for session_id, session_data in sessions_db.items():
+            if session_data.get("userId") == user_id or session_data.get("user_id") == user_id:
+                user_sessions.append({
+                    "id": session_id,
+                    "userId": user_id,
+                    "created_at": session_data.get("created_at"),
+                    "updated_at": session_data.get("updated_at")
+                })
+        
+        # 如果記憶體中沒有數據，嘗試從資料庫獲取
+        if not user_sessions:
+            try:
+                conn = psycopg2.connect(
+                    host="35.221.147.151",
+                    port=5432,
+                    user="postgres",
+                    password="@Aa123456",
+                    dbname="linebot_v2"
+                )
+                
+                cur = conn.cursor()
+                
+                # 查詢該用戶的所有 sessions
+                query = """
+                SELECT session_id, id, timestamp
+                FROM linebot_v2 
+                WHERE id = %s 
+                ORDER BY timestamp DESC
+                """
+                
+                cur.execute(query, (user_id,))
+                sessions = cur.fetchall()
+                
+                cur.close()
+                conn.close()
+                
+                # 轉換為字典格式
+                for session in sessions:
+                    user_sessions.append({
+                        "id": session[0],
+                        "userId": session[1],
+                        "created_at": session[2].isoformat() if session[2] else None,
+                        "updated_at": session[2].isoformat() if session[2] else None
+                    })
+                
+                print(f"從資料庫找到用戶 {user_id} 的 {len(user_sessions)} 個 sessions")
+            except Exception as e:
+                print(f"從資料庫獲取 sessions 失敗: {e}")
+        
+        print(f"找到用戶 {user_id} 的 {len(user_sessions)} 個 sessions")
+        return user_sessions
+        
+    except Exception as e:
+        print(f"獲取用戶 sessions 失敗: {e}")
+        return []
+
+# 添加新的本地 API 端點
+@app.get("/local-api/get_user_by_session")
+def get_user_by_session(sessionId: str):
+    """根據 session_id 獲取對應的 user_id"""
+    try:
+        conn = psycopg2.connect(
+            host="35.221.147.151",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="linebot_v2"
+        )
+        
+        cur = conn.cursor()
+        
+        # 查詢該 session_id 對應的 user_id
+        query = """
+        SELECT id FROM linebot_v2 
+        WHERE session_id = %s 
+        ORDER BY timestamp DESC LIMIT 1
+        """
+        
+        cur.execute(query, (sessionId,))
+        result = cur.fetchone()
+        
+        cur.close()
+        conn.close()
+        
+        if result:
+            user_id = result[0]
+            print(f"找到 session {sessionId} 對應的 user_id: {user_id}")
+            return {"userId": user_id, "sessionId": sessionId}
+        else:
+            print(f"未找到 session {sessionId} 對應的 user_id")
+            return {"error": "Session not found"}
+            
+    except Exception as e:
+        print(f"獲取 user_id 失敗: {e}")
+        return {"error": str(e)}
+
+@app.get("/get_user_sessions")
+def get_user_sessions(userId: str):
+    """根據 userId 獲取該用戶的所有 sessions"""
+    try:
+        # 從資料庫查詢該用戶的所有 sessions
+        conn = psycopg2.connect(
+            host="35.221.147.151",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="linebot_v2"
+        )
+        
+        cur = conn.cursor()
+        
+        # 查詢該用戶的所有 sessions
+        query = """
+        SELECT session_id, user_id, created_at, updated_at
+        FROM session_records 
+        WHERE user_id = %s 
+        ORDER BY created_at DESC
+        """
+        
+        cur.execute(query, (userId,))
+        sessions = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        # 轉換為字典格式
+        session_list = []
+        for session in sessions:
+            session_list.append({
+                "id": session[0],
+                "user_id": session[1],
+                "created_at": session[2].isoformat() if session[2] else None,
+                "updated_at": session[3].isoformat() if session[3] else None
+            })
+        
+        print(f"找到用戶 {userId} 的 {len(session_list)} 個 sessions")
+        return session_list
+        
+    except Exception as e:
+        print(f"獲取用戶 sessions 失敗: {e}")
+        raise HTTPException(500, f"獲取用戶 sessions 失敗: {str(e)}")
+
+@app.get("/get_session_details")
+def get_session_details(userId: str, sessionId: str):
+    """獲取特定 session 的詳細信息"""
+    try:
+        # 從記憶體中的 sessions_db 獲取 session 詳細信息
+        if sessionId in sessions_db:
+            session_data = sessions_db[sessionId]
+            print(f"找到 session {sessionId} 的詳細信息")
+            return session_data
+        else:
+            print(f"Session {sessionId} 不存在於記憶體中")
+            raise HTTPException(404, f"Session {sessionId} not found")
+            
+    except Exception as e:
+        print(f"獲取 session 詳細信息失敗: {e}")
+        raise HTTPException(500, f"獲取 session 詳細信息失敗: {str(e)}")
 
 # 添加 run 端點
 class RunRequest(BaseModel):
