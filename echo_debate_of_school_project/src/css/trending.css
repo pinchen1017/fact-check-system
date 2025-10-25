@@ -169,6 +169,23 @@
     border-color: rgb(203, 163, 54);
 }
 
+/* 熱門查證圖卡樣式 - 深藍色主題 */
+.trending-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.trending-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(30, 64, 175, 0.15);
+    border-color: #1e40af;
+}
+
 .score-badge {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;

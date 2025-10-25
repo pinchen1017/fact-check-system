@@ -112,18 +112,18 @@ function Header({ currentTab, onTabChange }) {
                         </li>
                         <li className="mobile-nav-item">
                             <button 
-                                className={`mobile-nav-button ${currentTab === 'trending' ? 'active' : ''}`}
-                                onClick={() => handleNavClick('trending')}
-                            >
-                                熱門內容
-                            </button>
-                        </li>
-                        <li className="mobile-nav-item">
-                            <button 
                                 className={`mobile-nav-button ${currentTab === 'fact_check' ? 'active' : ''}`}
                                 onClick={() => handleNavClick('fact_check')}
                             >
                                 事實查核
+                            </button>
+                        </li>
+                        <li className="mobile-nav-item">
+                            <button 
+                                className={`mobile-nav-button ${currentTab === 'trending' ? 'active' : ''}`}
+                                onClick={() => handleNavClick('trending')}
+                            >
+                                歷史查證
                             </button>
                         </li>
                         <li className="mobile-nav-item">

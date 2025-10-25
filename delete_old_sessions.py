@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-刪除 seq < 35 的舊 session 資料
+刪除 seq < 51 的舊 session 資料
 """
 
 import psycopg2
 import datetime
 
 def delete_old_sessions():
-    """刪除 seq < 35 的舊 session 資料"""
+    """刪除 seq < 53 的舊 session 資料"""
     conn = None
     cur = None
     try:
@@ -22,18 +22,18 @@ def delete_old_sessions():
         )
         cur = conn.cursor()
 
-        print("開始刪除 seq < 35 的舊 session 資料...")
+        print("開始刪除 seq < 53 的舊 session 資料...")
 
         # 先查詢要刪除的記錄數量
-        cur.execute("SELECT COUNT(*) FROM linebot_v2 WHERE seq < 35")
+        cur.execute("SELECT COUNT(*) FROM linebot_v2 WHERE seq < 53")
         count_to_delete = cur.fetchone()[0]
-        print(f"將刪除 {count_to_delete} 筆記錄 (seq < 35)")
+        print(f"將刪除 {count_to_delete} 筆記錄 (seq < 45)")
 
         # 顯示要刪除的記錄
         cur.execute("""
             SELECT seq, id, session_id, timestamp
             FROM linebot_v2
-            WHERE seq < 35
+            WHERE seq < 53
             ORDER BY seq
         """)
         records_to_delete = cur.fetchall()
@@ -49,7 +49,7 @@ def delete_old_sessions():
             return False
 
         # 執行刪除
-        delete_sql = "DELETE FROM linebot_v2 WHERE seq < 35"
+        delete_sql = "DELETE FROM linebot_v2 WHERE seq < 53"
         cur.execute(delete_sql)
         deleted_count = cur.rowcount
 
@@ -91,7 +91,7 @@ def delete_old_sessions():
             conn.close()
 
 def main():
-    print("=== 刪除舊 Session 資料 (seq < 35) ===")
+    print("=== 刪除舊 Session 資料 (seq < 53) ===")
     if delete_old_sessions():
         print("\n舊資料刪除完成！")
     else:

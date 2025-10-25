@@ -11,6 +11,11 @@ function Trending({ factChecks, currentUserId = 'user' }) {
     const [historyError, setHistoryError] = useState(null)
     const [actualUserId, setActualUserId] = useState(currentUserId)
 
+    // 熱門查證相關狀態
+    const [trendingData, setTrendingData] = useState([])
+    const [isLoadingTrending, setIsLoadingTrending] = useState(false)
+    const [trendingError, setTrendingError] = useState(null)
+
     // 獲取用戶歷史分析記錄
     const fetchUserHistory = async (userId = actualUserId) => {
         setIsLoadingHistory(true)
@@ -93,24 +98,24 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                         // 使用現有的 API 端點獲取 session 詳細資料
                         const sessionUrl = `/api-proxy/apps/judge/users/${userId}/sessions/${sessionId}`
                         console.log('正在獲取 session 詳細資料:', sessionUrl)
-                        
-                        const sessionResponse = await fetch(sessionUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                        })
-                        
+                
+                const sessionResponse = await fetch(sessionUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                
                         console.log(`Session ${sessionId} 回應狀態:`, sessionResponse.status)
-                        
-                        if (sessionResponse.ok) {
-                            const sessionData = await sessionResponse.json()
+                
+                if (sessionResponse.ok) {
+                    const sessionData = await sessionResponse.json()
                             console.log(`Session ${sessionId} 獲取成功`)
-                            
+                    
                             // 處理 session 資料
-                            if (sessionData.state && sessionData.state.final_report_json) {
-                                const finalReport = sessionData.state.final_report_json
-                                const weightCalc = sessionData.state.weight_calculation_json || {}
+                    if (sessionData.state && sessionData.state.final_report_json) {
+                        const finalReport = sessionData.state.final_report_json
+                        const weightCalc = sessionData.state.weight_calculation_json || {}
                                 const factCheck = sessionData.state.fact_check_result_json || {}
                                 const classification = sessionData.state.classification_json || {}
                                 
@@ -157,14 +162,14 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                                     dateString = new Date().toLocaleDateString('zh-TW')
                                     console.log('使用當前時間:', dateString)
                                 }
-                                
-                                const historyItem = {
-                                    id: sessionData.id,
-                                    title: finalReport.topic || '未知主題',
-                                    summary: finalReport.overall_assessment || '無評估內容',
-                                    result: getCredibilityLevel(weightCalc.final_score || 0.5),
+                        
+                        const historyItem = {
+                            id: sessionData.id,
+                            title: finalReport.topic || '未知主題',
+                            summary: finalReport.overall_assessment || '無評估內容',
+                            result: getCredibilityLevel(weightCalc.final_score || 0.5),
                                     date: dateString,
-                                    sessionId: sessionData.id,
+                            sessionId: sessionData.id,
                                     finalScore: weightCalc.final_score || 0.5,
                                     analyzedText: sessionData.state.analyzed_text || '未知內容',
                                     juryBrief: finalReport.jury_brief || '無陪審團簡報',
@@ -306,12 +311,12 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                                 dateString = new Date().toLocaleDateString('zh-TW')
                                 console.log('使用當前時間:', dateString)
                             }
-                            
-                            const historyItem = {
+                        
+                        const historyItem = {
                                 id: sessionData.id,
-                                title: finalReport.topic || '未知主題',
-                                summary: finalReport.overall_assessment || '無評估內容',
-                                result: getCredibilityLevel(weightCalc.final_score || 0.5),
+                            title: finalReport.topic || '未知主題',
+                            summary: finalReport.overall_assessment || '無評估內容',
+                            result: getCredibilityLevel(weightCalc.final_score || 0.5),
                                 date: dateString,
                                 sessionId: sessionData.id,
                                 finalScore: weightCalc.final_score || 0.5,
@@ -360,6 +365,140 @@ function Trending({ factChecks, currentUserId = 'user' }) {
         }
     }
 
+    // 獲取熱門查證數據
+    const fetchTrendingData = async () => {
+        setIsLoadingTrending(true)
+        setTrendingError(null)
+        
+        try {
+            console.log('=== 開始獲取熱門查證資料 ===')
+            
+            // 直接使用現有的 API 獲取最新的 sessions
+            const sessionsUrl = `http://localhost:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions`
+            console.log('正在獲取最新 sessions:', sessionsUrl)
+            
+            const sessionsResponse = await fetch(sessionsUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors',
+            })
+            
+            console.log('Sessions 回應狀態:', sessionsResponse.status)
+            console.log('Sessions 回應頭:', Object.fromEntries(sessionsResponse.headers.entries()))
+            
+            if (!sessionsResponse.ok) {
+                const errorText = await sessionsResponse.text()
+                console.log('Sessions 錯誤內容:', errorText)
+                console.log('Sessions 錯誤狀態:', sessionsResponse.status)
+                console.log('Sessions 錯誤狀態文字:', sessionsResponse.statusText)
+                throw new Error(`獲取 sessions 失敗: ${sessionsResponse.status} - ${errorText}`)
+            }
+            
+            const sessionsData = await sessionsResponse.json()
+            console.log('獲取到的 sessions 數據:', sessionsData)
+            
+            // 取最新的 5 個 sessions
+            const latestSessions = sessionsData.slice(0, 5)
+            console.log('最新的 5 個 sessions:', latestSessions)
+            
+            // 逐一獲取每個 session 的詳細資料
+            const trendingData = []
+            for (let i = 0; i < latestSessions.length; i++) {
+                const sessionId = latestSessions[i]
+                console.log(`正在獲取 session ${i + 1}/${latestSessions.length}: ${sessionId}`)
+                
+                try {
+                    const sessionUrl = `http://localhost:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions/${sessionId}`
+                    const sessionResponse = await fetch(sessionUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        mode: 'cors',
+                    })
+                    
+                    console.log(`Session ${sessionId} 回應狀態:`, sessionResponse.status)
+                    console.log(`Session ${sessionId} 回應頭:`, Object.fromEntries(sessionResponse.headers.entries()))
+                    
+                    if (sessionResponse.ok) {
+                        const sessionData = await sessionResponse.json()
+                        console.log(`Session ${sessionId} 詳細資料:`, sessionData)
+                        
+                        // 處理時間戳
+                        let dateString = '未知日期'
+                        if (sessionData.timestamp) {
+                            try {
+                                const date = new Date(sessionData.timestamp)
+                                if (!isNaN(date.getTime())) {
+                                    dateString = date.toLocaleDateString('zh-TW', {
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })
+                                }
+                            } catch (e) {
+                                console.log('日期解析失敗:', e)
+                            }
+                        }
+                        
+                        // 處理模型分類
+                        let modelClassification = '未知'
+                        if (sessionData.model_classification && typeof sessionData.model_classification === 'object') {
+                            modelClassification = sessionData.model_classification.classification || '未知'
+                        } else if (typeof sessionData.model_classification === 'string') {
+                            modelClassification = sessionData.model_classification
+                        }
+                        
+                        const trendingItem = {
+                            id: `trending-${sessionId}-${i}`,
+                            sessionId: sessionId,
+                            userId: 'Ub57p8h5pm9db7u62uh8pj',
+                            date: dateString,
+                            title: sessionData.topic || `查證主題 ${sessionId.substring(0, 8)}...`,
+                            summary: sessionData.analyzed_text || '這是熱門查證記錄',
+                            result: sessionData.overall_assessment || '中等可信度',
+                            analyzedText: sessionData.analyzed_text || '這是熱門查證記錄',
+                            juryBrief: sessionData.jury_brief || '陪審團簡報內容',
+                            scores: sessionData.scores || {
+                                llm_score: 0.6,
+                                slm_score: 0.5,
+                                jury_score: 0.5,
+                                final_score: 0.6
+                            },
+                            factCheckClass: sessionData.fact_check_classification || '政治',
+                            modelClass: modelClassification,
+                            credibilityLevel: sessionData.credibility_level || '中等可信度'
+                        }
+                        
+                        trendingData.push(trendingItem)
+                        console.log(`Session ${sessionId} 處理完成`)
+                    } else {
+                        const errorText = await sessionResponse.text()
+                        console.log(`Session ${sessionId} 獲取失敗: ${sessionResponse.status}`)
+                        console.log(`Session ${sessionId} 錯誤內容:`, errorText)
+                        console.log(`Session ${sessionId} 錯誤狀態文字:`, sessionResponse.statusText)
+                    }
+                } catch (error) {
+                    console.error(`處理 session ${sessionId} 時發生錯誤:`, error)
+                }
+            }
+            
+            console.log('所有熱門查證數據處理完成:', trendingData)
+            setTrendingData(trendingData)
+            console.log('=== 熱門查證獲取完成 ===')
+            
+        } catch (error) {
+            console.error('獲取熱門查證數據失敗:', error)
+            setTrendingError(`獲取熱門查證數據失敗: ${error.message}`)
+        } finally {
+            setIsLoadingTrending(false)
+        }
+    }
+
     // 可信度評級函數
     const getCredibilityLevel = (score) => {
         if (score === 1) return '完全可信'
@@ -404,16 +543,17 @@ function Trending({ factChecks, currentUserId = 'user' }) {
         }
     }
 
-    // 組件載入時獲取歷史數據
+    // 組件載入時獲取歷史數據和熱門查證數據
     useEffect(() => {
-        const initializeHistory = async () => {
+        const initializeData = async () => {
             const actualUserId = await getUserIdFromSession()
             console.log('實際使用的 user_id:', actualUserId)
             setActualUserId(actualUserId)
             fetchUserHistory(actualUserId)
+            fetchTrendingData()
         }
         
-        initializeHistory()
+        initializeData()
     }, [])
 
     return (
@@ -422,11 +562,11 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                 <div className="trending-section">
                     <h1>歷史查證</h1>
 
+                    
                     {/* 歷史查證 */}
                     <div className="latest-section">
                         <div className="section-header">
                             <h2><MdOutlineHistoryToggleOff /> 歷史查證</h2>
-                            <a href="#" className="view-all-link">查看全部</a>
                         </div>
 
                         {isLoadingHistory ? (
@@ -517,61 +657,6 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                                 ))}
                             </div>
                         )}
-                    </div>
-
-                    {/* 最新查證 */}
-                    <div className="latest-section">
-                        <div className="section-header">
-                            <h2><MdVerifiedUser /> 最新查證</h2>
-                        </div>
-
-                        <div className="fact-checks-list">
-                            {factChecks && factChecks.map((item) => (
-                                <article key={item.id} className="fact-check-item">
-                                    <div className="item-content">
-                                        <div className="item-header">
-                                            <span className={`status-badge ${item.result.includes('高') ? 'true' : item.result.includes('低') ? 'false' : 'mixed'}`}>
-                                                {item.result}
-                                            </span>
-                                            <span className="category-badge">{item.category}</span>
-                                        </div>
-                                        <h3 className="item-title">{item.title}</h3>
-                                        <p className="item-summary">{item.summary}</p>
-                                        <div className="item-meta">
-                                            <span className="item-author">作者：{item.author}</span>
-                                            <span className="item-date">{item.date}</span>
-                                        </div>
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* 分類內容 */}
-                    <div className="categories-content">
-                        <div className="category-section">
-                            <h2>政治</h2>
-                            <div className="category-items">
-                                {factChecks && factChecks.filter(item => item.category === '政治').map((item) => (
-                                    <div key={item.id} className="category-item">
-                                        <h4>{item.title}</h4>
-                                        <span className="item-date">{item.date}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="category-section">
-                            <h2>健康</h2>
-                            <div className="category-items">
-                                {factChecks && factChecks.filter(item => item.category === '健康').map((item) => (
-                                    <div key={item.id} className="category-item">
-                                        <h4>{item.title}</h4>
-                                        <span className="item-date">{item.date}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
