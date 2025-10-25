@@ -3,6 +3,21 @@
 # Echo Debate 專案快速部署腳本
 echo "🚀 開始部署 Echo Debate 專案..."
 
+# 檢查是否為生產部署
+if [ "$1" = "prod" ]; then
+    echo "📦 使用生產配置部署..."
+    COMPOSE_FILE="docker-compose.prod.yml"
+    echo "🌐 部署後外部用戶可通過以下地址訪問："
+    echo "   前端: http://your-server-ip"
+    echo "   API: http://your-server-ip:4000/api/health"
+else
+    echo "🔧 使用開發配置部署..."
+    COMPOSE_FILE="docker-compose.yml"
+    echo "🏠 本地訪問地址："
+    echo "   前端: http://localhost:3000"
+    echo "   API: http://localhost:4000/api/health"
+fi
+
 # 檢查 Docker 是否安裝
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker 未安裝，請先安裝 Docker"
@@ -18,7 +33,7 @@ echo "✅ Docker 環境檢查通過"
 
 # 停止現有容器（如果有的話）
 echo "🛑 停止現有容器..."
-docker-compose down 2>/dev/null || true
+docker-compose -f $COMPOSE_FILE down 2>/dev/null || true
 
 # 清理舊的映像（可選）
 echo "🧹 清理舊映像..."
@@ -26,7 +41,7 @@ docker system prune -f
 
 # 建置新映像
 echo "🔨 建置 Docker 映像..."
-docker-compose build --no-cache
+docker-compose -f $COMPOSE_FILE build --no-cache
 
 if [ $? -ne 0 ]; then
     echo "❌ 建置失敗"
@@ -37,7 +52,7 @@ echo "✅ 映像建置完成"
 
 # 啟動服務
 echo "🚀 啟動服務..."
-docker-compose up -d
+docker-compose -f $COMPOSE_FILE up -d
 
 if [ $? -ne 0 ]; then
     echo "❌ 啟動失敗"
@@ -52,7 +67,7 @@ sleep 10
 
 # 檢查服務狀態
 echo "📊 檢查服務狀態..."
-docker-compose ps
+docker-compose -f $COMPOSE_FILE ps
 
 # 檢查健康狀態
 echo "🏥 檢查健康狀態..."

@@ -6,9 +6,9 @@
 
 ### 從 GitHub 部署
 
-1. **克隆專案**
+1. **下載專案**
 ```bash
-git clone <your-github-repo>
+git clone https://github.com/pinchen1017/fact-check-system.git
 cd UI6_docker
 ```
 
@@ -35,8 +35,45 @@ curl http://localhost:4000/api/health
 ```
 
 4. **訪問應用**
-- **前端應用**: http://localhost:3000
-- **後端 API**: http://localhost:4000/api/health
+- **前端應用**: http://localhost:3000 (本地測試)
+- **後端 API**: http://localhost:4000/api/health (本地測試)
+
+### 公開部署配置
+
+如果要讓外部用戶訪問，使用生產配置文件：
+
+```bash
+# 方法一：使用生產部署腳本（推薦）
+./quick-deploy.sh prod
+
+# 方法二：手動使用生產配置
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+或者修改 `docker-compose.yml` 中的端口配置：
+
+```yaml
+ports:
+  - "80:3000"    # 前端使用 80 端口
+  - "4000:4000"  # 後端 API 端口
+```
+
+部署後外部用戶可以通過以下地址訪問：
+- **公開前端**: http://your-server-ip (或 http://your-domain)
+- **公開 API**: http://your-server-ip:4000/api/health
+
+### 防火牆設定
+
+```bash
+# Ubuntu/Debian 防火牆設定
+sudo ufw allow 80
+sudo ufw allow 4000
+sudo ufw enable
+
+# 檢查防火牆狀態
+sudo ufw status
+```
 
 ## 安裝
 
@@ -132,6 +169,21 @@ docker-compose logs -f
 
 # 健康檢查
 curl -f http://localhost:4000/api/health
+```
+
+### 公開部署測試
+
+```bash
+# 測試公開前端（假設使用 80 端口）
+curl http://your-server-ip
+
+# 測試公開 API
+curl http://your-server-ip:4000/api/health
+
+# 檢查防火牆設定
+sudo ufw status
+sudo ufw allow 80
+sudo ufw allow 4000
 ```
 
 目前 CI/CD 狀態：已配置 Docker 容器化部署，支援一鍵部署腳本。
