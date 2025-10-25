@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  echo-debate-app:
+    build: .
+    container_name: echo-debate-container
+    ports:
+      - "3000:3000"  # 前端端口
+      - "4000:4000"  # 後端API端口
+    environment:
+      # 資料庫連接設定
+      - DB_HOST=35.221.147.151
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=@Aa123456
+      - DB_NAME=linebot_v2
+      - DB_SSL=true
+      
+      # JWT 設定
+      - JWT_SECRET=production-secret-key-2024
+      
+      # Node.js 環境
+      - NODE_ENV=production
+      - PORT=4000
+      
+      # FastAPI 服務設定
+      - VITE_FASTAPI_URL=http://120.107.172.133:10001
+      
+    volumes:
+      # 持久化 PM2 日誌
+      - pm2-logs:/var/log/pm2
+      
+    restart: unless-stopped
+    
+    # 健康檢查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  pm2-logs:
+    driver: local

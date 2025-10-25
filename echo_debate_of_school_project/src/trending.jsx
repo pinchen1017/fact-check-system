@@ -374,7 +374,7 @@ function Trending({ factChecks, currentUserId = 'user' }) {
             console.log('=== 開始獲取熱門查證資料 ===')
             
             // 直接使用現有的 API 獲取最新的 sessions
-            const sessionsUrl = `http://localhost:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions`
+            const sessionsUrl = `http://120.107.172.133:10001/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions`
             console.log('正在獲取最新 sessions:', sessionsUrl)
             
             const sessionsResponse = await fetch(sessionsUrl, {
@@ -410,7 +410,7 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                 console.log(`正在獲取 session ${i + 1}/${latestSessions.length}: ${sessionId}`)
                 
                 try {
-                    const sessionUrl = `http://localhost:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions/${sessionId}`
+                    const sessionUrl = `http://120.107.172.133:10001/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions/${sessionId}`
                     const sessionResponse = await fetch(sessionUrl, {
                         method: 'GET',
                         headers: {
