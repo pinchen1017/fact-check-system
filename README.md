@@ -1,10 +1,10 @@
 # Echo Debate 事實查核系統 - Docker 部署版
 
-## 📋 專案概述
+## 一、 專案概述
 
 這是一個基於 React + Node.js 的事實查核系統，提供即時新聞分析、辯論法庭和熱門查證功能。本專案已完全容器化，使用 Docker 進行部署，適合在實驗室環境中快速部署和運行。
 
-## 🏗️ 系統架構
+## 二、 系統架構
 
 ### 前端 (Frontend)
 - **技術棧**: React 19 + Vite + React Router
@@ -70,6 +70,209 @@ curl http://localhost:3000
 
 # 測試後端 API
 curl http://localhost:4000/api/health
+```
+
+## 🎯 正常執行指南
+
+### 第一次執行
+
+1. **確保 Docker 環境就緒**
+```bash
+# 檢查 Docker 狀態
+docker --version
+docker-compose --version
+
+# 如果沒有安裝，請先安裝 Docker
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+```
+
+2. **下載並準備專案**
+```bash
+# 進入專案目錄
+cd UI6_docker
+
+# 確保腳本有執行權限
+chmod +x quick-deploy.sh
+```
+
+3. **執行部署**
+```bash
+# 方法一：使用快速部署腳本（推薦）
+./quick-deploy.sh
+
+# 方法二：手動部署
+docker-compose build
+docker-compose up -d
+```
+
+4. **等待服務啟動**
+```bash
+# 查看啟動日誌
+docker-compose logs -f
+
+# 等待看到類似以下訊息：
+# echo-debate-app | Starting services with PM2...
+# echo-debate-app | [PM2] Starting frontend
+# echo-debate-app | [PM2] Starting backend
+```
+
+5. **驗證服務正常運行**
+```bash
+# 檢查容器狀態（應該顯示 "Up" 狀態）
+docker-compose ps
+
+# 測試前端服務
+curl -I http://localhost:3000
+# 應該返回 HTTP/1.1 200 OK
+
+# 測試後端 API
+curl http://localhost:4000/api/health
+# 應該返回 {"ok":true}
+```
+
+### 日常使用
+
+1. **啟動服務**
+```bash
+# 如果服務已停止，重新啟動
+docker-compose up -d
+
+# 查看服務狀態
+docker-compose ps
+```
+
+2. **停止服務**
+```bash
+# 停止所有服務
+docker-compose down
+
+# 停止並清理資源
+docker-compose down -v
+```
+
+3. **重啟服務**
+```bash
+# 重啟所有服務
+docker-compose restart
+
+# 重啟特定服務
+docker-compose restart echo-debate-app
+```
+
+4. **查看日誌**
+```bash
+# 查看所有服務日誌
+docker-compose logs
+
+# 即時查看日誌
+docker-compose logs -f
+
+# 查看特定服務日誌
+docker-compose logs echo-debate-app
+```
+
+### 訪問應用
+
+部署成功後，在瀏覽器中訪問：
+
+- **主應用**: http://localhost:3000
+- **API 健康檢查**: http://localhost:4000/api/health
+
+### 功能測試
+
+1. **事實查核功能**
+   - 訪問 http://localhost:3000
+   - 在搜尋框輸入要查證的新聞
+   - 點擊「開始查證」按鈕
+   - 觀察即時分析結果
+
+2. **辯論法庭功能**
+   - 點擊「辯論法庭」頁面
+   - 查看正反方辯論過程
+   - 觀察法官裁決結果
+
+3. **熱門查證功能**
+   - 點擊「熱門查證」頁面
+   - 查看熱門查證排行
+   - 瀏覽歷史查證記錄
+
+### 常見問題解決
+
+1. **端口被占用**
+```bash
+# 檢查端口使用情況
+netstat -tulpn | grep :3000
+netstat -tulpn | grep :4000
+
+# 如果端口被占用，修改 docker-compose.yml 中的端口映射
+# 例如：將 "3000:3000" 改為 "3001:3000"
+```
+
+2. **服務無法啟動**
+```bash
+# 查看詳細錯誤日誌
+docker-compose logs echo-debate-app
+
+# 重新建置容器
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+3. **資料庫連接問題**
+```bash
+# 檢查網路連接
+ping 35.221.147.151
+
+# 檢查環境變數
+docker-compose exec echo-debate-app env | grep DB_
+```
+
+4. **前端無法訪問**
+```bash
+# 檢查前端服務狀態
+docker-compose exec echo-debate-app pm2 status
+
+# 重啟前端服務
+docker-compose exec echo-debate-app pm2 restart frontend
+```
+
+### 系統監控
+
+1. **查看系統資源使用**
+```bash
+# 查看容器資源使用
+docker stats
+
+# 查看特定容器資源
+docker stats echo-debate-container
+```
+
+2. **查看 PM2 進程狀態**
+```bash
+# 進入容器
+docker-compose exec echo-debate-app bash
+
+# 查看 PM2 狀態
+pm2 status
+
+# 查看 PM2 日誌
+pm2 logs
+
+# 重啟所有進程
+pm2 restart all
+```
+
+3. **健康檢查**
+```bash
+# 檢查容器健康狀態
+docker-compose ps
+
+# 手動健康檢查
+curl -f http://localhost:4000/api/health
 ```
 
 ## 📁 專案結構

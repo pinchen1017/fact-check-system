@@ -49,7 +49,7 @@ const Header = ({ data }) => {
           {trust.label === "勝訴" && <FaCheckCircle />}
           {trust.label === "敗訴" && <FaTimesCircle />}
           {trust.label === "未定" && <FaQuestionCircle />}
-          <span className="np-badge-text">{trust.label}{typeof trust.value === "number" ? ` · ${trust.value}` : ""}</span>
+          <span className="np-badge-text">{trust.label}</span>
         </div>
       </div>
       <h1 className="np-title">{topic || "未命名主題"}</h1>
@@ -546,7 +546,7 @@ const NewsCourtroom = ({ data }) => {
       
       {/* 檢察官查核 */}
       <div className="np-court-section">
-        <h3 className="np-subtitle">Prosecutor查核</h3>
+        <h3 className="np-subtitle">檢察官查核</h3>
         <div className="np-grounding-grid">
           {chunks.length > 0 ? (
             chunks.map((chunk, i) => (
@@ -562,16 +562,6 @@ const NewsCourtroom = ({ data }) => {
                   <div className="np-grounding-text">
                     <p>{chunk.snippet || chunk.text}</p>
                   </div>
-                )}
-                {(chunk.url && chunk.url !== '無相關網址') && (
-                  <a className="np-source-link" href={chunk.url} target="_blank" rel="noopener noreferrer">
-                    <FaExternalLinkAlt /> 查看原文
-                  </a>
-                )}
-                {chunk.web?.uri && (
-                  <a className="np-source-link" href={chunk.web.uri} target="_blank" rel="noopener noreferrer">
-                    <FaExternalLinkAlt /> 查看原文
-                  </a>
                 )}
               </div>
             ))
@@ -799,13 +789,13 @@ const JuryAndEvidence = ({ data }) => {
     '主辯角色': [
       {
         name: '正方',
-        type: '主辯',
+        type: 'DEBATE',
         thesis: stakes.find(s => s.side === 'Advocate')?.thesis || '支持主流觀點',
         characteristics: ['支持主流觀點', '推動政策改革', '強調正面影響']
       },
       {
         name: '反方', 
-        type: '主辯',
+        type: 'DEBATE',
         thesis: stakes.find(s => s.side === 'Skeptic')?.thesis || '質疑現有觀點',
         characteristics: ['質疑現有觀點', '要求更多證據', '指出潛在問題']
       }
@@ -813,7 +803,7 @@ const JuryAndEvidence = ({ data }) => {
     '檢察官': [
       {
         name: '檢察官',
-        type: 'evidence',
+        type: 'EVIDENCE',
         thesis: '負責查核事實證據',
         characteristics: ['查核資料來源', '驗證事實真偽', '提供客觀證據']
       }
@@ -821,7 +811,7 @@ const JuryAndEvidence = ({ data }) => {
     '法官': [
       {
         name: '法官',
-        type: 'jury', 
+        type: 'JUDGE', 
         thesis: '做出最終裁決',
         characteristics: ['客觀評判', '綜合考量', '做出判決']
       }
@@ -829,25 +819,25 @@ const JuryAndEvidence = ({ data }) => {
     '陪審團': [
       {
         name: '擾動者',
-        type: '陪審團',
+        type: 'JURY',
         thesis: '挑戰既有觀點',
         characteristics: ['提出質疑', '挑戰權威', '引發思考']
       },
       {
         name: '影響者1',
-        type: '陪審團', 
+        type: 'JURY', 
         thesis: '影響公眾認知',
         characteristics: ['引導輿論', '傳播觀點', '影響判斷']
       },
       {
         name: '影響者2',
-        type: '陪審團',
+        type: 'JURY',
         thesis: '提供專業見解', 
         characteristics: ['專業分析', '深度思考', '平衡觀點']
       },
       {
         name: '主持人',
-        type: '陪審團',
+        type: 'JURY',
         thesis: '引導辯論進行',
         characteristics: ['控制流程', '維持秩序', '確保公平']
       }

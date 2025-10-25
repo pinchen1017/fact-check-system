@@ -14,7 +14,7 @@
 }
 
 .loading-content {
-  text-align: center;
+  text-align: center !important;
   color: #2d3748;
   padding: 2rem;
 }
@@ -593,7 +593,7 @@
   font-weight: 600;
   font-size: 14px;
   border-radius: 10px 10px 0 0;
-  text-align: center;
+  text-align: center !important;
 }
 
 /* Analysis header styles */
@@ -953,7 +953,7 @@
   border-radius: 8px;
   padding: 12px;
   border: 1px solid #e2e8f0;
-  text-align: center;
+  text-align: center !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1063,7 +1063,7 @@
 }
 
 .cofact-link {
-  text-align: center;
+  text-align: center !important;
   padding-top: 16px;
   border-top: 1px solid #e2e8f0;
 }
@@ -1371,25 +1371,39 @@
 }
 
 .verification-badge {
-  display: inline-block;
+  display: inline-flex;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-weight: 600;
   font-size: 1.1rem;
-  text-align: center;
+  text-align: center !important;
   min-width: 50px;
+  justify-content: center;
+  align-items: center;
 }
 
 .verification-badge.correct {
   background-color: #c6f6d5;
-  color: #495057;
+  color: #155724 2px solid !important;
+  font-size: 1.1rem;
   border: 1px solid #9ae6b4;
+  text-align: center !important;
 }
 
 .verification-badge.incorrect {
   background-color: #fed7d7;
-  color: #495057;
+  color: #721c24 !important;
   border: 1px solid #feb2b2;
+  text-align: center !important;
+  font-size: 1.1rem;
+} 
+
+.verification-badge.unknown {
+  background-color: #f2ca2b59 !important;
+  color: #92810e !important;
+  border: 2px solid rgba(203, 163, 54, 0.708) !important;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .credibility-score,
@@ -1477,7 +1491,7 @@
   border-radius: 12px;
   padding: 2rem;
   margin-top: 1.5rem;
-  text-align: center;
+  text-align: center !important;
   /* position: relative;
   overflow: hidden; */
 }
@@ -1507,7 +1521,7 @@
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid rgba(203, 163, 54, 0.3);
 }
@@ -1532,7 +1546,7 @@
 
 .score-table th {
   padding: 1rem 0.75rem;
-  text-align: center;
+  text-align: center !important;
   font-weight: 600;
   color: rgb(246, 241, 235);
   /* border-bottom: 2px solid rgb(203, 163, 54); */
@@ -1542,7 +1556,7 @@
 
 .score-table td {
   padding: 0.75rem;
-  text-align: center;
+  text-align: center !important;
   border-bottom: 1px solid rgba(63, 74, 85, 0.1);
   /* color: rgb(63, 74, 85); */
   background-color: white;
@@ -1650,6 +1664,7 @@
   display: flex;
   justify-content: center;
   margin: 1.5rem 0;
+  text-align: center !important;
 }
 
 .analysis-text {
@@ -1687,7 +1702,7 @@
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
   border-bottom: 3px solid #4299e1;
   padding-bottom: 0.5rem;
 }
@@ -1707,7 +1722,7 @@
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
   border-bottom: 3px solid #48bb78;
   padding-bottom: 0.5rem;
 }
@@ -1717,7 +1732,7 @@
   margin-bottom: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
 }
 
 .overall-summary-grid {
@@ -1732,7 +1747,7 @@
   /* border: 1px solid #e9ecef; */
   border-radius: 8px;
   padding: 1.2rem;
-  text-align: center;
+  text-align: center !important;
 }
 
 .overall-item h3 {
@@ -1743,26 +1758,30 @@
 }
 
 .verification-badge {
-  display: inline-block;
+  display: inline-flex;
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
   font-weight: 600;
   font-size: 1rem;
-  text-align: center;
+  text-align: center !important;
   min-width: 100px;
   margin-bottom: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .verification-badge.correct {
   background-color: #d4edda;
   color: #155724;
   border: 2px solid #c3e6cb;
+  text-align: center !important;
 }
 
 .verification-badge.incorrect {
   background-color: #f8d7da;
   color: #721c24;
   border: 2px solid #f5c6cb;
+  text-align: center !important;
 }
 
 .credibility-display {
@@ -1826,7 +1845,7 @@
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 1.5rem;
-  text-align: center;
+  text-align: center !important;
 }
 
 .formula-section:hover{
@@ -1840,7 +1859,7 @@
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid rgba(203, 163, 54, 0.3);
 }
@@ -1907,7 +1926,7 @@
   margin-bottom: 1rem;
   font-size: 1rem;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
   border-bottom: 2px solid #bee3f8;
   padding-bottom: 0.5rem;
 }
@@ -1969,7 +1988,7 @@
   border: 1px solid #bee3f8;
   border-radius: 6px;
   padding: 1rem;
-  text-align: center;
+  text-align: center !important;
 }
 
 .formula-text p {
@@ -2167,28 +2186,40 @@
   display: flex;
   justify-content: center;
   margin: 0.5rem 0;
+  text-align: center !important;
 }
 
 .verification-badge {
-  display: inline-block;
+  display: inline-flex;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-weight: 600;
   font-size: 1.1rem;
-  text-align: center;
+  text-align: center !important;
   min-width: 50px;
+  justify-content: center;
+  align-items: center;
 }
 
 .verification-badge.correct {
+  text-align: center !important;
   background-color: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
 }
 
 .verification-badge.incorrect {
+  text-align: center !important;
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+.verification-badge.unknown {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 2px solid #f59e0b;
+  font-weight: 600;
 }
 
 /* 分析觀點樣式 */

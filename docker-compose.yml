@@ -24,7 +24,7 @@ services:
       - PORT=4000
       
       # FastAPI 服務設定
-      - VITE_FASTAPI_URL=http://120.107.172.133:10001
+      - VITE_FASTAPI_URL=http://127.0.0.1:8000
       
     volumes:
       # 持久化 PM2 日誌

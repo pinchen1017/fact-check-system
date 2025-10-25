@@ -269,25 +269,25 @@
 }
 
 /* 主辯角色 - 報紙藍色系 */
-.np-role-type[data-type='主辯']{
+.np-role-type[data-type='DEBATE']{
   background: #6699CC;
   border: 1px solid #6699CC;
 }
 
 /* 檢察官角色 - 中藍色系 */
-.np-role-type[data-type='evidence']{
+.np-role-type[data-type='EVIDENCE']{
   background: #85B8CB;
   border: 1px solid #85B8CB;
 }
 
 /* 法官角色 - 深藍色系 */
-.np-role-type[data-type='jury']{
+.np-role-type[data-type='JUDGE']{
   background: #1D6A96;
   border: 1px solid #1D6A96;
 }
 
 /* 陪審團角色 - 中灰色系 */
-.np-role-type[data-type='陪審團']{
+.np-role-type[data-type='JURY']{
   background: #666666;
   border: 1px solid #666666;
 }

@@ -20,7 +20,7 @@ app.add_middleware(
     allow_origins=[
         "https://pinchen1017.github.io",
         "http://127.0.0.1:5173", "http://localhost:5173",
-        "http://120.107.172.133:10001", "http://localhost:8000",
+        "http://127.0.0.1:8000", "http://localhost:8000",
         "http://172.20.112.1:5173",  # 添加本機 IP
         "*"  # 開發環境允許所有來源
     ],

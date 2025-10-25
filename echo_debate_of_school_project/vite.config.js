@@ -23,7 +23,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/local-api/, ''),
       },
       '/api-proxy': {
-        target: 'http://120.107.172.133:10001/',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-proxy/, ''),
         configure: (proxy, options) => {

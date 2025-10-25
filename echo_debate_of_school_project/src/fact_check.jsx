@@ -64,8 +64,31 @@ const getN8nVerdict = (score) => {
   // 處理數值類型的score
   if (score > 0) return '勝訴';
   if (score < 0) return '敗訴';
-  if (score === 0) return '有待釐清';
+  if (score === 0) return '無法判決';
   return '未知';
+};
+
+// 獲取顏色分類的函數
+const getColorClass = (text) => {
+  if (!text) return 'unknown';
+  
+  // 紅色：敗訴、不可信、低 (優先檢查，避免"不可信"被誤判為"可信")
+  if (text.includes('敗訴') || text.includes('不可信') || text.includes('低')) {
+    return 'incorrect';
+  }
+  
+  // 綠色：勝訴、可信、高
+  if (text.includes('勝訴') || text.includes('可信') || text.includes('高')) {
+    return 'correct';
+  }
+  
+  // 黃色：無法判決、未知、半信半疑
+  if (text.includes('無法判決') || text.includes('未知') || text.includes('半信半疑')) {
+    return 'unknown';
+  }
+  
+  // 默認為黃色
+  return 'unknown';
 };
 
 {/* FactCheck */ }
@@ -243,7 +266,7 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
   }
 
   // 多agent API相關函數
-  const apiUrl = 'http://120.107.172.133:10001/';
+  const apiUrl = 'http://127.0.0.1:8000/';
   const proxyApiUrl = '/api-proxy'; // 使用代理避免CORS問題
 
 
@@ -1790,10 +1813,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                           <div className="verification-result">
-                            <span className={`verification-badge ${getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0).includes('高') ? 'correct' : 'incorrect'}`}>
-                              {getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0)}
-                             </span>
+                            <div className="verification-result" style={{ textAlign: 'center' }}>
+                             <span className={`verification-badge ${getColorClass(getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0))}`}>
+                               {getCredibilityLevel(analysisResult.weight_calculation_json?.llm_score || 0)}
+                              </span>
                           </div>
                         </div>
                       </div>
@@ -1824,10 +1847,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                           <div className="verification-result">
-                            <span className={`verification-badge ${getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0).includes('高') ? 'correct' : 'incorrect'}`}>
-                              {getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0)}
-                             </span>
+                            <div className="verification-result" style={{ textAlign: 'center' }}>
+                             <span className={`verification-badge ${getColorClass(getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0))}`}>
+                               {getCredibilityLevel(parseFloat(analysisResult.classification_json?.Probability) || 0)}
+                              </span>
                           </div>
                         </div>
                       </div>
@@ -1858,10 +1881,10 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       </div>
                       <div className="dialogue-metrics">
                         <div className="metric-item">
-                          <div className="verification-result">
-                            <span className={`verification-badge ${getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0) === '勝訴' ? 'correct' : 'incorrect'}`}>
-                              {getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0)}
-                            </span>
+                           <div className="verification-result" style={{ textAlign: 'center' }}>
+                             <span className={`verification-badge ${getColorClass(getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0))}`}>
+                               {getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0)}
+                             </span>
                           </div>
                         </div>
                       </div>

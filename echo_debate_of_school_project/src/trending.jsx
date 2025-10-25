@@ -374,7 +374,7 @@ function Trending({ factChecks, currentUserId = 'user' }) {
             console.log('=== 開始獲取熱門查證資料 ===')
             
             // 直接使用現有的 API 獲取最新的 sessions
-            const sessionsUrl = `http://120.107.172.133:10001/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions`
+            const sessionsUrl = `http://127.0.0.1:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions`
             console.log('正在獲取最新 sessions:', sessionsUrl)
             
             const sessionsResponse = await fetch(sessionsUrl, {
@@ -410,7 +410,7 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                 console.log(`正在獲取 session ${i + 1}/${latestSessions.length}: ${sessionId}`)
                 
                 try {
-                    const sessionUrl = `http://120.107.172.133:10001/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions/${sessionId}`
+                    const sessionUrl = `http://127.0.0.1:8000/apps/judge/users/Ub57p8h5pm9db7u62uh8pj/sessions/${sessionId}`
                     const sessionResponse = await fetch(sessionUrl, {
                         method: 'GET',
                         headers: {
@@ -622,15 +622,15 @@ function Trending({ factChecks, currentUserId = 'user' }) {
                                                     </div>
                                                     
                                                     <div className="detail-section">
-                                                        <h4>陪審團assert</h4>
+                                                        <h4>陪審團宣稱</h4>
                                                         <p className="jury-brief">{item.juryBrief}</p>
                                                     </div>
                                                     
                                                     <div className="detail-section">
                                                         <h4>評分詳情</h4>
                                                         <div className="score-details">
-                                                            <span className="score-item">LLM：{Math.round((item.scores.llm_score || 0) * 100)}%</span>
-                                                            <span className="score-item">industry expert：{Math.round((item.scores.slm_score || 0) * 100)}%</span>
+                                                            <span className="score-item">私家偵探：{Math.round((item.scores.llm_score || 0) * 100)}%</span>
+                                                            <span className="score-item">業界學者：{Math.round((item.scores.slm_score || 0) * 100)}%</span>
                                                             <span className="score-item">陪審團：{Math.round((item.scores.jury_score || 0) * 100)}%</span>
                                                             <span className="score-item final-score">最終分數：{Math.round((item.scores.final_score || 0) * 100)}%</span>
                                                         </div>
