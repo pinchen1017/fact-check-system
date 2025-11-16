@@ -9,6 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Backend is running");
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 const runs = new Map();    // demo 狀態
 const streams = new Map(); // run_id -> Set(res)

@@ -1,0 +1,15 @@
+version: "2"
+# authtoken 通過環境變數 NGROK_AUTHTOKEN 傳遞（在 docker-compose.yml 中設定）
+
+tunnels:
+  frontend:
+    addr: echo-debate-app:3000
+    proto: http
+    inspect: true
+    bind_tls: true
+    
+  backend:
+    addr: echo-debate-app:4000
+    proto: http
+    inspect: true
+    bind_tls: true

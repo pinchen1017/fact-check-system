@@ -20,7 +20,7 @@ app.add_middleware(
     allow_origins=[
         "https://pinchen1017.github.io",
         "http://127.0.0.1:5173", "http://localhost:5173",
-        "http://120.107.172.133:10001", "http://localhost:8000",
+        "http://120.107.172.114:8080", "http://localhost:8000",
         "http://172.20.112.1:5173",  # 添加本機 IP
         "*"  # 開發環境允許所有來源
     ],
@@ -442,6 +442,7 @@ def get_user_by_session(sessionId: str):
 def get_user_session(user_id: str, session_id: str):
     """獲取特定用戶的特定 session"""
     try:
+        print(f"查詢 session: user_id={user_id}, session_id={session_id}")
         # 首先嘗試從記憶體中的 sessions_db 獲取
         if session_id in sessions_db:
             session_data = sessions_db[session_id]
@@ -467,10 +468,13 @@ def get_user_session(user_id: str, session_id: str):
                 },
                 "fact_check_classification": "政治",
                 "model_classification": {"classification": "新聞"},
-                "credibility_level": "中等可信度"
+                "credibility_level": "中等可信度",
+                "state": {}
             }
     except Exception as e:
         print(f"獲取 session {session_id} 失敗: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(500, f"獲取 session 失敗: {str(e)}")
 
 @app.get("/get_user_sessions")
