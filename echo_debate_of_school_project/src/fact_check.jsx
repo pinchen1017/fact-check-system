@@ -8,6 +8,7 @@ import { BsNewspaper } from "react-icons/bs"
 import { MdOutlineHistoryToggleOff } from "react-icons/md"
 import { MdAnalytics } from "react-icons/md"
 import { TbDeviceDesktopAnalytics } from "react-icons/tb"
+import { FaCheckCircle, FaTimesCircle, FaQuestionCircle } from "react-icons/fa"
 import cofact from './assets/cofact.png'
 import discuss_cofact from './assets/discuss_cofact.png'
 import discuss from './assets/discuss.png'
@@ -45,6 +46,71 @@ const normalizeScoreToPercent = (score) => {
   if (isNaN(n)) return 50;
   const pct = n <= 1 ? n * 100 : n;
   return Math.max(0, Math.min(100, pct));
+};
+
+// 根據 ambiguityScore/100 使用 getCredibilityLevel 規則計算 newsCorrectness
+// 將可信度等級映射為 "高"、"中"、"低"
+const getNewsCorrectnessFromAmbiguityScore = (ambiguityScore) => {
+  const score = typeof ambiguityScore === 'string' ? parseFloat(ambiguityScore) : ambiguityScore;
+  if (isNaN(score)) return "中";
+  
+  // 將百分比轉換為 0-1 區間
+  const normalizedScore = score / 100;
+  
+  // 根據 getCredibilityLevel 的規則映射
+  if (normalizedScore === 1) return "高"; // 完全可信
+  if (normalizedScore < 1 && normalizedScore >= 0.875) return "高"; // 可信度極高
+  if (normalizedScore < 0.875 && normalizedScore >= 0.625) return "高"; // 可信度高
+  if (normalizedScore < 0.625 && normalizedScore > 0.5) return "中"; // 可信度稍高
+  if (normalizedScore === 0.5) return "中"; // 半信半疑
+  if (normalizedScore < 0.5 && normalizedScore >= 0.375) return "中"; // 可信度稍低
+  if (normalizedScore < 0.375 && normalizedScore >= 0.125) return "低"; // 可信度低
+  if (normalizedScore < 0.125 && normalizedScore > 0) return "低"; // 可信度極低
+  if (normalizedScore === 0) return "低"; // 完全不可信
+  return "中"; // 未知情況
+};
+
+// 可信度徽章計算（根據 final_report_json.jury_result 決定標籤）
+const computeTrustBadge = (data) => {
+  const finalReport = data?.final_report_json || {};
+  
+  // 優先使用 final_report_json.jury_result（綠色框的內容）
+  let juryResult = finalReport.jury_result;
+  
+  // 處理字符串：去除空格並轉換為字符串
+  if (juryResult != null) {
+    juryResult = String(juryResult).trim();
+  }
+  
+  // 根據 jury_result 映射到對應的 label
+  let label = "未定"; // 默認為未定（黃色）
+  
+  if (juryResult === "正方") {
+    label = "勝訴"; // 綠色
+  } else if (juryResult === "反方") {
+    label = "敗訴"; // 紅色
+  } else if (juryResult === "未定" || juryResult === "無法判決") {
+    label = "未定"; // 黃色
+  }
+  
+  // 調試日志
+  console.log('computeTrustBadge 計算:', {
+    juryResult,
+    label,
+    finalReport: finalReport,
+    jury_result_raw: finalReport.jury_result
+  });
+  
+  // 嘗試獲取對應的數值（用於顯示）
+  const weight = data?.weight_calculation_json || {};
+  let value = finalReport.jury_score || weight.jury_score || null;
+  
+  // 如果是 0-1 區間，轉換為 0-100
+  if (typeof value === "number" && value <= 1 && value >= 0) {
+    value = value * 100;
+  }
+  
+  return { label, value };
 };
 
 // 將n8n分數從1~-1區間轉換為1~0區間
@@ -780,15 +846,12 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       console.log("curation_raw:", curationRaw);
       console.log("groundingChunks:", groundingChunks);
       
-      // 從分類結果中提取新聞正確性
-      const classification = stateData.classification_json || {};
-      const newsCorrectness = classification.classification === "錯誤" ? "低" : 
-                             classification.classification === "正確" ? "高" : 
-                             classification.classification === "部分正確" ? "中" : "中";
-      
       // 從權重計算中提取可信度分數
       const weightCalc = stateData.weight_calculation_json || {};
       const ambiguityScore = normalizeScoreToPercent(weightCalc.final_score ?? 50).toFixed(2);
+      
+      // 根據 ambiguityScore/100 使用 getCredibilityLevel 規則計算新聞正確性
+      const newsCorrectness = getNewsCorrectnessFromAmbiguityScore(parseFloat(ambiguityScore));
       
       return {
         weight_calculation_json: stateData.weight_calculation_json || {
@@ -879,10 +942,8 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
       // 從權重計算中提取可信度分數
       const ambiguityScore = normalizeScoreToPercent(weightCalculationData?.final_score ?? 50).toFixed(2);
       
-      // 從分類結果中提取新聞正確性
-      const newsCorrectness = classificationData?.classification === "錯誤" ? "低" : 
-                             classificationData?.classification === "正確" ? "高" : 
-                             classificationData?.classification === "部分正確" ? "中" : "中";
+      // 根據 ambiguityScore/100 使用 getCredibilityLevel 規則計算新聞正確性
+      const newsCorrectness = getNewsCorrectnessFromAmbiguityScore(parseFloat(ambiguityScore));
 
       return {
         weight_calculation_json: weightCalculationData || {
@@ -1482,13 +1543,16 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
     // 計算整體結果
     const messageVerification = getCredibilityLevel(responseData.weight_calculation_json.final_score);
     const credibilityScore = normalizeScoreToPercent(responseData.weight_calculation_json.final_score).toFixed(1);
+    
+    // 根據 ambiguityScore/100 使用 getCredibilityLevel 規則計算新聞正確性
+    const newsCorrectness = getNewsCorrectnessFromAmbiguityScore(parseFloat(credibilityScore));
 
     const newAnalysisResult = {
       // 原始 response_b1.json 數據
       ...responseData,
       cofact: cofactResult,
       multiAgent: multiAgentResult, // 添加多agent分析結果
-      newsCorrectness: messageVerification,
+      newsCorrectness: newsCorrectness,
       ambiguityScore: credibilityScore,
       analysis: responseData.fact_check_result_json.analysis,
       models: {
@@ -1882,9 +1946,23 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                       <div className="dialogue-metrics">
                         <div className="metric-item">
                            <div className="verification-result" style={{ textAlign: 'center' }}>
-                             <span className={`verification-badge ${getColorClass(getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0))}`}>
-                               {getN8nVerdict(analysisResult.weight_calculation_json?.jury_score || 0)}
-                             </span>
+                             {(() => {
+                               const trust = computeTrustBadge(analysisResult);
+                               console.log('法庭辯論系統徽章計算:', {
+                                 trust,
+                                 trust_label: trust.label,
+                                 jury_result: analysisResult?.final_report_json?.jury_result,
+                                 final_report_json: analysisResult?.final_report_json
+                               });
+                               return (
+                                 <span className={`verification-badge ${trust.label === '勝訴' ? 'correct' : trust.label === '敗訴' ? 'incorrect' : 'unknown'}`}>
+                                   {trust.label === '勝訴'}
+                                   {trust.label === '敗訴'}
+                                   {trust.label === '未定'}
+                                   {trust.label}
+                                 </span>
+                               );
+                             })()}
                           </div>
                         </div>
                       </div>
