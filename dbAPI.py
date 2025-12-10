@@ -59,11 +59,11 @@ def save_session_record(user_id, session_id):
     """儲存 session 記錄到現有的資料庫表"""
     try:
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()
@@ -296,11 +296,11 @@ def list_all_sessions():
     try:
         # 從資料庫獲取所有 sessions
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()
@@ -355,11 +355,11 @@ def list_user_sessions(user_id: str):
         if not user_sessions:
             try:
                 conn = psycopg2.connect(
-                    host="35.221.147.151",
+                    host="35.229.243.129",
                     port=5432,
                     user="postgres",
                     password="@Aa123456",
-                    dbname="linebot_v2"
+                    dbname="postgres"
                 )
                 
                 cur = conn.cursor()
@@ -404,11 +404,11 @@ def get_user_by_session(sessionId: str):
     """根據 session_id 獲取對應的 user_id"""
     try:
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()
@@ -483,11 +483,11 @@ def get_user_sessions(userId: str):
     try:
         # 從資料庫查詢該用戶的所有 sessions
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()
@@ -546,11 +546,11 @@ def get_user_session_ids(userId: str):
     try:
         # 從資料庫查詢該用戶的所有 session_id
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()
@@ -785,11 +785,11 @@ def get_trending_analysis():
         
         # 從資料庫獲取最新的五筆資料
         conn = psycopg2.connect(
-            host="35.221.147.151",
+            host="35.229.243.129",
             port=5432,
             user="postgres",
             password="@Aa123456",
-            dbname="linebot_v2"
+            dbname="postgres"
         )
         
         cur = conn.cursor()

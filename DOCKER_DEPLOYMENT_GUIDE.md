@@ -140,11 +140,11 @@ sudo chown -R $USER:$USER .
 
 在 `docker-compose.yml` 中已預設以下環境變數：
 
-- `DB_HOST`: 資料庫主機 (35.221.147.151)
+- `DB_HOST`: 資料庫主機 (35.229.243.129)
 - `DB_PORT`: 資料庫端口 (5432)
 - `DB_USER`: 資料庫使用者 (postgres)
 - `DB_PASSWORD`: 資料庫密碼 (@Aa123456)
-- `DB_NAME`: 資料庫名稱 (linebot_v2)
+- `DB_NAME`: 資料庫名稱 (postgres)
 - `DB_SSL`: SSL 連接 (true)
 - `JWT_SECRET`: JWT 密鑰
 - `NODE_ENV`: 環境模式 (production)

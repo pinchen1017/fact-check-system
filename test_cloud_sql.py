@@ -1,11 +1,11 @@
 import psycopg2
 
 conn = psycopg2.connect(
-    host="35.221.147.151",
+    host="35.229.243.129",
     port=5432,
     user="postgres",
     password="@Aa123456",
-    dbname="linebot_v2"
+    dbname="postgres"
 )
 
 cur = conn.cursor()

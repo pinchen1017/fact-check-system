@@ -157,6 +157,34 @@ const getColorClass = (text) => {
   return 'unknown';
 };
 
+// 根據可信度等級獲取顏色分類（基於 getCredibilityLevel 規則）
+const getCredibilityColorClass = (credibilityLevel) => {
+  if (!credibilityLevel) return 'unknown';
+  
+  // 根據 getCredibilityLevel 的返回值進行分類
+  if (credibilityLevel === '完全可信' || 
+      credibilityLevel === '可信度極高' || 
+      credibilityLevel === '可信度高' || 
+      credibilityLevel === '可信度稍高') {
+    return 'correct';
+  }
+  
+  if (credibilityLevel === '半信半疑' || 
+      credibilityLevel === '未知') {
+    return 'unknown';
+  }
+  
+  if (credibilityLevel === '可信度稍低' || 
+      credibilityLevel === '可信度低' || 
+      credibilityLevel === '可信度極低' || 
+      credibilityLevel === '完全不可信') {
+    return 'incorrect';
+  }
+  
+  // 默認為黃色
+  return 'unknown';
+};
+
 {/* FactCheck */ }
 function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, onStartRealTimeAnalysis, analysisResult, setAnalysisResult }) {
   const [searchInput, setSearchInput] = useState(searchQuery || '')
@@ -1841,8 +1869,25 @@ function FactCheck({ searchQuery, factChecks, setSearchQuery, onOpenAnalysis, on
                 <div className="overall-summary-grid">
                   <div className="overall-item">
                     <h3>消息查核</h3>
-                    <div className={`verification-badge ${analysisResult.newsCorrectness && analysisResult.newsCorrectness.includes('高') ? 'correct' : 'incorrect'}`}>
-                      {analysisResult.newsCorrectness || '分析中'}
+                    <div className={`verification-badge ${(() => {
+                      // 根據 getCredibilityLevel 規則計算可信度等級
+                      const score = analysisResult.weight_calculation_json?.final_score ?? 
+                                   (analysisResult.ambiguityScore ? parseFloat(analysisResult.ambiguityScore) / 100 : null);
+                      if (score === null || score === undefined) {
+                        return 'unknown';
+                      }
+                      const credibilityLevel = getCredibilityLevel(score);
+                      return getCredibilityColorClass(credibilityLevel);
+                    })()}`}>
+                      {(() => {
+                        // 根據 getCredibilityLevel 規則顯示可信度等級
+                        const score = analysisResult.weight_calculation_json?.final_score ?? 
+                                     (analysisResult.ambiguityScore ? parseFloat(analysisResult.ambiguityScore) / 100 : null);
+                        if (score === null || score === undefined) {
+                          return analysisResult.newsCorrectness || '分析中';
+                        }
+                        return getCredibilityLevel(score);
+                      })()}
                     </div>
                   </div>
 

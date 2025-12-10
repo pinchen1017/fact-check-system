@@ -9,11 +9,11 @@ services:
       - "4000:4000"  # 後端API端口
     environment:
       # 資料庫連接設定
-      - DB_HOST=35.221.147.151
+      - DB_HOST=35.229.243.129
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=@Aa123456
-      - DB_NAME=linebot_v2
+      - DB_NAME=postgres
       - DB_SSL=true
       
       # JWT 設定

@@ -65,11 +65,11 @@ RUN echo '{ \
       "env": { \
         "NODE_ENV": "production", \
         "PORT": "4000", \
-        "DB_HOST": "35.221.147.151", \
+        "DB_HOST": "35.229.243.129", \
         "DB_PORT": "5432", \
         "DB_USER": "postgres", \
         "DB_PASSWORD": "@Aa123456", \
-        "DB_NAME": "linebot_v2", \
+        "DB_NAME": "postgres", \
         "DB_SSL": "true", \
         "JWT_SECRET": "production-secret-key-2024" \
       } \

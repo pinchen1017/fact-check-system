@@ -34,11 +34,11 @@ app.get("/api/health", (_, res) => res.json({ ok: true }));
 
 // Cloud SQL 連線設定（使用與 test_cloud_sql.py 相同參數）
 const pool = new pg.Pool({
-  host: process.env.DB_HOST || "35.221.147.151",
+  host: process.env.DB_HOST || "35.229.243.129",
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "@Aa123456",
-  database: process.env.DB_NAME || "linebot_v2",
+  database: process.env.DB_NAME || "postgres",
   max: 5,
   ssl: (process.env.DB_SSL === "true" || process.env.RENDER === "true" || process.env.NODE_ENV === "production")
     ? { rejectUnauthorized: false }
