@@ -9,5 +9,5 @@ conn = psycopg2.connect(
 )
 
 cur = conn.cursor()
-cur.execute("SELECT * FROM linebot_v2;")
+cur.execute("SELECT * FROM session;")
 print(cur.fetchall())

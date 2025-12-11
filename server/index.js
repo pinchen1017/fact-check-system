@@ -54,7 +54,7 @@ app.post("/save_session_record", async (req, res) => {
     try {
       const now = new Date();
       await client.query(
-        "INSERT INTO linebot_v2 (id, session_id, timestamp) VALUES ($1, $2, $3)",
+        "INSERT INTO session (id, session_id, timestamp) VALUES ($1, $2, $3)",
         [userId, sessionId, now]
       );
       res.json({ ok: true, userId, sessionId, timestamp: now.toISOString() });
@@ -75,7 +75,7 @@ app.get("/get_user_by_session", async (req, res) => {
     const client = await pool.connect();
     try {
       const { rows } = await client.query(
-        "SELECT id FROM linebot_v2 WHERE session_id = $1 ORDER BY seq DESC LIMIT 1",
+        "SELECT id FROM session WHERE session_id = $1 ORDER BY timestamp DESC LIMIT 1",
         [sessionId]
       );
       if (!rows || rows.length === 0) return res.status(404).json({ error: "not_found" });

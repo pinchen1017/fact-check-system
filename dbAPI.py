@@ -8,11 +8,18 @@ import psycopg2
 load_dotenv()
 PG_DSN = os.getenv("PG_DSN")
 if not PG_DSN:
-    print("Warning: PG_DSN not set, using in-memory database")
-    # 使用 SQLite 作為後備
-    engine = create_engine("sqlite:///./test.db", pool_pre_ping=True, future=True)
-else:
-    engine = create_engine(PG_DSN, pool_pre_ping=True, future=True)
+    # 從環境變數構建 PostgreSQL 連接字符串
+    db_host = os.getenv("DB_HOST", "35.229.243.129")
+    db_port = os.getenv("DB_PORT", "5432")
+    db_user = os.getenv("DB_USER", "postgres")
+    db_password = os.getenv("DB_PASSWORD", "@Aa123456")
+    db_name = os.getenv("DB_NAME", "postgres")
+    
+    # 構建 PostgreSQL DSN
+    PG_DSN = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    print(f"使用環境變數構建 PostgreSQL 連接: {db_host}:{db_port}/{db_name}")
+
+engine = create_engine(PG_DSN, pool_pre_ping=True, future=True)
 app = FastAPI(title="Echo Debate API", version="1.0.0")
 
 app.add_middleware(
@@ -68,9 +75,9 @@ def save_session_record(user_id, session_id):
         
         cur = conn.cursor()
         
-        # 插入到現有的 linebot_v2 表，使用正確的欄位名稱
+        # 插入到現有的 session 表，使用正確的欄位名稱
         insert_sql = """
-        INSERT INTO linebot_v2 (id, session_id, timestamp)
+        INSERT INTO session (id, session_id, timestamp)
         VALUES (%s, %s, %s)
         """
         
@@ -286,9 +293,60 @@ def create_session(session_data: SessionCreate):
 @app.get("/apps/judge/users/user/sessions/{session_id}", response_model=SessionResponse)
 def get_session(session_id: str):
     """獲取指定的 session"""
-    if session_id not in sessions_db:
-        raise HTTPException(404, "Session not found")
-    return SessionResponse(**sessions_db[session_id])
+    # 首先嘗試從記憶體中獲取
+    if session_id in sessions_db:
+        return SessionResponse(**sessions_db[session_id])
+    
+    # 如果記憶體中沒有，從資料庫查詢
+    try:
+        conn = psycopg2.connect(
+            host="35.229.243.129",
+            port=5432,
+            user="postgres",
+            password="@Aa123456",
+            dbname="postgres"
+        )
+        
+        cur = conn.cursor()
+        
+        # 查詢該 session_id 是否存在
+        query = """
+        SELECT id, session_id, timestamp
+        FROM session 
+        WHERE session_id = %s 
+        ORDER BY timestamp DESC LIMIT 1
+        """
+        
+        cur.execute(query, (session_id,))
+        result = cur.fetchone()
+        
+        cur.close()
+        conn.close()
+        
+        if result:
+            user_id = result[0]
+            # 從資料庫找到 session，返回基本結構
+            session_data = {
+                "id": session_id,
+                "appName": "judge",
+                "userId": user_id,
+                "state": {}
+            }
+            # 同時存入記憶體以便後續使用
+            sessions_db[session_id] = session_data
+            print(f"從資料庫找到 session {session_id}，user_id: {user_id}")
+            return SessionResponse(**session_data)
+        else:
+            print(f"Session {session_id} 在資料庫中不存在")
+            raise HTTPException(404, "Session not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"查詢 session {session_id} 時發生錯誤: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"查詢 session 失敗: {str(e)}")
 
 @app.get("/apps/judge/users/user/sessions/")
 def list_all_sessions():
@@ -308,7 +366,7 @@ def list_all_sessions():
         # 查詢所有 sessions
         query = """
         SELECT session_id, id, timestamp
-        FROM linebot_v2 
+        FROM session 
         ORDER BY timestamp DESC
         """
         
@@ -367,7 +425,7 @@ def list_user_sessions(user_id: str):
                 # 查詢該用戶的所有 sessions
                 query = """
                 SELECT session_id, id, timestamp
-                FROM linebot_v2 
+                FROM session 
                 WHERE id = %s 
                 ORDER BY timestamp DESC
                 """
@@ -415,7 +473,7 @@ def get_user_by_session(sessionId: str):
         
         # 查詢該 session_id 對應的 user_id
         query = """
-        SELECT id FROM linebot_v2 
+        SELECT id FROM session 
         WHERE session_id = %s 
         ORDER BY timestamp DESC LIMIT 1
         """
@@ -558,7 +616,7 @@ def get_user_session_ids(userId: str):
         # 查詢該用戶的所有 session_id
         query = """
         SELECT session_id, timestamp
-        FROM linebot_v2 
+        FROM session 
         WHERE id = %s 
         ORDER BY timestamp DESC
         """
@@ -794,11 +852,11 @@ def get_trending_analysis():
         
         cur = conn.cursor()
         
-        # 查詢最新的五筆資料，按seq排序
+        # 查詢最新的五筆資料，按timestamp排序
         query = """
         SELECT session_id, id, timestamp
-        FROM linebot_v2 
-        ORDER BY seq DESC 
+        FROM session 
+        ORDER BY timestamp DESC 
         LIMIT 5
         """
         
